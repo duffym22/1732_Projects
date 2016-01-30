@@ -62,7 +62,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.rtb_Notes = new System.Windows.Forms.RichTextBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.txt_roughTerrain = new System.Windows.Forms.TextBox();
@@ -442,7 +442,7 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.richTextBox1);
+            this.groupBox3.Controls.Add(this.rtb_Notes);
             this.groupBox3.Location = new System.Drawing.Point(330, 117);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(316, 203);
@@ -450,13 +450,13 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Notes";
             // 
-            // richTextBox1
+            // rtb_Notes
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(6, 19);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(304, 178);
-            this.richTextBox1.TabIndex = 11;
-            this.richTextBox1.Text = "";
+            this.rtb_Notes.Location = new System.Drawing.Point(6, 19);
+            this.rtb_Notes.Name = "rtb_Notes";
+            this.rtb_Notes.Size = new System.Drawing.Size(304, 178);
+            this.rtb_Notes.TabIndex = 11;
+            this.rtb_Notes.Text = "";
             // 
             // groupBox8
             // 
@@ -750,6 +750,7 @@
             this.Controls.Add(this.label1);
             this.Name = "Form1";
             this.Text = "2016 FRC Scouting Form";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox7.ResumeLayout(false);
@@ -790,7 +791,7 @@
         private System.Windows.Forms.RadioButton rdo_allianceBlue;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox rtb_Notes;
         private System.Windows.Forms.Button btn_submitData;
         private System.Windows.Forms.Button btn_clearData;
         private System.Windows.Forms.GroupBox groupBox3;
