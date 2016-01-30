@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Excel;
+using System.Diagnostics;
 
 namespace _2016_FRC_Scouting_Form
 {
@@ -49,6 +50,7 @@ namespace _2016_FRC_Scouting_Form
         private Workbook _xlwb;
         private Worksheet _xlws;
         private object misValue = System.Reflection.Missing.Value;
+        private Stopwatch timer = new Stopwatch();
         private DataGrid dataGridView1;
 
         internal int pTeam_Num;
@@ -237,38 +239,57 @@ namespace _2016_FRC_Scouting_Form
                 openDataFile();                                 //access file if not open (if file not exist, will be created in condition above)
                 gatherData();                                   //gather data from form
                 addDataRow();
-               
+                
+                setStatusBar("Form submitted successfully");
                 //dataGridView1.DataSource = gatherData();  
                 //set into specific format
             }
         }
 
+        private void setStatusBar(string msg)
+        {
+            timer.Start();
+            do
+            {
+                toolStripStatusLabel1.Text = msg;
+            } while (timer.ElapsedMilliseconds < 5000);
+            timer.Stop();
+            timer.Reset();
+        }
+
         private void gatherData()
         {
-            Team_Num = Int32.Parse(txt_teamNum.Text);
-            Match_Num = Int32.Parse(txt_matchNum.Text);
-            Scout_Name = txt_scoutName.Text;
-            Team_Alliance = rdo_allianceRed.Checked ? "Red" : "Blue";
-            Auto_Defense_Reached = chk_reached.Checked;
-            Auto_Defense_Crossed = chk_crossed.Checked;
-            Auto_Low_Goal_Scored = chk_lowScore.Checked;
-            Auto_High_Goal_Scored = chk_highScore.Checked;
-            Auto_Starting_Position = rdo_startNeutral.Checked ? "Neutral Zone" : "Courtyard";
-            Auto_Ending_Position = rdo_endNeutral.Checked ? "Neutral Zone" : "Courtyard";
-            Tele_Portcullis = Int32.Parse(txt_portcullis.Text);
-            Tele_Fries = Int32.Parse(txt_fries.Text);
-            Tele_Rampart = Int32.Parse(txt_rampart.Text);
-            Tele_Moat = Int32.Parse(txt_moat.Text);
-            Tele_Drawbridge = Int32.Parse(txt_drawbridge.Text);
-            Tele_SallyPort = Int32.Parse(txt_sallyPort.Text);
-            Tele_RockWall = Int32.Parse(txt_rockWall.Text);
-            Tele_RoughTerrain = Int32.Parse(txt_roughTerrain.Text);
-            Tele_LowBar = Int32.Parse(txt_lowBar.Text);
-            Tele_Low_Goal_Scored = Int32.Parse(txt_lowGoalsScored.Text);
-            Tele_High_Goal_Scored = Int32.Parse(txt_highGoalsScored.Text);
-            End_Challenged = rdo_Challenged.Checked;
-            End_Scaled = rdo_Scaled.Checked;
-            Notes = rtb_Notes.Text;            
+            try
+            {
+                Team_Num = Int32.Parse(txt_teamNum.Text);
+                Match_Num = Int32.Parse(txt_matchNum.Text);
+                Scout_Name = txt_scoutName.Text;
+                Team_Alliance = rdo_allianceRed.Checked ? "Red" : "Blue";
+                Auto_Defense_Reached = chk_reached.Checked;
+                Auto_Defense_Crossed = chk_crossed.Checked;
+                Auto_Low_Goal_Scored = chk_lowScore.Checked;
+                Auto_High_Goal_Scored = chk_highScore.Checked;
+                Auto_Starting_Position = rdo_startNeutral.Checked ? "Neutral Zone" : "Courtyard";
+                Auto_Ending_Position = rdo_endNeutral.Checked ? "Neutral Zone" : "Courtyard";
+                Tele_Portcullis = Int32.Parse(txt_portcullis.Text);
+                Tele_Fries = Int32.Parse(txt_fries.Text);
+                Tele_Rampart = Int32.Parse(txt_rampart.Text);
+                Tele_Moat = Int32.Parse(txt_moat.Text);
+                Tele_Drawbridge = Int32.Parse(txt_drawbridge.Text);
+                Tele_SallyPort = Int32.Parse(txt_sallyPort.Text);
+                Tele_RockWall = Int32.Parse(txt_rockWall.Text);
+                Tele_RoughTerrain = Int32.Parse(txt_roughTerrain.Text);
+                Tele_LowBar = Int32.Parse(txt_lowBar.Text);
+                Tele_Low_Goal_Scored = Int32.Parse(txt_lowGoalsScored.Text);
+                Tele_High_Goal_Scored = Int32.Parse(txt_highGoalsScored.Text);
+                End_Challenged = rdo_Challenged.Checked;
+                End_Scaled = rdo_Scaled.Checked;
+                Notes = rtb_Notes.Text;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "Issue reading data from form");
+            }
         }
 
         private void initializeProperties()
@@ -301,45 +322,60 @@ namespace _2016_FRC_Scouting_Form
 
         private void addDataRow()
         {
-            //get last data row
-            Range last = _xlws.Cells.SpecialCells(XlCellType.xlCellTypeLastCell);
-            int lastRow = last.Row;
-            lastRow++;
-            _xlws.Cells[lastRow, DATA_ROWS.Team_Num] = Team_Num;
-            _xlws.Cells[lastRow, DATA_ROWS.Match_Num] = Match_Num;
-            _xlws.Cells[lastRow, DATA_ROWS.Scout_Name] = Scout_Name;
-            _xlws.Cells[lastRow, DATA_ROWS.Alliance] = Team_Alliance;
-            _xlws.Cells[lastRow, DATA_ROWS.Auto_Defense_Reached] = Auto_Defense_Reached;
-            _xlws.Cells[lastRow, DATA_ROWS.Auto_Defense_Crossed] = Auto_Defense_Crossed;
-            _xlws.Cells[lastRow, DATA_ROWS.Auto_Low_Goal_Scored] = Auto_Low_Goal_Scored;
-            _xlws.Cells[lastRow, DATA_ROWS.Auto_High_Goal_Scored] = Auto_High_Goal_Scored;
-            _xlws.Cells[lastRow, DATA_ROWS.Auto_Starting_Position] = Auto_Starting_Position;
-            _xlws.Cells[lastRow, DATA_ROWS.Auto_Ending_Position] = Auto_Ending_Position;
-            _xlws.Cells[lastRow, DATA_ROWS.Tele_Portcullis] = Tele_Portcullis;
-            _xlws.Cells[lastRow, DATA_ROWS.Tele_Fries] = Tele_Fries;
-            _xlws.Cells[lastRow, DATA_ROWS.Tele_Rampart] = Tele_Rampart;
-            _xlws.Cells[lastRow, DATA_ROWS.Tele_Moat] = Tele_Moat;
-            _xlws.Cells[lastRow, DATA_ROWS.Tele_Drawbridge] = Tele_Drawbridge;
-            _xlws.Cells[lastRow, DATA_ROWS.Tele_SallyPort] = Tele_SallyPort;
-            _xlws.Cells[lastRow, DATA_ROWS.Tele_RockWall] = Tele_RockWall;
-            _xlws.Cells[lastRow, DATA_ROWS.Tele_RoughTerrain] = Tele_RoughTerrain;
-            _xlws.Cells[lastRow, DATA_ROWS.Tele_LowBar] = Tele_LowBar;
-            _xlws.Cells[lastRow, DATA_ROWS.Tele_Low_Goal_Scored] = Tele_Low_Goal_Scored;
-            _xlws.Cells[lastRow, DATA_ROWS.Tele_High_Goal_Scored] = Tele_High_Goal_Scored;
-            _xlws.Cells[lastRow, DATA_ROWS.End_Challenged] = End_Challenged;
-            _xlws.Cells[lastRow, DATA_ROWS.End_Scaled] = End_Scaled;
-            _xlws.Cells[lastRow, DATA_ROWS.Notes] = Notes;
+            try
+            {
+                //get last data row
+                Range last = _xlws.Cells.SpecialCells(XlCellType.xlCellTypeLastCell);
+                int lastRow = last.Row;
+                lastRow++;
+                _xlws.Cells[lastRow, DATA_ROWS.Team_Num] = Team_Num;
+                _xlws.Cells[lastRow, DATA_ROWS.Match_Num] = Match_Num;
+                _xlws.Cells[lastRow, DATA_ROWS.Scout_Name] = Scout_Name;
+                _xlws.Cells[lastRow, DATA_ROWS.Alliance] = Team_Alliance;
+                _xlws.Cells[lastRow, DATA_ROWS.Auto_Defense_Reached] = Auto_Defense_Reached;
+                _xlws.Cells[lastRow, DATA_ROWS.Auto_Defense_Crossed] = Auto_Defense_Crossed;
+                _xlws.Cells[lastRow, DATA_ROWS.Auto_Low_Goal_Scored] = Auto_Low_Goal_Scored;
+                _xlws.Cells[lastRow, DATA_ROWS.Auto_High_Goal_Scored] = Auto_High_Goal_Scored;
+                _xlws.Cells[lastRow, DATA_ROWS.Auto_Starting_Position] = Auto_Starting_Position;
+                _xlws.Cells[lastRow, DATA_ROWS.Auto_Ending_Position] = Auto_Ending_Position;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_Portcullis] = Tele_Portcullis;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_Fries] = Tele_Fries;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_Rampart] = Tele_Rampart;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_Moat] = Tele_Moat;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_Drawbridge] = Tele_Drawbridge;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_SallyPort] = Tele_SallyPort;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_RockWall] = Tele_RockWall;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_RoughTerrain] = Tele_RoughTerrain;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_LowBar] = Tele_LowBar;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_Low_Goal_Scored] = Tele_Low_Goal_Scored;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_High_Goal_Scored] = Tele_High_Goal_Scored;
+                _xlws.Cells[lastRow, DATA_ROWS.End_Challenged] = End_Challenged;
+                _xlws.Cells[lastRow, DATA_ROWS.End_Scaled] = End_Scaled;
+                _xlws.Cells[lastRow, DATA_ROWS.Notes] = Notes;
 
-            
-            _xlwb.Save();
-            _xlwb.Close(true, misValue, misValue);
+
+                _xlwb.Save();
+                _xlwb.Close(true, misValue, misValue);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "Issue writing data row to worksheet");
+
+            }
 
         }
 
         private void openDataFile()
         {
-            _xlwb = _xlApp.Workbooks.Open(_DATA_DIRECTORY + _EXCEL_FILENAME);
-            _xlws = _xlwb.Worksheets.get_Item(dataSheet);
+            try
+            {
+                _xlwb = _xlApp.Workbooks.Open(_DATA_DIRECTORY + _EXCEL_FILENAME);
+                _xlws = _xlwb.Worksheets.get_Item(dataSheet);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, "Issue opening the data file");
+            }
         }
 
         private void clearExcelObjects()
