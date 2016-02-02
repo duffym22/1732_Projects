@@ -91,6 +91,8 @@
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.label16 = new System.Windows.Forms.Label();
+            this.txt_missedHighGoal = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox6.SuspendLayout();
@@ -398,6 +400,8 @@
             // 
             // groupBox9
             // 
+            this.groupBox9.Controls.Add(this.txt_missedHighGoal);
+            this.groupBox9.Controls.Add(this.label16);
             this.groupBox9.Controls.Add(this.txt_highGoalsScored);
             this.groupBox9.Controls.Add(this.txt_lowGoalsScored);
             this.groupBox9.Controls.Add(this.label6);
@@ -412,23 +416,23 @@
             // txt_highGoalsScored
             // 
             this.txt_highGoalsScored.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.txt_highGoalsScored.Location = new System.Drawing.Point(92, 61);
+            this.txt_highGoalsScored.Location = new System.Drawing.Point(97, 46);
             this.txt_highGoalsScored.Name = "txt_highGoalsScored";
-            this.txt_highGoalsScored.Size = new System.Drawing.Size(57, 20);
+            this.txt_highGoalsScored.Size = new System.Drawing.Size(48, 20);
             this.txt_highGoalsScored.TabIndex = 30;
             // 
             // txt_lowGoalsScored
             // 
             this.txt_lowGoalsScored.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.txt_lowGoalsScored.Location = new System.Drawing.Point(92, 30);
+            this.txt_lowGoalsScored.Location = new System.Drawing.Point(97, 19);
             this.txt_lowGoalsScored.Name = "txt_lowGoalsScored";
-            this.txt_lowGoalsScored.Size = new System.Drawing.Size(57, 20);
+            this.txt_lowGoalsScored.Size = new System.Drawing.Size(48, 20);
             this.txt_lowGoalsScored.TabIndex = 29;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(21, 64);
+            this.label6.Location = new System.Drawing.Point(9, 49);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(54, 13);
             this.label6.TabIndex = 2;
@@ -437,7 +441,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(21, 33);
+            this.label5.Location = new System.Drawing.Point(10, 22);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(52, 13);
             this.label5.TabIndex = 1;
@@ -750,6 +754,23 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(9, 76);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(82, 13);
+            this.label16.TabIndex = 31;
+            this.label16.Text = "Missed (H) Goal";
+            // 
+            // txt_missedHighGoal
+            // 
+            this.txt_missedHighGoal.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_missedHighGoal.Location = new System.Drawing.Point(97, 73);
+            this.txt_missedHighGoal.Name = "txt_missedHighGoal";
+            this.txt_missedHighGoal.Size = new System.Drawing.Size(48, 20);
+            this.txt_missedHighGoal.TabIndex = 32;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -864,6 +885,8 @@
         private System.Windows.Forms.TextBox txt_lowGoalsScored;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.TextBox txt_missedHighGoal;
+        private System.Windows.Forms.Label label16;
     }
 }
 

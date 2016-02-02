@@ -35,9 +35,10 @@ namespace _2016_FRC_Scouting_Form
         Tele_LowBar = 19,
         Tele_Low_Goal_Scored = 20,
         Tele_High_Goal_Scored = 21,
-        End_Challenged = 22,
-        End_Scaled = 23,
-        Notes = 24
+        Tele_Missed_High_Goal = 22,
+        End_Challenged = 23,
+        End_Scaled = 24,
+        Notes = 25
 
     };
 
@@ -74,6 +75,7 @@ namespace _2016_FRC_Scouting_Form
         internal int pTele_LowBar;
         internal int pTele_Low_Goal_Scored;
         internal int pTele_High_Goal_Scored;
+        internal int pTele_Missed_High_Goal;    
         internal bool pEnd_Challenged;
         internal bool pEnd_Scaled;
         internal string pNotes;
@@ -210,6 +212,12 @@ namespace _2016_FRC_Scouting_Form
             set { pTele_High_Goal_Scored = value; }
         }
 
+        internal int Tele_Missed_High_Goal
+        {
+            get { return pTele_Missed_High_Goal; }
+            set { pTele_Missed_High_Goal = value; }
+        }
+
         internal bool End_Challenged
         {
             get { return pEnd_Challenged; }
@@ -239,7 +247,7 @@ namespace _2016_FRC_Scouting_Form
                 openDataFile();                                 //access file if not open (if file not exist, will be created in condition above)
                 gatherData();                                   //gather data from form
                 addDataRow();
-                
+
                 setStatusBar("Form submitted successfully");
                 //dataGridView1.DataSource = gatherData();  
                 //set into specific format
@@ -248,13 +256,7 @@ namespace _2016_FRC_Scouting_Form
 
         private void setStatusBar(string msg)
         {
-            timer.Start();
-            do
-            {
-                toolStripStatusLabel1.Text = msg;
-            } while (timer.ElapsedMilliseconds < 5000);
-            timer.Stop();
-            timer.Reset();
+            toolStripStatusLabel1.Text = msg;
         }
 
         private void gatherData()
@@ -282,6 +284,8 @@ namespace _2016_FRC_Scouting_Form
                 Tele_LowBar = Int32.Parse(txt_lowBar.Text);
                 Tele_Low_Goal_Scored = Int32.Parse(txt_lowGoalsScored.Text);
                 Tele_High_Goal_Scored = Int32.Parse(txt_highGoalsScored.Text);
+                Tele_High_Goal_Scored = Int32.Parse(txt_highGoalsScored.Text);
+
                 End_Challenged = rdo_Challenged.Checked;
                 End_Scaled = rdo_Scaled.Checked;
                 Notes = rtb_Notes.Text;
@@ -349,6 +353,7 @@ namespace _2016_FRC_Scouting_Form
                 _xlws.Cells[lastRow, DATA_ROWS.Tele_LowBar] = Tele_LowBar;
                 _xlws.Cells[lastRow, DATA_ROWS.Tele_Low_Goal_Scored] = Tele_Low_Goal_Scored;
                 _xlws.Cells[lastRow, DATA_ROWS.Tele_High_Goal_Scored] = Tele_High_Goal_Scored;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_Missed_High_Goal] = Tele_Missed_High_Goal;
                 _xlws.Cells[lastRow, DATA_ROWS.End_Challenged] = End_Challenged;
                 _xlws.Cells[lastRow, DATA_ROWS.End_Scaled] = End_Scaled;
                 _xlws.Cells[lastRow, DATA_ROWS.Notes] = Notes;
@@ -360,7 +365,6 @@ namespace _2016_FRC_Scouting_Form
             catch (Exception ex)
             {
                 HandleException(ex, "Issue writing data row to worksheet");
-
             }
 
         }
@@ -433,6 +437,7 @@ namespace _2016_FRC_Scouting_Form
                 _xlws.Cells[1, DATA_ROWS.Tele_LowBar] = "Tele_LowBar";
                 _xlws.Cells[1, DATA_ROWS.Tele_Low_Goal_Scored] = "Tele_Low_Goal_Scored";
                 _xlws.Cells[1, DATA_ROWS.Tele_High_Goal_Scored] = "Tele_High_Goal_Scored";
+                _xlws.Cells[1, DATA_ROWS.Tele_Missed_High_Goal] = "Tele_Missed_High_Goal";
                 _xlws.Cells[1, DATA_ROWS.End_Challenged] = "End_Challenged";
                 _xlws.Cells[1, DATA_ROWS.End_Scaled] = "End_Scaled";
                 _xlws.Cells[1, DATA_ROWS.Notes] = "Notes";
@@ -570,7 +575,8 @@ namespace _2016_FRC_Scouting_Form
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            clearExcelObjects();
+            if(_xlApp != null)
+                clearExcelObjects();
         }
     }
 }
