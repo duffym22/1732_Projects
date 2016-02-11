@@ -75,7 +75,7 @@ namespace _2016_FRC_Scouting_Form
         internal int pTele_LowBar;
         internal int pTele_Low_Goal_Scored;
         internal int pTele_High_Goal_Scored;
-        internal int pTele_Missed_High_Goal;    
+        internal int pTele_Missed_High_Goal;
         internal bool pEnd_Challenged;
         internal bool pEnd_Scaled;
         internal string pNotes;
@@ -88,8 +88,8 @@ namespace _2016_FRC_Scouting_Form
 
         internal int Team_Num
         {
-            get {return pTeam_Num;}
-            set {pTeam_Num = value;}
+            get { return pTeam_Num; }
+            set { pTeam_Num = value; }
         }
 
         internal int Match_Num
@@ -238,33 +238,53 @@ namespace _2016_FRC_Scouting_Form
 
         private void btn_submitData_Click(object sender, EventArgs e)
         {
+            System.Threading.Thread t;
             initializeProperties();
             if (initExcel()) //initialize Excel object
             {
-                
+
                 if (!verifyExistingDataFile())                  //Check if file already exists - File will be stored locally at C:\2016_FRC_Scouting\
                     createNewDataFile();                        //if not exist - create new file (force creation of file in directory where executable is run from)                
                 openDataFile();                                 //access file if not open (if file not exist, will be created in condition above)
                 gatherData();                                   //gather data from form
-                addDataRow();
+                if (Team_Num.Equals(-1) || Match_Num.Equals(-1))
+                {
+                    if (Team_Num.Equals(-1))
+                    {
+                        t = new System.Threading.Thread(() => setStatusBar("Please specify a team number", 10000));
+                        t.Start();
+                    }
+                    else if (Match_Num.Equals(-1))
+                    {
+                        t = new System.Threading.Thread(() => setStatusBar("Please specify the match number", 10000));
+                        t.Start();
+                    }
 
-                setStatusBar("Form submitted successfully");
-                //dataGridView1.DataSource = gatherData();  
-                //set into specific format
+                }
+                else
+                {
+                    addDataRow();
+                    clearALLData();
+                    t = new System.Threading.Thread(() => setStatusBar("Form submitted successfully"));
+                    t.Start();
+                }
             }
         }
 
-        private void setStatusBar(string msg)
+        private void setStatusBar(string msg, int timeToDisplay = 2500)
         {
             toolStripStatusLabel1.Text = msg;
+            System.Threading.Thread.Sleep(2500);
+            toolStripStatusLabel1.Text = "";
         }
 
         private void gatherData()
         {
+            int result;
             try
             {
-                Team_Num = Int32.Parse(txt_teamNum.Text);
-                Match_Num = Int32.Parse(txt_matchNum.Text);
+                Team_Num = Int32.TryParse(txt_teamNum.Text, out result) ? result : -1;
+                Match_Num = Int32.TryParse(txt_matchNum.Text, out result) ? result : -1;
                 Scout_Name = txt_scoutName.Text;
                 Team_Alliance = rdo_allianceRed.Checked ? "Red" : "Blue";
                 Auto_Defense_Reached = chk_reached.Checked;
@@ -273,18 +293,18 @@ namespace _2016_FRC_Scouting_Form
                 Auto_High_Goal_Scored = chk_highScore.Checked;
                 Auto_Starting_Position = rdo_startNeutral.Checked ? "Neutral Zone" : "Courtyard";
                 Auto_Ending_Position = rdo_endNeutral.Checked ? "Neutral Zone" : "Courtyard";
-                Tele_Portcullis = Int32.Parse(txt_portcullis.Text);
-                Tele_Fries = Int32.Parse(txt_fries.Text);
-                Tele_Rampart = Int32.Parse(txt_rampart.Text);
-                Tele_Moat = Int32.Parse(txt_moat.Text);
-                Tele_Drawbridge = Int32.Parse(txt_drawbridge.Text);
-                Tele_SallyPort = Int32.Parse(txt_sallyPort.Text);
-                Tele_RockWall = Int32.Parse(txt_rockWall.Text);
-                Tele_RoughTerrain = Int32.Parse(txt_roughTerrain.Text);
-                Tele_LowBar = Int32.Parse(txt_lowBar.Text);
-                Tele_Low_Goal_Scored = Int32.Parse(txt_lowGoalsScored.Text);
-                Tele_High_Goal_Scored = Int32.Parse(txt_highGoalsScored.Text);
-                Tele_High_Goal_Scored = Int32.Parse(txt_highGoalsScored.Text);
+                Tele_Portcullis = Int32.TryParse(txt_portcullis.Text, out result) ? result : 0;
+                Tele_Fries = Int32.TryParse(txt_fries.Text, out result) ? result : 0;
+                Tele_Rampart = Int32.TryParse(txt_rampart.Text, out result) ? result : 0;
+                Tele_Moat = Int32.TryParse(txt_moat.Text, out result) ? result : 0;
+                Tele_Drawbridge = Int32.TryParse(txt_drawbridge.Text, out result) ? result : 0;
+                Tele_SallyPort = Int32.TryParse(txt_sallyPort.Text, out result) ? result : 0;
+                Tele_RockWall = Int32.TryParse(txt_rockWall.Text, out result) ? result : 0;
+                Tele_RoughTerrain = Int32.TryParse(txt_roughTerrain.Text, out result) ? result : 0;
+                Tele_LowBar = Int32.TryParse(txt_lowBar.Text, out result) ? result : 0;
+                Tele_Low_Goal_Scored = Int32.TryParse(txt_lowGoalsScored.Text, out result) ? result : 0;
+                Tele_High_Goal_Scored = Int32.TryParse(txt_highGoalsScored.Text, out result) ? result : 0;
+                Tele_High_Goal_Scored = Int32.TryParse(txt_highGoalsScored.Text, out result) ? result : 0;
 
                 End_Challenged = rdo_Challenged.Checked;
                 End_Scaled = rdo_Scaled.Checked;
@@ -413,7 +433,7 @@ namespace _2016_FRC_Scouting_Form
             {
                 _xlwb = _xlApp.Workbooks.Add(Type.Missing);
                 _xlws = _xlwb.ActiveSheet;
-                _xlws.Name = dataSheet; 
+                _xlws.Name = dataSheet;
                 _xlws = (Worksheet)_xlwb.Worksheets[1];
 
                 _xlws.Cells[1, DATA_ROWS.Team_Num] = "Team#";
@@ -455,7 +475,7 @@ namespace _2016_FRC_Scouting_Form
         private Boolean verifyExistingDataFile()
         {
             Boolean rtval = false;
-            if(!Directory.Exists(_DATA_DIRECTORY)) //create data directory if it doesn't exist
+            if (!Directory.Exists(_DATA_DIRECTORY)) //create data directory if it doesn't exist
             {
                 Directory.CreateDirectory(_DATA_DIRECTORY);
             }
@@ -488,12 +508,20 @@ namespace _2016_FRC_Scouting_Form
             return rtval;
         }
 
-        private void btn_clearData_Click(object sender, EventArgs e)
+        private void clearALLData()
         {
             clearAllCheckboxes(this);
             clearAllRadioButtons(this);
             clearAllTextBoxes(this);
+            clearAllMaskedTextBoxes(this);
             clearAllRichTextBoxes(this);
+        }
+
+        private void btn_clearData_Click(object sender, EventArgs e)
+        {
+            DialogResult result1 = MessageBox.Show("Are you sure you want to clear the form?", "WHAT ARE YOU DOING!?!?!?!?!", MessageBoxButtons.YesNo);
+            if (result1.Equals(DialogResult.Yes))
+                clearALLData();
         }
 
         private void clearAllRichTextBoxes(Control ctrl)
@@ -509,6 +537,22 @@ namespace _2016_FRC_Scouting_Form
             else
             {
                 rtxt.Text = String.Empty;
+            }
+        }
+
+        private void clearAllMaskedTextBoxes(Control ctrl)
+        {
+            System.Windows.Forms.MaskedTextBox txt = ctrl as System.Windows.Forms.MaskedTextBox;
+            if (txt == null)
+            {
+                foreach (Control child in ctrl.Controls)
+                {
+                    clearAllMaskedTextBoxes(child); //recursive
+                }
+            }
+            else
+            {
+                txt.Text = String.Empty;
             }
         }
 
@@ -547,7 +591,7 @@ namespace _2016_FRC_Scouting_Form
         private void clearAllCheckboxes(Control ctrl)
         {
             System.Windows.Forms.CheckBox chkBox = ctrl as System.Windows.Forms.CheckBox;
-            if (chkBox == null )
+            if (chkBox == null)
             {
                 foreach (Control child in ctrl.Controls)
                 {
@@ -562,7 +606,7 @@ namespace _2016_FRC_Scouting_Form
 
         private void HandleException(Exception ex, String message = "")
         {
-            if(message.Equals(""))
+            if (message.Equals(""))
                 MessageBox.Show("Exception thrown:" + Environment.NewLine + ex.Message + Environment.NewLine + ex.InnerException + Environment.NewLine + ex.StackTrace);
             else
                 MessageBox.Show(message + Environment.NewLine + ex.Message + Environment.NewLine + ex.InnerException + Environment.NewLine + ex.StackTrace);
@@ -575,8 +619,13 @@ namespace _2016_FRC_Scouting_Form
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(_xlApp != null)
+            if (_xlApp != null)
                 clearExcelObjects();
+        }
+
+        private void chk_robotDisabled_CheckedChanged(object sender, EventArgs e)
+        {
+            mtb_timeDisabled.Enabled = chk_robotDisabled.Checked;
         }
     }
 }

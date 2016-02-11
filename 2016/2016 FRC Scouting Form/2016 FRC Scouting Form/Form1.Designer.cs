@@ -51,12 +51,18 @@
             this.chk_lowScore = new System.Windows.Forms.CheckBox();
             this.chk_highScore = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.mtb_timeDisabled = new System.Windows.Forms.MaskedTextBox();
+            this.chk_robotDisabled = new System.Windows.Forms.CheckBox();
+            this.label17 = new System.Windows.Forms.Label();
             this.btn_clearData = new System.Windows.Forms.Button();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.rdo_Scaled = new System.Windows.Forms.RadioButton();
             this.rdo_Challenged = new System.Windows.Forms.RadioButton();
             this.btn_submitData = new System.Windows.Forms.Button();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.txt_missedHighGoal = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
             this.txt_highGoalsScored = new System.Windows.Forms.TextBox();
             this.txt_lowGoalsScored = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -91,14 +97,13 @@
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.label16 = new System.Windows.Forms.Label();
-            this.txt_missedHighGoal = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox11.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -124,14 +129,14 @@
             this.txt_teamNum.Location = new System.Drawing.Point(63, 10);
             this.txt_teamNum.Name = "txt_teamNum";
             this.txt_teamNum.Size = new System.Drawing.Size(100, 20);
-            this.txt_teamNum.TabIndex = 1;
+            this.txt_teamNum.TabIndex = 0;
             // 
             // txt_matchNum
             // 
             this.txt_matchNum.Location = new System.Drawing.Point(230, 10);
             this.txt_matchNum.Name = "txt_matchNum";
             this.txt_matchNum.Size = new System.Drawing.Size(100, 20);
-            this.txt_matchNum.TabIndex = 3;
+            this.txt_matchNum.TabIndex = 1;
             // 
             // label2
             // 
@@ -147,7 +152,7 @@
             this.txt_scoutName.Location = new System.Drawing.Point(408, 10);
             this.txt_scoutName.Name = "txt_scoutName";
             this.txt_scoutName.Size = new System.Drawing.Size(100, 20);
-            this.txt_scoutName.TabIndex = 5;
+            this.txt_scoutName.TabIndex = 2;
             // 
             // label3
             // 
@@ -173,7 +178,7 @@
             this.rdo_allianceRed.Location = new System.Drawing.Point(567, 11);
             this.rdo_allianceRed.Name = "rdo_allianceRed";
             this.rdo_allianceRed.Size = new System.Drawing.Size(45, 17);
-            this.rdo_allianceRed.TabIndex = 7;
+            this.rdo_allianceRed.TabIndex = 3;
             this.rdo_allianceRed.TabStop = true;
             this.rdo_allianceRed.Text = "Red";
             this.rdo_allianceRed.UseVisualStyleBackColor = true;
@@ -184,7 +189,7 @@
             this.rdo_allianceBlue.Location = new System.Drawing.Point(618, 11);
             this.rdo_allianceBlue.Name = "rdo_allianceBlue";
             this.rdo_allianceBlue.Size = new System.Drawing.Size(46, 17);
-            this.rdo_allianceBlue.TabIndex = 8;
+            this.rdo_allianceBlue.TabIndex = 4;
             this.rdo_allianceBlue.TabStop = true;
             this.rdo_allianceBlue.Text = "Blue";
             this.rdo_allianceBlue.UseVisualStyleBackColor = true;
@@ -219,7 +224,7 @@
             this.rdo_endCourtyard.Location = new System.Drawing.Point(30, 55);
             this.rdo_endCourtyard.Name = "rdo_endCourtyard";
             this.rdo_endCourtyard.Size = new System.Drawing.Size(70, 17);
-            this.rdo_endCourtyard.TabIndex = 5;
+            this.rdo_endCourtyard.TabIndex = 1;
             this.rdo_endCourtyard.TabStop = true;
             this.rdo_endCourtyard.Text = "Courtyard";
             this.rdo_endCourtyard.UseVisualStyleBackColor = true;
@@ -230,7 +235,7 @@
             this.rdo_endNeutral.Location = new System.Drawing.Point(30, 26);
             this.rdo_endNeutral.Name = "rdo_endNeutral";
             this.rdo_endNeutral.Size = new System.Drawing.Size(87, 17);
-            this.rdo_endNeutral.TabIndex = 4;
+            this.rdo_endNeutral.TabIndex = 0;
             this.rdo_endNeutral.TabStop = true;
             this.rdo_endNeutral.Text = "Neutral Zone";
             this.rdo_endNeutral.UseVisualStyleBackColor = true;
@@ -252,7 +257,7 @@
             this.rdo_startSpy.Location = new System.Drawing.Point(24, 55);
             this.rdo_startSpy.Name = "rdo_startSpy";
             this.rdo_startSpy.Size = new System.Drawing.Size(112, 17);
-            this.rdo_startSpy.TabIndex = 3;
+            this.rdo_startSpy.TabIndex = 1;
             this.rdo_startSpy.TabStop = true;
             this.rdo_startSpy.Text = "Courtyard/Spy Bot";
             this.rdo_startSpy.UseVisualStyleBackColor = true;
@@ -263,7 +268,7 @@
             this.rdo_startNeutral.Location = new System.Drawing.Point(24, 26);
             this.rdo_startNeutral.Name = "rdo_startNeutral";
             this.rdo_startNeutral.Size = new System.Drawing.Size(87, 17);
-            this.rdo_startNeutral.TabIndex = 2;
+            this.rdo_startNeutral.TabIndex = 0;
             this.rdo_startNeutral.TabStop = true;
             this.rdo_startNeutral.Text = "Neutral Zone";
             this.rdo_startNeutral.UseVisualStyleBackColor = true;
@@ -316,7 +321,7 @@
             this.chk_lowScore.Location = new System.Drawing.Point(38, 25);
             this.chk_lowScore.Name = "chk_lowScore";
             this.chk_lowScore.Size = new System.Drawing.Size(71, 17);
-            this.chk_lowScore.TabIndex = 2;
+            this.chk_lowScore.TabIndex = 0;
             this.chk_lowScore.Text = "Low Goal";
             this.chk_lowScore.UseVisualStyleBackColor = true;
             // 
@@ -326,12 +331,13 @@
             this.chk_highScore.Location = new System.Drawing.Point(38, 56);
             this.chk_highScore.Name = "chk_highScore";
             this.chk_highScore.Size = new System.Drawing.Size(73, 17);
-            this.chk_highScore.TabIndex = 3;
+            this.chk_highScore.TabIndex = 1;
             this.chk_highScore.Text = "High Goal";
             this.chk_highScore.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.groupBox11);
             this.groupBox2.Controls.Add(this.btn_clearData);
             this.groupBox2.Controls.Add(this.groupBox10);
             this.groupBox2.Controls.Add(this.btn_submitData);
@@ -345,12 +351,54 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Teleop";
             // 
+            // groupBox11
+            // 
+            this.groupBox11.Controls.Add(this.mtb_timeDisabled);
+            this.groupBox11.Controls.Add(this.chk_robotDisabled);
+            this.groupBox11.Controls.Add(this.label17);
+            this.groupBox11.Location = new System.Drawing.Point(330, 244);
+            this.groupBox11.Name = "groupBox11";
+            this.groupBox11.Size = new System.Drawing.Size(120, 120);
+            this.groupBox11.TabIndex = 18;
+            this.groupBox11.TabStop = false;
+            this.groupBox11.Text = "Disabled Notes";
+            // 
+            // mtb_timeDisabled
+            // 
+            this.mtb_timeDisabled.Enabled = false;
+            this.mtb_timeDisabled.Location = new System.Drawing.Point(25, 60);
+            this.mtb_timeDisabled.Mask = "90:00";
+            this.mtb_timeDisabled.Name = "mtb_timeDisabled";
+            this.mtb_timeDisabled.Size = new System.Drawing.Size(67, 20);
+            this.mtb_timeDisabled.TabIndex = 1;
+            this.mtb_timeDisabled.ValidatingType = typeof(System.DateTime);
+            // 
+            // chk_robotDisabled
+            // 
+            this.chk_robotDisabled.AutoSize = true;
+            this.chk_robotDisabled.Location = new System.Drawing.Point(6, 19);
+            this.chk_robotDisabled.Name = "chk_robotDisabled";
+            this.chk_robotDisabled.Size = new System.Drawing.Size(105, 17);
+            this.chk_robotDisabled.TabIndex = 0;
+            this.chk_robotDisabled.Text = "Robot Disabled?";
+            this.chk_robotDisabled.UseVisualStyleBackColor = true;
+            this.chk_robotDisabled.CheckedChanged += new System.EventHandler(this.chk_robotDisabled_CheckedChanged);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(20, 44);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(77, 13);
+            this.label17.TabIndex = 17;
+            this.label17.Text = "Time Disabled:";
+            // 
             // btn_clearData
             // 
-            this.btn_clearData.Location = new System.Drawing.Point(510, 326);
+            this.btn_clearData.Location = new System.Drawing.Point(484, 323);
             this.btn_clearData.Name = "btn_clearData";
-            this.btn_clearData.Size = new System.Drawing.Size(130, 30);
-            this.btn_clearData.TabIndex = 13;
+            this.btn_clearData.Size = new System.Drawing.Size(130, 23);
+            this.btn_clearData.TabIndex = 1;
             this.btn_clearData.Text = "Clear form";
             this.btn_clearData.UseVisualStyleBackColor = true;
             this.btn_clearData.Click += new System.EventHandler(this.btn_clearData_Click);
@@ -390,10 +438,10 @@
             // 
             // btn_submitData
             // 
-            this.btn_submitData.Location = new System.Drawing.Point(336, 326);
+            this.btn_submitData.Location = new System.Drawing.Point(456, 250);
             this.btn_submitData.Name = "btn_submitData";
-            this.btn_submitData.Size = new System.Drawing.Size(130, 30);
-            this.btn_submitData.TabIndex = 12;
+            this.btn_submitData.Size = new System.Drawing.Size(186, 46);
+            this.btn_submitData.TabIndex = 2;
             this.btn_submitData.Text = "Submit";
             this.btn_submitData.UseVisualStyleBackColor = true;
             this.btn_submitData.Click += new System.EventHandler(this.btn_submitData_Click);
@@ -413,13 +461,30 @@
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Boulders Scored";
             // 
+            // txt_missedHighGoal
+            // 
+            this.txt_missedHighGoal.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_missedHighGoal.Location = new System.Drawing.Point(97, 73);
+            this.txt_missedHighGoal.Name = "txt_missedHighGoal";
+            this.txt_missedHighGoal.Size = new System.Drawing.Size(48, 20);
+            this.txt_missedHighGoal.TabIndex = 2;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(9, 76);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(82, 13);
+            this.label16.TabIndex = 31;
+            this.label16.Text = "Missed (H) Goal";
+            // 
             // txt_highGoalsScored
             // 
             this.txt_highGoalsScored.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.txt_highGoalsScored.Location = new System.Drawing.Point(97, 46);
             this.txt_highGoalsScored.Name = "txt_highGoalsScored";
             this.txt_highGoalsScored.Size = new System.Drawing.Size(48, 20);
-            this.txt_highGoalsScored.TabIndex = 30;
+            this.txt_highGoalsScored.TabIndex = 1;
             // 
             // txt_lowGoalsScored
             // 
@@ -427,7 +492,7 @@
             this.txt_lowGoalsScored.Location = new System.Drawing.Point(97, 19);
             this.txt_lowGoalsScored.Name = "txt_lowGoalsScored";
             this.txt_lowGoalsScored.Size = new System.Drawing.Size(48, 20);
-            this.txt_lowGoalsScored.TabIndex = 29;
+            this.txt_lowGoalsScored.TabIndex = 0;
             // 
             // label6
             // 
@@ -452,7 +517,7 @@
             this.groupBox3.Controls.Add(this.rtb_Notes);
             this.groupBox3.Location = new System.Drawing.Point(330, 117);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(316, 203);
+            this.groupBox3.Size = new System.Drawing.Size(316, 121);
             this.groupBox3.TabIndex = 14;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Notes";
@@ -461,8 +526,8 @@
             // 
             this.rtb_Notes.Location = new System.Drawing.Point(6, 19);
             this.rtb_Notes.Name = "rtb_Notes";
-            this.rtb_Notes.Size = new System.Drawing.Size(304, 178);
-            this.rtb_Notes.TabIndex = 11;
+            this.rtb_Notes.Size = new System.Drawing.Size(304, 90);
+            this.rtb_Notes.TabIndex = 0;
             this.rtb_Notes.Text = "";
             // 
             // groupBox8
@@ -520,7 +585,7 @@
             this.txt_roughTerrain.Location = new System.Drawing.Point(170, 213);
             this.txt_roughTerrain.Name = "txt_roughTerrain";
             this.txt_roughTerrain.Size = new System.Drawing.Size(75, 20);
-            this.txt_roughTerrain.TabIndex = 26;
+            this.txt_roughTerrain.TabIndex = 7;
             // 
             // txt_rockWall
             // 
@@ -528,7 +593,7 @@
             this.txt_rockWall.Location = new System.Drawing.Point(31, 213);
             this.txt_rockWall.Name = "txt_rockWall";
             this.txt_rockWall.Size = new System.Drawing.Size(75, 20);
-            this.txt_rockWall.TabIndex = 25;
+            this.txt_rockWall.TabIndex = 6;
             // 
             // label14
             // 
@@ -556,7 +621,7 @@
             this.txt_sallyPort.Location = new System.Drawing.Point(170, 153);
             this.txt_sallyPort.Name = "txt_sallyPort";
             this.txt_sallyPort.Size = new System.Drawing.Size(75, 20);
-            this.txt_sallyPort.TabIndex = 22;
+            this.txt_sallyPort.TabIndex = 5;
             // 
             // txt_drawbridge
             // 
@@ -564,7 +629,7 @@
             this.txt_drawbridge.Location = new System.Drawing.Point(31, 153);
             this.txt_drawbridge.Name = "txt_drawbridge";
             this.txt_drawbridge.Size = new System.Drawing.Size(75, 20);
-            this.txt_drawbridge.TabIndex = 21;
+            this.txt_drawbridge.TabIndex = 4;
             // 
             // label10
             // 
@@ -592,7 +657,7 @@
             this.txt_moat.Location = new System.Drawing.Point(170, 93);
             this.txt_moat.Name = "txt_moat";
             this.txt_moat.Size = new System.Drawing.Size(75, 20);
-            this.txt_moat.TabIndex = 18;
+            this.txt_moat.TabIndex = 3;
             // 
             // txt_rampart
             // 
@@ -600,7 +665,7 @@
             this.txt_rampart.Location = new System.Drawing.Point(31, 93);
             this.txt_rampart.Name = "txt_rampart";
             this.txt_rampart.Size = new System.Drawing.Size(75, 20);
-            this.txt_rampart.TabIndex = 17;
+            this.txt_rampart.TabIndex = 2;
             // 
             // txt_fries
             // 
@@ -608,7 +673,7 @@
             this.txt_fries.Location = new System.Drawing.Point(170, 33);
             this.txt_fries.Name = "txt_fries";
             this.txt_fries.Size = new System.Drawing.Size(75, 20);
-            this.txt_fries.TabIndex = 14;
+            this.txt_fries.TabIndex = 1;
             // 
             // txt_portcullis
             // 
@@ -616,7 +681,7 @@
             this.txt_portcullis.Location = new System.Drawing.Point(31, 33);
             this.txt_portcullis.Name = "txt_portcullis";
             this.txt_portcullis.Size = new System.Drawing.Size(75, 20);
-            this.txt_portcullis.TabIndex = 4;
+            this.txt_portcullis.TabIndex = 0;
             // 
             // label11
             // 
@@ -665,7 +730,7 @@
             this.txt_lowBar.Location = new System.Drawing.Point(101, 273);
             this.txt_lowBar.Name = "txt_lowBar";
             this.txt_lowBar.Size = new System.Drawing.Size(75, 20);
-            this.txt_lowBar.TabIndex = 28;
+            this.txt_lowBar.TabIndex = 8;
             // 
             // label15
             // 
@@ -743,7 +808,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 555);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 570);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(694, 22);
             this.statusStrip1.TabIndex = 15;
@@ -754,29 +819,12 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(9, 76);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(82, 13);
-            this.label16.TabIndex = 31;
-            this.label16.Text = "Missed (H) Goal";
-            // 
-            // txt_missedHighGoal
-            // 
-            this.txt_missedHighGoal.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.txt_missedHighGoal.Location = new System.Drawing.Point(97, 73);
-            this.txt_missedHighGoal.Name = "txt_missedHighGoal";
-            this.txt_missedHighGoal.Size = new System.Drawing.Size(48, 20);
-            this.txt_missedHighGoal.TabIndex = 32;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(694, 577);
+            this.ClientSize = new System.Drawing.Size(694, 592);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.rdo_allianceBlue);
@@ -802,6 +850,8 @@
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
+            this.groupBox11.ResumeLayout(false);
+            this.groupBox11.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             this.groupBox9.ResumeLayout(false);
@@ -887,6 +937,10 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.TextBox txt_missedHighGoal;
         private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.GroupBox groupBox11;
+        private System.Windows.Forms.MaskedTextBox mtb_timeDisabled;
+        private System.Windows.Forms.CheckBox chk_robotDisabled;
+        private System.Windows.Forms.Label label17;
     }
 }
 
