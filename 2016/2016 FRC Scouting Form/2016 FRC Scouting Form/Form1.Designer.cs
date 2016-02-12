@@ -94,7 +94,7 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.btn_clearSearch = new System.Windows.Forms.Button();
             this.btn_Search = new System.Windows.Forms.Button();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.rtb_Search = new System.Windows.Forms.RichTextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1.SuspendLayout();
@@ -203,7 +203,7 @@
             this.groupBox1.Location = new System.Drawing.Point(6, 6);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(652, 117);
-            this.groupBox1.TabIndex = 9;
+            this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Autonomous";
             // 
@@ -214,7 +214,7 @@
             this.groupBox7.Location = new System.Drawing.Point(491, 19);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(155, 90);
-            this.groupBox7.TabIndex = 6;
+            this.groupBox7.TabIndex = 3;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Ending Position";
             // 
@@ -247,7 +247,7 @@
             this.groupBox6.Location = new System.Drawing.Point(330, 19);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(155, 90);
-            this.groupBox6.TabIndex = 5;
+            this.groupBox6.TabIndex = 2;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Starting Position";
             // 
@@ -311,7 +311,7 @@
             this.groupBox4.Location = new System.Drawing.Point(169, 19);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(155, 90);
-            this.groupBox4.TabIndex = 4;
+            this.groupBox4.TabIndex = 1;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Scoring";
             // 
@@ -347,7 +347,7 @@
             this.groupBox2.Location = new System.Drawing.Point(6, 129);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(652, 370);
-            this.groupBox2.TabIndex = 10;
+            this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Teleop";
             // 
@@ -359,7 +359,7 @@
             this.groupBox11.Location = new System.Drawing.Point(330, 244);
             this.groupBox11.Name = "groupBox11";
             this.groupBox11.Size = new System.Drawing.Size(120, 120);
-            this.groupBox11.TabIndex = 18;
+            this.groupBox11.TabIndex = 4;
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "Disabled Notes";
             // 
@@ -370,7 +370,7 @@
             this.mtb_timeDisabled.Mask = "90:00";
             this.mtb_timeDisabled.Name = "mtb_timeDisabled";
             this.mtb_timeDisabled.Size = new System.Drawing.Size(67, 20);
-            this.mtb_timeDisabled.TabIndex = 1;
+            this.mtb_timeDisabled.TabIndex = 2;
             this.mtb_timeDisabled.ValidatingType = typeof(System.DateTime);
             // 
             // chk_robotDisabled
@@ -390,7 +390,7 @@
             this.label17.Location = new System.Drawing.Point(20, 44);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(77, 13);
-            this.label17.TabIndex = 17;
+            this.label17.TabIndex = 1;
             this.label17.Text = "Time Disabled:";
             // 
             // btn_clearData
@@ -398,7 +398,7 @@
             this.btn_clearData.Location = new System.Drawing.Point(484, 323);
             this.btn_clearData.Name = "btn_clearData";
             this.btn_clearData.Size = new System.Drawing.Size(130, 23);
-            this.btn_clearData.TabIndex = 1;
+            this.btn_clearData.TabIndex = 6;
             this.btn_clearData.Text = "Clear form";
             this.btn_clearData.UseVisualStyleBackColor = true;
             this.btn_clearData.Click += new System.EventHandler(this.btn_clearData_Click);
@@ -441,7 +441,7 @@
             this.btn_submitData.Location = new System.Drawing.Point(456, 250);
             this.btn_submitData.Name = "btn_submitData";
             this.btn_submitData.Size = new System.Drawing.Size(186, 46);
-            this.btn_submitData.TabIndex = 2;
+            this.btn_submitData.TabIndex = 5;
             this.btn_submitData.Text = "Submit";
             this.btn_submitData.UseVisualStyleBackColor = true;
             this.btn_submitData.Click += new System.EventHandler(this.btn_submitData_Click);
@@ -467,7 +467,7 @@
             this.txt_missedHighGoal.Location = new System.Drawing.Point(97, 73);
             this.txt_missedHighGoal.Name = "txt_missedHighGoal";
             this.txt_missedHighGoal.Size = new System.Drawing.Size(48, 20);
-            this.txt_missedHighGoal.TabIndex = 2;
+            this.txt_missedHighGoal.TabIndex = 5;
             // 
             // label16
             // 
@@ -475,7 +475,7 @@
             this.label16.Location = new System.Drawing.Point(9, 76);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(82, 13);
-            this.label16.TabIndex = 31;
+            this.label16.TabIndex = 4;
             this.label16.Text = "Missed (H) Goal";
             // 
             // txt_highGoalsScored
@@ -484,7 +484,7 @@
             this.txt_highGoalsScored.Location = new System.Drawing.Point(97, 46);
             this.txt_highGoalsScored.Name = "txt_highGoalsScored";
             this.txt_highGoalsScored.Size = new System.Drawing.Size(48, 20);
-            this.txt_highGoalsScored.TabIndex = 1;
+            this.txt_highGoalsScored.TabIndex = 3;
             // 
             // txt_lowGoalsScored
             // 
@@ -492,7 +492,7 @@
             this.txt_lowGoalsScored.Location = new System.Drawing.Point(97, 19);
             this.txt_lowGoalsScored.Name = "txt_lowGoalsScored";
             this.txt_lowGoalsScored.Size = new System.Drawing.Size(48, 20);
-            this.txt_lowGoalsScored.TabIndex = 0;
+            this.txt_lowGoalsScored.TabIndex = 1;
             // 
             // label6
             // 
@@ -509,7 +509,7 @@
             this.label5.Location = new System.Drawing.Point(10, 22);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(52, 13);
-            this.label5.TabIndex = 1;
+            this.label5.TabIndex = 0;
             this.label5.Text = "Low Goal";
             // 
             // groupBox3
@@ -518,7 +518,7 @@
             this.groupBox3.Location = new System.Drawing.Point(330, 117);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(316, 121);
-            this.groupBox3.TabIndex = 14;
+            this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Notes";
             // 
@@ -577,7 +577,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(277, 304);
-            this.tableLayoutPanel1.TabIndex = 15;
+            this.tableLayoutPanel1.TabIndex = 0;
             // 
             // txt_roughTerrain
             // 
@@ -585,7 +585,7 @@
             this.txt_roughTerrain.Location = new System.Drawing.Point(170, 213);
             this.txt_roughTerrain.Name = "txt_roughTerrain";
             this.txt_roughTerrain.Size = new System.Drawing.Size(75, 20);
-            this.txt_roughTerrain.TabIndex = 7;
+            this.txt_roughTerrain.TabIndex = 15;
             // 
             // txt_rockWall
             // 
@@ -593,7 +593,7 @@
             this.txt_rockWall.Location = new System.Drawing.Point(31, 213);
             this.txt_rockWall.Name = "txt_rockWall";
             this.txt_rockWall.Size = new System.Drawing.Size(75, 20);
-            this.txt_rockWall.TabIndex = 6;
+            this.txt_rockWall.TabIndex = 13;
             // 
             // label14
             // 
@@ -602,7 +602,7 @@
             this.label14.Location = new System.Drawing.Point(170, 180);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(75, 13);
-            this.label14.TabIndex = 24;
+            this.label14.TabIndex = 14;
             this.label14.Text = "Rough Terrain";
             // 
             // label13
@@ -612,7 +612,7 @@
             this.label13.Location = new System.Drawing.Point(40, 180);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(57, 13);
-            this.label13.TabIndex = 23;
+            this.label13.TabIndex = 12;
             this.label13.Text = "Rock Wall";
             // 
             // txt_sallyPort
@@ -621,7 +621,7 @@
             this.txt_sallyPort.Location = new System.Drawing.Point(170, 153);
             this.txt_sallyPort.Name = "txt_sallyPort";
             this.txt_sallyPort.Size = new System.Drawing.Size(75, 20);
-            this.txt_sallyPort.TabIndex = 5;
+            this.txt_sallyPort.TabIndex = 11;
             // 
             // txt_drawbridge
             // 
@@ -629,7 +629,7 @@
             this.txt_drawbridge.Location = new System.Drawing.Point(31, 153);
             this.txt_drawbridge.Name = "txt_drawbridge";
             this.txt_drawbridge.Size = new System.Drawing.Size(75, 20);
-            this.txt_drawbridge.TabIndex = 4;
+            this.txt_drawbridge.TabIndex = 9;
             // 
             // label10
             // 
@@ -638,7 +638,7 @@
             this.label10.Location = new System.Drawing.Point(182, 120);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(51, 13);
-            this.label10.TabIndex = 20;
+            this.label10.TabIndex = 10;
             this.label10.Text = "Sally Port";
             // 
             // label9
@@ -648,7 +648,7 @@
             this.label9.Location = new System.Drawing.Point(38, 120);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(61, 13);
-            this.label9.TabIndex = 19;
+            this.label9.TabIndex = 8;
             this.label9.Text = "Drawbridge";
             // 
             // txt_moat
@@ -657,7 +657,7 @@
             this.txt_moat.Location = new System.Drawing.Point(170, 93);
             this.txt_moat.Name = "txt_moat";
             this.txt_moat.Size = new System.Drawing.Size(75, 20);
-            this.txt_moat.TabIndex = 3;
+            this.txt_moat.TabIndex = 7;
             // 
             // txt_rampart
             // 
@@ -665,7 +665,7 @@
             this.txt_rampart.Location = new System.Drawing.Point(31, 93);
             this.txt_rampart.Name = "txt_rampart";
             this.txt_rampart.Size = new System.Drawing.Size(75, 20);
-            this.txt_rampart.TabIndex = 2;
+            this.txt_rampart.TabIndex = 5;
             // 
             // txt_fries
             // 
@@ -673,7 +673,7 @@
             this.txt_fries.Location = new System.Drawing.Point(170, 33);
             this.txt_fries.Name = "txt_fries";
             this.txt_fries.Size = new System.Drawing.Size(75, 20);
-            this.txt_fries.TabIndex = 1;
+            this.txt_fries.TabIndex = 3;
             // 
             // txt_portcullis
             // 
@@ -681,7 +681,7 @@
             this.txt_portcullis.Location = new System.Drawing.Point(31, 33);
             this.txt_portcullis.Name = "txt_portcullis";
             this.txt_portcullis.Size = new System.Drawing.Size(75, 20);
-            this.txt_portcullis.TabIndex = 0;
+            this.txt_portcullis.TabIndex = 1;
             // 
             // label11
             // 
@@ -690,7 +690,7 @@
             this.label11.Location = new System.Drawing.Point(171, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(73, 13);
-            this.label11.TabIndex = 12;
+            this.label11.TabIndex = 2;
             this.label11.Text = "Freedom Fries";
             // 
             // label7
@@ -700,7 +700,7 @@
             this.label7.Location = new System.Drawing.Point(45, 60);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(47, 13);
-            this.label7.TabIndex = 15;
+            this.label7.TabIndex = 4;
             this.label7.Text = "Rampart";
             // 
             // label8
@@ -710,7 +710,7 @@
             this.label8.Location = new System.Drawing.Point(192, 60);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(31, 13);
-            this.label8.TabIndex = 16;
+            this.label8.TabIndex = 6;
             this.label8.Text = "Moat";
             // 
             // label12
@@ -720,7 +720,7 @@
             this.label12.Location = new System.Drawing.Point(44, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(49, 13);
-            this.label12.TabIndex = 13;
+            this.label12.TabIndex = 0;
             this.label12.Text = "Portcullis";
             // 
             // txt_lowBar
@@ -730,7 +730,7 @@
             this.txt_lowBar.Location = new System.Drawing.Point(101, 273);
             this.txt_lowBar.Name = "txt_lowBar";
             this.txt_lowBar.Size = new System.Drawing.Size(75, 20);
-            this.txt_lowBar.TabIndex = 8;
+            this.txt_lowBar.TabIndex = 17;
             // 
             // label15
             // 
@@ -740,7 +740,7 @@
             this.label15.Location = new System.Drawing.Point(115, 240);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(46, 13);
-            this.label15.TabIndex = 27;
+            this.label15.TabIndex = 16;
             this.label15.Text = "Low Bar";
             // 
             // tabControl1
@@ -770,7 +770,7 @@
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage2.Controls.Add(this.btn_clearSearch);
             this.tabPage2.Controls.Add(this.btn_Search);
-            this.tabPage2.Controls.Add(this.richTextBox2);
+            this.tabPage2.Controls.Add(this.rtb_Search);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -786,23 +786,25 @@
             this.btn_clearSearch.TabIndex = 2;
             this.btn_clearSearch.Text = "Clear Search";
             this.btn_clearSearch.UseVisualStyleBackColor = true;
+            this.btn_clearSearch.Click += new System.EventHandler(this.btn_clearSearch_Click);
             // 
             // btn_Search
             // 
-            this.btn_Search.Location = new System.Drawing.Point(121, 443);
+            this.btn_Search.Location = new System.Drawing.Point(115, 443);
             this.btn_Search.Name = "btn_Search";
             this.btn_Search.Size = new System.Drawing.Size(150, 40);
             this.btn_Search.TabIndex = 1;
             this.btn_Search.Text = "Search";
             this.btn_Search.UseVisualStyleBackColor = true;
+            this.btn_Search.Click += new System.EventHandler(this.btn_Search_Click);
             // 
-            // richTextBox2
+            // rtb_Search
             // 
-            this.richTextBox2.Location = new System.Drawing.Point(6, 6);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(651, 421);
-            this.richTextBox2.TabIndex = 0;
-            this.richTextBox2.Text = "";
+            this.rtb_Search.Location = new System.Drawing.Point(6, 6);
+            this.rtb_Search.Name = "rtb_Search";
+            this.rtb_Search.Size = new System.Drawing.Size(651, 305);
+            this.rtb_Search.TabIndex = 0;
+            this.rtb_Search.Text = "";
             // 
             // statusStrip1
             // 
@@ -907,7 +909,7 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button btn_clearSearch;
         private System.Windows.Forms.Button btn_Search;
-        private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.RichTextBox rtb_Search;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TextBox txt_roughTerrain;
         private System.Windows.Forms.TextBox txt_rockWall;

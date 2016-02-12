@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Excel;
 using System.Diagnostics;
+using System.Threading;
 
 namespace _2016_FRC_Scouting_Form
 {
@@ -52,7 +53,6 @@ namespace _2016_FRC_Scouting_Form
         private Worksheet _xlws;
         private object misValue = System.Reflection.Missing.Value;
         private Stopwatch timer = new Stopwatch();
-        private DataGrid dataGridView1;
 
         internal int pTeam_Num;
         internal int pMatch_Num;
@@ -238,7 +238,7 @@ namespace _2016_FRC_Scouting_Form
 
         private void btn_submitData_Click(object sender, EventArgs e)
         {
-            System.Threading.Thread t;
+            Thread t;
             initializeProperties();
             if (initExcel()) //initialize Excel object
             {
@@ -251,12 +251,12 @@ namespace _2016_FRC_Scouting_Form
                 {
                     if (Team_Num.Equals(-1))
                     {
-                        t = new System.Threading.Thread(() => setStatusBar("Please specify a team number", 10000));
+                        t = new Thread(() => setStatusBar("Please specify a team number", 10000));
                         t.Start();
                     }
                     else if (Match_Num.Equals(-1))
                     {
-                        t = new System.Threading.Thread(() => setStatusBar("Please specify the match number", 10000));
+                        t = new Thread(() => setStatusBar("Please specify the match number", 10000));
                         t.Start();
                     }
 
@@ -265,7 +265,7 @@ namespace _2016_FRC_Scouting_Form
                 {
                     addDataRow();
                     clearALLData();
-                    t = new System.Threading.Thread(() => setStatusBar("Form submitted successfully"));
+                    t = new Thread(() => setStatusBar("Form submitted successfully"));
                     t.Start();
                 }
             }
@@ -626,6 +626,66 @@ namespace _2016_FRC_Scouting_Form
         private void chk_robotDisabled_CheckedChanged(object sender, EventArgs e)
         {
             mtb_timeDisabled.Enabled = chk_robotDisabled.Checked;
+        }
+
+        private void btn_clearSearch_Click(object sender, EventArgs e)
+        {
+            rtb_Search.Clear();
+        }
+
+        private void btn_Search_Click(object sender, EventArgs e)
+        {
+            Thread t;
+            if (_xlApp == null)
+                initExcel();
+            if (_xlwb == null || _xlws == null)
+                openDataFile();
+
+            int teamResult, matchResult;
+
+            if (Int32.TryParse(txt_teamNum.Text, out teamResult))
+                Team_Num = teamResult;
+            if (Int32.TryParse(txt_matchNum.Text, out matchResult))
+                Match_Num = matchResult;
+            if(Team_Num.Equals(0) && Match_Num.Equals(0))
+            {
+                t = new Thread(() => setStatusBar("Please specify either a team number or match number", 10000));
+                t.Start();
+                return;
+            }
+
+            Range currentFind = null;
+            Range firstFind = null;
+
+            Range last = _xlws.Cells.SpecialCells(XlCellType.xlCellTypeLastCell);
+            int lastRow = last.Row;
+            String endRange = "AA" + lastRow.ToString();
+
+            Range data = _xlApp.get_Range("A1", endRange);
+            // You should specify all these parameters every time you call this method,
+            // since they can be overridden in the user interface. 
+            currentFind = data.Find(Team_Num, Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlPart, XlSearchOrder.xlByRows, XlSearchDirection.xlNext, false, Type.Missing, Type.Missing);
+
+            while (currentFind != null)
+            {
+                //keep track of the first range you find. 
+                if (firstFind == null)
+                {
+                    firstFind = currentFind;
+                }
+
+                //if you didn't move to a new range/find another row, you are done.
+                else if (currentFind.get_Address(XlReferenceStyle.xlA1) == firstFind.get_Address(XlReferenceStyle.xlA1))
+                {
+                    break;
+                }
+
+                currentFind.Font.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Red);
+                currentFind.Font.Bold = true;
+
+                //find next row if available
+                currentFind = data.FindNext(currentFind);
+            }
         }
     }
 }
