@@ -92,9 +92,22 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.gbx_searchStats = new System.Windows.Forms.GroupBox();
+            this.btn_showTeamAggregate = new System.Windows.Forms.Button();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.cbx_showStats = new System.Windows.Forms.CheckBox();
+            this.dgv_Search = new System.Windows.Forms.DataGridView();
             this.btn_clearSearch = new System.Windows.Forms.Button();
             this.btn_Search = new System.Windows.Forms.Button();
-            this.rtb_Search = new System.Windows.Forms.RichTextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1.SuspendLayout();
@@ -112,6 +125,9 @@
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.gbx_searchStats.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_Search)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -768,15 +784,169 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.gbx_searchStats);
+            this.tabPage2.Controls.Add(this.dgv_Search);
             this.tabPage2.Controls.Add(this.btn_clearSearch);
             this.tabPage2.Controls.Add(this.btn_Search);
-            this.tabPage2.Controls.Add(this.rtb_Search);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(663, 505);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Search";
+            // 
+            // gbx_searchStats
+            // 
+            this.gbx_searchStats.Controls.Add(this.btn_showTeamAggregate);
+            this.gbx_searchStats.Controls.Add(this.tableLayoutPanel2);
+            this.gbx_searchStats.Controls.Add(this.cbx_showStats);
+            this.gbx_searchStats.Location = new System.Drawing.Point(8, 284);
+            this.gbx_searchStats.Name = "gbx_searchStats";
+            this.gbx_searchStats.Size = new System.Drawing.Size(649, 153);
+            this.gbx_searchStats.TabIndex = 5;
+            this.gbx_searchStats.TabStop = false;
+            this.gbx_searchStats.Text = "groupBox12";
+            // 
+            // btn_showTeamAggregate
+            // 
+            this.btn_showTeamAggregate.Location = new System.Drawing.Point(453, 15);
+            this.btn_showTeamAggregate.Name = "btn_showTeamAggregate";
+            this.btn_showTeamAggregate.Size = new System.Drawing.Size(190, 24);
+            this.btn_showTeamAggregate.TabIndex = 8;
+            this.btn_showTeamAggregate.Text = "Show Team Aggregate Data";
+            this.btn_showTeamAggregate.UseVisualStyleBackColor = true;
+            this.btn_showTeamAggregate.Click += new System.EventHandler(this.btn_showTeamAggregate_Click);
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 5;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel2.Controls.Add(this.label20, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.label19, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.label18, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.textBox1, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.label22, 3, 0);
+            this.tableLayoutPanel2.Controls.Add(this.label21, 4, 0);
+            this.tableLayoutPanel2.Controls.Add(this.textBox2, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.textBox3, 2, 1);
+            this.tableLayoutPanel2.Controls.Add(this.textBox4, 3, 1);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 42);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 5;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(426, 105);
+            this.tableLayoutPanel2.TabIndex = 7;
+            // 
+            // label20
+            // 
+            this.label20.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(185, 0);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(100, 13);
+            this.label20.TabIndex = 8;
+            this.label20.Text = "Preferred Auto Start";
+            // 
+            // label19
+            // 
+            this.label19.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(95, 0);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(84, 13);
+            this.label19.TabIndex = 7;
+            this.label19.Text = "Total Low Goals";
+            // 
+            // label18
+            // 
+            this.label18.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(3, 0);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(86, 13);
+            this.label18.TabIndex = 5;
+            this.label18.Text = "Total High Goals";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.textBox1.Location = new System.Drawing.Point(8, 16);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(75, 20);
+            this.textBox1.TabIndex = 6;
+            // 
+            // label22
+            // 
+            this.label22.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(291, 0);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(97, 13);
+            this.label22.TabIndex = 10;
+            this.label22.Text = "Preferred Auto End";
+            // 
+            // label21
+            // 
+            this.label21.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(394, 0);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(86, 13);
+            this.label21.TabIndex = 9;
+            this.label21.Text = "Total High Goals";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.textBox2.Location = new System.Drawing.Point(99, 16);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(75, 20);
+            this.textBox2.TabIndex = 11;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.textBox3.Location = new System.Drawing.Point(197, 16);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(75, 20);
+            this.textBox3.TabIndex = 12;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.textBox4.Location = new System.Drawing.Point(302, 16);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(75, 20);
+            this.textBox4.TabIndex = 13;
+            // 
+            // cbx_showStats
+            // 
+            this.cbx_showStats.AutoSize = true;
+            this.cbx_showStats.Location = new System.Drawing.Point(6, 19);
+            this.cbx_showStats.Name = "cbx_showStats";
+            this.cbx_showStats.Size = new System.Drawing.Size(132, 17);
+            this.cbx_showStats.TabIndex = 4;
+            this.cbx_showStats.Text = "Populate Search Stats";
+            this.cbx_showStats.UseVisualStyleBackColor = true;
+            // 
+            // dgv_Search
+            // 
+            this.dgv_Search.AllowUserToAddRows = false;
+            this.dgv_Search.AllowUserToDeleteRows = false;
+            this.dgv_Search.AllowUserToOrderColumns = true;
+            this.dgv_Search.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_Search.Location = new System.Drawing.Point(6, 6);
+            this.dgv_Search.Name = "dgv_Search";
+            this.dgv_Search.Size = new System.Drawing.Size(651, 272);
+            this.dgv_Search.TabIndex = 3;
             // 
             // btn_clearSearch
             // 
@@ -797,14 +967,6 @@
             this.btn_Search.Text = "Search";
             this.btn_Search.UseVisualStyleBackColor = true;
             this.btn_Search.Click += new System.EventHandler(this.btn_Search_Click);
-            // 
-            // rtb_Search
-            // 
-            this.rtb_Search.Location = new System.Drawing.Point(6, 6);
-            this.rtb_Search.Name = "rtb_Search";
-            this.rtb_Search.Size = new System.Drawing.Size(651, 305);
-            this.rtb_Search.TabIndex = 0;
-            this.rtb_Search.Text = "";
             // 
             // statusStrip1
             // 
@@ -865,6 +1027,11 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.gbx_searchStats.ResumeLayout(false);
+            this.gbx_searchStats.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_Search)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -909,7 +1076,6 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button btn_clearSearch;
         private System.Windows.Forms.Button btn_Search;
-        private System.Windows.Forms.RichTextBox rtb_Search;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TextBox txt_roughTerrain;
         private System.Windows.Forms.TextBox txt_rockWall;
@@ -943,6 +1109,20 @@
         private System.Windows.Forms.MaskedTextBox mtb_timeDisabled;
         private System.Windows.Forms.CheckBox chk_robotDisabled;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.DataGridView dgv_Search;
+        private System.Windows.Forms.GroupBox gbx_searchStats;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.CheckBox cbx_showStats;
+        private System.Windows.Forms.Button btn_showTeamAggregate;
     }
 }
 
