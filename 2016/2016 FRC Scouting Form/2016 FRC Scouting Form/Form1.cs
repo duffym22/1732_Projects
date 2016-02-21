@@ -63,167 +63,54 @@ namespace _2016_FRC_Scouting_Form
             InitializeComponent();
         }
 
-        internal int _Team_Num
-        {
-            get;
-            set;
-        }
+        #region Team_Properties
+        internal int _Team_Num { get; set; }
+        internal int _Match_Num { get; set; }
+        internal String _Scout_Name { get; set; }
+        internal String _Team_Alliance { get; set; }
+        internal Boolean _Auto_Defense_Reached { get; set; }
+        internal Boolean _Auto_Defense_Crossed { get; set; }
+        internal Boolean _Auto_Low_Goal_Scored { get; set; }
+        internal Boolean _Auto_High_Goal_Scored { get; set; }
+        internal String _Auto_Starting_Position { get; set; }
+        internal String _Auto_Ending_Position { get; set; }
+        internal int _Tele_Portcullis { get; set; }
+        internal int _Tele_Fries { get; set; }
+        internal int _Tele_Rampart { get; set; }
+        internal int _Tele_Moat { get; set; }
+        internal int _Tele_Drawbridge { get; set; }
+        internal int _Tele_SallyPort { get; set; }
+        internal int _Tele_RockWall { get; set; }
+        internal int _Tele_RoughTerrain { get; set; }
+        internal int _Tele_LowBar { get; set; }
+        internal int _Tele_Low_Goal_Scored { get; set; }
+        internal int _Tele_High_Goal_Scored { get; set; }
+        internal int _Tele_High_Goal_Missed { get; set; }
+        internal Boolean _Robot_Disabled { get; set; }
+        internal string _Time_Disabled { get; set; }
+        internal bool _End_Challenged { get; set; }
+        internal bool _End_Scaled { get; set; }
+        internal String _Notes { get; set; }
+        #endregion
 
-        internal int _Match_Num
-        {
-            get;
-            set;
-        }
+        #region Search_Properties
+        internal int _Total_High_Goals { get; set; }
+        internal int _Total_High_Goals_Missed { get; set; }
+        internal int _Total_Low_Goals { get; set; }
+        internal int _Total_Auto_Crossing { get; set; }
+        internal int _Total_Portcullis_Attempts { get; set; }
+        internal int _Total_Rampart_Attempts { get; set; }
+        internal int _Total_Drawbridge_Attempts { get; set; }
+        internal int _Total_Freedom_Fries_Attempts { get; set; }
+        internal int _Total_Moat_Attempts { get; set; }
+        internal int _Total_SallyPort_Attempts { get; set; }
+        internal int _Total_RockWall_Attempts { get; set; }
+        internal int _Total_RoughTerrain_Attempts { get; set; }
+        internal int _Total_LowBar_Attempts { get; set; }
+        internal int _Total_Challenge_Attempts { get; set; }
+        internal int _Total_Scale_Attempts { get; set; }
+        #endregion
 
-        internal String _Scout_Name
-        {
-            get;
-            set;
-        }
-
-        internal String _Team_Alliance
-        {
-            get;
-            set;
-        }
-
-        internal Boolean _Auto_Defense_Reached
-        {
-            get;
-            set;
-        }
-
-        internal Boolean _Auto_Defense_Crossed
-        {
-            get;
-            set;
-        }
-
-        internal Boolean _Auto_Low_Goal_Scored
-        {
-            get;
-            set;
-        }
-
-        internal Boolean _Auto_High_Goal_Scored
-        {
-            get;
-            set;
-        }
-
-        internal String _Auto_Starting_Position
-        {
-            get;
-            set;
-        }
-
-        internal String _Auto_Ending_Position
-        {
-            get;
-            set;
-        }
-
-        internal int _Tele_Portcullis
-        {
-            get;
-            set;
-        }
-
-        internal int _Tele_Fries
-        {
-            get;
-            set;
-        }
-
-        internal int _Tele_Rampart
-        {
-            get;
-            set;
-        }
-
-        internal int _Tele_Moat
-        {
-            get;
-            set;
-        }
-
-        internal int _Tele_Drawbridge
-        {
-            get;
-            set;
-        }
-
-        internal int _Tele_SallyPort
-        {
-            get;
-            set;
-        }
-
-        internal int _Tele_RockWall
-        {
-            get;
-            set;
-        }
-
-        internal int _Tele_RoughTerrain
-        {
-            get;
-            set;
-        }
-
-        internal int _Tele_LowBar
-        {
-            get;
-            set;
-        }
-
-        internal int _Tele_Low_Goal_Scored
-        {
-            get;
-            set;
-        }
-
-        internal int _Tele_High_Goal_Scored
-        {
-            get;
-            set;
-        }
-
-        internal int _Tele_Missed_High_Goal
-        {
-            get;
-            set;
-        }
-
-        internal Boolean _Robot_Disabled
-        {
-            get;
-            set;
-        }
-
-        internal string _Time_Disabled
-        {
-            get;
-            set;
-        }
-
-        internal bool _End_Challenged
-        {
-            get;
-            set;
-        }
-
-        internal bool _End_Scaled
-        {
-            get;
-            set;
-        }
-
-        internal String _Notes
-        {
-            get;
-            set;
-        }
 
         private void btn_submitData_Click(object sender, EventArgs e)
         {
@@ -273,7 +160,7 @@ namespace _2016_FRC_Scouting_Form
             try
             {
                 _Team_Num = Int32.TryParse(txt_teamNum.Text, out result) ? result : -1;
-                _Match_Num = Int32.TryParse(txt_matchNum.Text, out result) ? result : -1;
+                _Match_Num = Int32.TryParse(nup_matchNum.Text, out result) ? result : -1;
                 _Scout_Name = txt_scoutName.Text;
                 _Team_Alliance = rdo_allianceRed.Checked ? "Red" : "Blue";
 
@@ -371,7 +258,7 @@ namespace _2016_FRC_Scouting_Form
                 _xlws.Cells[lastRow, DATA_ROWS.Tele_LowBar] = _Tele_LowBar;
                 _xlws.Cells[lastRow, DATA_ROWS.Tele_Low_Goal_Scored] = _Tele_Low_Goal_Scored;
                 _xlws.Cells[lastRow, DATA_ROWS.Tele_High_Goal_Scored] = _Tele_High_Goal_Scored;
-                _xlws.Cells[lastRow, DATA_ROWS.Tele_Missed_High_Goal] = _Tele_Missed_High_Goal;
+                _xlws.Cells[lastRow, DATA_ROWS.Tele_Missed_High_Goal] = _Tele_High_Goal_Missed;
                 _xlws.Cells[lastRow, DATA_ROWS.Robot_Disabled] = _Robot_Disabled;
                 _xlws.Cells[lastRow, DATA_ROWS.Time_Disabled] = _Time_Disabled;
                 _xlws.Cells[lastRow, DATA_ROWS.End_Challenged] = _End_Challenged;
@@ -636,20 +523,34 @@ namespace _2016_FRC_Scouting_Form
         private void btn_clearSearch_Click(object sender, EventArgs e)
         {
             dgv_Search.Rows.Clear();
+            txt_teamNum.Text = String.Empty;
+            txt_totalAutoCrossing.Text = String.Empty;
+            txt_totalHighGoals.Text = String.Empty;
+            txt_totalHighGoalsMissed.Text = String.Empty;
+            txt_totalLowGoals.Text = String.Empty;
+            txt_totalChallenge.Text = String.Empty;
+            txt_totalScales.Text = String.Empty;
+            txt_totalPortcullis.Text = String.Empty;
+            txt_totalRampart.Text = String.Empty;
+            txt_totalDrawbridge.Text = String.Empty;
+            txt_totalFreedomFries.Text = String.Empty;
+            txt_totalMoat.Text = String.Empty;
+            txt_totalSallyPort.Text = String.Empty;
+            txt_totalRockWall.Text = String.Empty;
+            txt_totalRoughTerrain.Text = String.Empty;
+            txt_totalLowBar.Text = String.Empty;
         }
 
         private void btn_Search_Click(object sender, EventArgs e)
         {
-            if(!_datagridInit)
-                initializeDatagridView();
-            dgv_Search.Rows.Clear();
+
             Thread t;
             if (_xlApp == null)
                 initExcel();
             if (_xlwb == null || _xlws == null)
                 openDataFile();
 
-            int teamResult, matchResult;
+            int teamResult;
 
             if (Int32.TryParse(txt_teamNum.Text, out teamResult))
                 _Team_Num = teamResult;
@@ -659,6 +560,12 @@ namespace _2016_FRC_Scouting_Form
                 t.Start();
                 return;
             }
+            else
+            {
+                if (!_datagridInit)
+                    initializeDatagridView();
+                dgv_Search.Rows.Clear();
+            }
 
 
             //get maximum search range
@@ -667,46 +574,120 @@ namespace _2016_FRC_Scouting_Form
             Range data = _xlApp.get_Range("A1", String.Format("AA" + lastRow.ToString()));
             //get rows that have the data we want
             ArrayList rows = searchData(data);
-            ArrayList dataFound = new ArrayList();
 
-            initializeProperties();     //initialize properties so they are empty when we use them
-            //gather data from rows and store in array
+            initializeProperties();     //initialize properties so they are empty when we use them     
+            initializeRobotStats();     //set search/stats properties to 0
+            gatherSearchData(rows);     //gather data from rows and store in array
+            displaySearchData();        //display data on datagridview
+
+
+
+        }
+
+        private void initializeRobotStats()
+        {
+            _Total_High_Goals = 0;
+            _Total_High_Goals_Missed = 0;
+            _Total_Low_Goals = 0;
+            _Total_Auto_Crossing = 0;
+            _Total_Scale_Attempts = 0;
+            _Total_Portcullis_Attempts = 0;
+            _Total_Rampart_Attempts = 0;
+            _Total_Drawbridge_Attempts = 0;
+            _Total_Freedom_Fries_Attempts = 0;
+            _Total_Moat_Attempts = 0;
+            _Total_SallyPort_Attempts = 0;
+            _Total_RockWall_Attempts = 0;
+            _Total_RoughTerrain_Attempts = 0;
+            _Total_LowBar_Attempts = 0;
+            _Total_Challenge_Attempts = 0;
+            _Total_Scale_Attempts = 0;
+        }
+
+        private void displaySearchData()
+        {
+            txt_totalAutoCrossing.Text = _Total_Auto_Crossing.ToString();
+            txt_totalHighGoals.Text = _Total_High_Goals.ToString();
+            txt_totalHighGoalsMissed.Text = _Total_High_Goals_Missed.ToString();
+            txt_totalLowGoals.Text = _Total_Low_Goals.ToString();
+            txt_totalChallenge.Text = _Total_Challenge_Attempts.ToString();
+            txt_totalScales.Text = _Total_Scale_Attempts.ToString();
+            txt_totalPortcullis.Text = _Total_Portcullis_Attempts.ToString();
+            txt_totalRampart.Text = _Total_Rampart_Attempts.ToString();
+            txt_totalDrawbridge.Text = _Total_Drawbridge_Attempts.ToString();
+            txt_totalFreedomFries.Text = _Total_Freedom_Fries_Attempts.ToString();
+            txt_totalMoat.Text = _Total_Moat_Attempts.ToString();
+            txt_totalSallyPort.Text = _Total_SallyPort_Attempts.ToString();
+            txt_totalRockWall.Text = _Total_RockWall_Attempts.ToString();
+            txt_totalRoughTerrain.Text = _Total_RoughTerrain_Attempts.ToString();
+            txt_totalLowBar.Text = _Total_LowBar_Attempts.ToString();
+        }
+
+        private void gatherSearchData(ArrayList rows)
+        {
             foreach (int item in rows)
             {
-                Range range1 = _xlws.Rows[item]; //For all columns in row 1
+                Range range1 = _xlws.Rows[item]; //For all columns in row selected
                 _Team_Num = (int)_xlws.Cells[item, DATA_ROWS.Team_Num].Value2;
                 _Match_Num = (int)_xlws.Cells[item, DATA_ROWS.Match_Num].Value2;
                 _Scout_Name = (String)_xlws.Cells[item, DATA_ROWS.Scout_Name].Value2;
                 _Team_Alliance = (String)_xlws.Cells[item, DATA_ROWS.Alliance].Value2;
                 _Auto_Defense_Reached = (Boolean)_xlws.Cells[item, DATA_ROWS.Auto_Defense_Reached].Value2;
                 _Auto_Defense_Crossed = (Boolean)_xlws.Cells[item, DATA_ROWS.Auto_Defense_Crossed].Value2;
+                if(_Auto_Defense_Crossed)
+                    _Total_Auto_Crossing++;
                 _Auto_Low_Goal_Scored = (Boolean)_xlws.Cells[item, DATA_ROWS.Auto_Low_Goal_Scored].Value2;
                 _Auto_High_Goal_Scored = (Boolean)_xlws.Cells[item, DATA_ROWS.Auto_High_Goal_Scored].Value2;
                 _Auto_Starting_Position = (String)_xlws.Cells[item, DATA_ROWS.Auto_Starting_Position].Value2;
                 _Auto_Ending_Position = (String)_xlws.Cells[item, DATA_ROWS.Auto_Ending_Position].Value2;
+
                 _Tele_Portcullis = (int)_xlws.Cells[item, DATA_ROWS.Tele_Portcullis].Value2;
+                _Total_Portcullis_Attempts += _Tele_Portcullis;
+
                 _Tele_Fries = (int)_xlws.Cells[item, DATA_ROWS.Tele_Fries].Value2;
+                _Total_Freedom_Fries_Attempts += _Tele_Fries;
+
                 _Tele_Rampart = (int)_xlws.Cells[item, DATA_ROWS.Tele_Rampart].Value2;
+                _Total_Rampart_Attempts += _Tele_Rampart;
+
                 _Tele_Moat = (int)_xlws.Cells[item, DATA_ROWS.Tele_Moat].Value2;
+                _Total_Moat_Attempts += _Tele_Moat;
+
                 _Tele_Drawbridge = (int)_xlws.Cells[item, DATA_ROWS.Tele_Drawbridge].Value2;
+                _Total_Drawbridge_Attempts += _Tele_Drawbridge;
+
                 _Tele_SallyPort = (int)_xlws.Cells[item, DATA_ROWS.Tele_SallyPort].Value2;
+                _Total_SallyPort_Attempts += _Tele_SallyPort;
+
                 _Tele_RockWall = (int)_xlws.Cells[item, DATA_ROWS.Tele_RockWall].Value2;
+                _Total_RockWall_Attempts += _Tele_RockWall;
+
                 _Tele_RoughTerrain = (int)_xlws.Cells[item, DATA_ROWS.Tele_RoughTerrain].Value2;
+                _Total_RoughTerrain_Attempts += _Tele_RoughTerrain;
+
                 _Tele_LowBar = (int)_xlws.Cells[item, DATA_ROWS.Tele_LowBar].Value2;
+                _Total_LowBar_Attempts += _Tele_LowBar;
+
                 _Tele_Low_Goal_Scored = (int)_xlws.Cells[item, DATA_ROWS.Tele_Low_Goal_Scored].Value2;
+                _Total_Low_Goals += _Tele_Low_Goal_Scored;
+
                 _Tele_High_Goal_Scored = (int)_xlws.Cells[item, DATA_ROWS.Tele_High_Goal_Scored].Value2;
-                _Tele_Missed_High_Goal = (int)_xlws.Cells[item, DATA_ROWS.Tele_Missed_High_Goal].Value2;
+                _Total_High_Goals += _Tele_High_Goal_Scored;
+
+                _Tele_High_Goal_Missed = (int)_xlws.Cells[item, DATA_ROWS.Tele_Missed_High_Goal].Value2;
+                _Total_High_Goals_Missed += _Tele_High_Goal_Missed;
+
                 _Robot_Disabled = (Boolean)_xlws.Cells[item, DATA_ROWS.Robot_Disabled].Value2;
                 _Time_Disabled = (String)_xlws.Cells[item, DATA_ROWS.Time_Disabled].Text.ToString();
                 _End_Challenged = (Boolean)_xlws.Cells[item, DATA_ROWS.End_Challenged].Value2;
+                if (_End_Challenged)
+                    _Total_Challenge_Attempts++;
                 _End_Scaled = (Boolean)_xlws.Cells[item, DATA_ROWS.End_Scaled].Value2;
+                if (_End_Scaled)
+                    _Total_Scale_Attempts++;
                 _Notes = (String)_xlws.Cells[item, DATA_ROWS.Notes].Value2;
-                dgv_Search.Rows.Add(_Team_Num, _Match_Num, _Scout_Name, _Team_Alliance, _Auto_Defense_Reached, _Auto_Defense_Crossed, _Auto_Low_Goal_Scored, _Auto_High_Goal_Scored, _Auto_Starting_Position, _Auto_Ending_Position, _Tele_Portcullis, _Tele_Fries, _Tele_Rampart, _Tele_Moat, _Tele_Drawbridge, _Tele_SallyPort, _Tele_RockWall, _Tele_RoughTerrain, _Tele_LowBar, _Tele_Low_Goal_Scored, _Tele_High_Goal_Scored, _Tele_Missed_High_Goal, _Robot_Disabled, _Time_Disabled, _End_Challenged, _End_Scaled, _Notes);
-
+                dgv_Search.Rows.Add(_Team_Num, _Match_Num, _Scout_Name, _Team_Alliance, _Auto_Defense_Reached, _Auto_Defense_Crossed, _Auto_Low_Goal_Scored, _Auto_High_Goal_Scored, _Auto_Starting_Position, _Auto_Ending_Position, _Tele_Portcullis, _Tele_Fries, _Tele_Rampart, _Tele_Moat, _Tele_Drawbridge, _Tele_SallyPort, _Tele_RockWall, _Tele_RoughTerrain, _Tele_LowBar, _Tele_Low_Goal_Scored, _Tele_High_Goal_Scored, _Tele_High_Goal_Missed, _Robot_Disabled, _Time_Disabled, _End_Challenged, _End_Scaled, _Notes);
             }
-
-            //display data on datagridview
-
         }
 
         private void initializeDatagridView()
@@ -774,7 +755,24 @@ namespace _2016_FRC_Scouting_Form
         private void btn_showTeamAggregate_Click(object sender, EventArgs e)
         {
             //iterate across all the data and compile it so each team is only listed once and shows all of their stats
-            //stats include: Total High Goals(1), Total High Goals Missed(1), Total Low Goals(1), Total Time each Defense Crossed(9), Total times CROSSED in AUTO(1), Total times scaled(1), total times challenged(1)
+            /*stats include: 
+             * Total High Goals(1), 
+             * Total High Goals Missed(1), 
+             * Total Low Goals(1), 
+             * Total Time each Defense Crossed(9), 
+             * Total times CROSSED in AUTO(1), 
+             * Total times scaled(1), 
+             * Total times challenged(1)
+             */
+        }
+
+        private void txt_teamNum_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar.Equals(Convert.ToChar(Keys.Enter)))
+            {
+                if (tabControl1.SelectedTab.Text.Equals("Search"))
+                    btn_Search_Click(sender, e);
+            }
         }
     }
 }

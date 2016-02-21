@@ -30,7 +30,6 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.txt_teamNum = new System.Windows.Forms.TextBox();
-            this.txt_matchNum = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txt_scoutName = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -92,24 +91,47 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.txt_totalLowBar = new System.Windows.Forms.TextBox();
+            this.txt_totalRoughTerrain = new System.Windows.Forms.TextBox();
+            this.txt_totalRockWall = new System.Windows.Forms.TextBox();
+            this.label31 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
+            this.txt_totalSallyPort = new System.Windows.Forms.TextBox();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.txt_totalMoat = new System.Windows.Forms.TextBox();
+            this.label26 = new System.Windows.Forms.Label();
+            this.txt_totalRampart = new System.Windows.Forms.TextBox();
+            this.txt_totalDrawbridge = new System.Windows.Forms.TextBox();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.txt_totalFreedomFries = new System.Windows.Forms.TextBox();
+            this.label32 = new System.Windows.Forms.Label();
+            this.txt_totalPortcullis = new System.Windows.Forms.TextBox();
             this.gbx_searchStats = new System.Windows.Forms.GroupBox();
-            this.btn_showTeamAggregate = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.label20 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
+            this.txt_totalAutoCrossing = new System.Windows.Forms.TextBox();
+            this.txt_totalChallenge = new System.Windows.Forms.TextBox();
+            this.txt_totalScales = new System.Windows.Forms.TextBox();
+            this.txt_totalHighGoalsMissed = new System.Windows.Forms.TextBox();
+            this.txt_totalHighGoals = new System.Windows.Forms.TextBox();
+            this.txt_totalLowGoals = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.cbx_showStats = new System.Windows.Forms.CheckBox();
-            this.dgv_Search = new System.Windows.Forms.DataGridView();
+            this.btn_showTeamAggregate = new System.Windows.Forms.Button();
             this.btn_clearSearch = new System.Windows.Forms.Button();
             this.btn_Search = new System.Windows.Forms.Button();
+            this.dgv_Search = new System.Windows.Forms.DataGridView();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.nup_matchNum = new System.Windows.Forms.NumericUpDown();
             this.groupBox1.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox6.SuspendLayout();
@@ -125,10 +147,13 @@
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox12.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.gbx_searchStats.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Search)).BeginInit();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nup_matchNum)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -146,13 +171,7 @@
             this.txt_teamNum.Name = "txt_teamNum";
             this.txt_teamNum.Size = new System.Drawing.Size(100, 20);
             this.txt_teamNum.TabIndex = 0;
-            // 
-            // txt_matchNum
-            // 
-            this.txt_matchNum.Location = new System.Drawing.Point(230, 10);
-            this.txt_matchNum.Name = "txt_matchNum";
-            this.txt_matchNum.Size = new System.Drawing.Size(100, 20);
-            this.txt_matchNum.TabIndex = 1;
+            this.txt_teamNum.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_teamNum_KeyPress);
             // 
             // label2
             // 
@@ -581,7 +600,7 @@
             this.tableLayoutPanel1.Controls.Add(this.label15, 0, 8);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(21, 19);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 10;
+            this.tableLayoutPanel1.RowCount = 11;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
@@ -592,6 +611,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(277, 304);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
@@ -784,10 +804,9 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.groupBox12);
             this.tabPage2.Controls.Add(this.gbx_searchStats);
             this.tabPage2.Controls.Add(this.dgv_Search);
-            this.tabPage2.Controls.Add(this.btn_clearSearch);
-            this.tabPage2.Controls.Add(this.btn_Search);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -795,75 +814,303 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Search";
             // 
+            // groupBox12
+            // 
+            this.groupBox12.Controls.Add(this.tableLayoutPanel3);
+            this.groupBox12.Location = new System.Drawing.Point(329, 284);
+            this.groupBox12.Name = "groupBox12";
+            this.groupBox12.Size = new System.Drawing.Size(328, 215);
+            this.groupBox12.TabIndex = 9;
+            this.groupBox12.TabStop = false;
+            this.groupBox12.Text = "Total Defenses Crossed";
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanel3.Controls.Add(this.txt_totalLowBar, 2, 5);
+            this.tableLayoutPanel3.Controls.Add(this.txt_totalRoughTerrain, 1, 5);
+            this.tableLayoutPanel3.Controls.Add(this.txt_totalRockWall, 0, 5);
+            this.tableLayoutPanel3.Controls.Add(this.label31, 1, 4);
+            this.tableLayoutPanel3.Controls.Add(this.label29, 2, 2);
+            this.tableLayoutPanel3.Controls.Add(this.label24, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.txt_totalSallyPort, 2, 3);
+            this.tableLayoutPanel3.Controls.Add(this.label28, 1, 2);
+            this.tableLayoutPanel3.Controls.Add(this.label25, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.txt_totalMoat, 1, 3);
+            this.tableLayoutPanel3.Controls.Add(this.label26, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.txt_totalRampart, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.txt_totalDrawbridge, 2, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label27, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.label30, 0, 4);
+            this.tableLayoutPanel3.Controls.Add(this.txt_totalFreedomFries, 0, 3);
+            this.tableLayoutPanel3.Controls.Add(this.label32, 2, 4);
+            this.tableLayoutPanel3.Controls.Add(this.txt_totalPortcullis, 0, 1);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(6, 19);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 6;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.97938F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 17.01031F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.97938F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 18.04124F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(317, 194);
+            this.tableLayoutPanel3.TabIndex = 8;
+            // 
+            // txt_totalLowBar
+            // 
+            this.txt_totalLowBar.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalLowBar.Location = new System.Drawing.Point(226, 159);
+            this.txt_totalLowBar.Name = "txt_totalLowBar";
+            this.txt_totalLowBar.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalLowBar.TabIndex = 33;
+            // 
+            // txt_totalRoughTerrain
+            // 
+            this.txt_totalRoughTerrain.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalRoughTerrain.Location = new System.Drawing.Point(120, 159);
+            this.txt_totalRoughTerrain.Name = "txt_totalRoughTerrain";
+            this.txt_totalRoughTerrain.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalRoughTerrain.TabIndex = 32;
+            // 
+            // txt_totalRockWall
+            // 
+            this.txt_totalRockWall.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalRockWall.Location = new System.Drawing.Point(15, 159);
+            this.txt_totalRockWall.Name = "txt_totalRockWall";
+            this.txt_totalRockWall.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalRockWall.TabIndex = 31;
+            // 
+            // label31
+            // 
+            this.label31.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(120, 126);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(75, 13);
+            this.label31.TabIndex = 18;
+            this.label31.Text = "Rough Terrain";
+            // 
+            // label29
+            // 
+            this.label29.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(238, 62);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(51, 13);
+            this.label29.TabIndex = 28;
+            this.label29.Text = "Sally Port";
+            // 
+            // label24
+            // 
+            this.label24.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(28, 0);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(49, 13);
+            this.label24.TabIndex = 17;
+            this.label24.Text = "Portcullis";
+            // 
+            // txt_totalSallyPort
+            // 
+            this.txt_totalSallyPort.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalSallyPort.Location = new System.Drawing.Point(226, 97);
+            this.txt_totalSallyPort.Name = "txt_totalSallyPort";
+            this.txt_totalSallyPort.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalSallyPort.TabIndex = 23;
+            // 
+            // label28
+            // 
+            this.label28.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(142, 62);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(31, 13);
+            this.label28.TabIndex = 27;
+            this.label28.Text = "Moat";
+            // 
+            // label25
+            // 
+            this.label25.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(134, 0);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(47, 13);
+            this.label25.TabIndex = 18;
+            this.label25.Text = "Rampart";
+            // 
+            // txt_totalMoat
+            // 
+            this.txt_totalMoat.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalMoat.Location = new System.Drawing.Point(120, 97);
+            this.txt_totalMoat.Name = "txt_totalMoat";
+            this.txt_totalMoat.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalMoat.TabIndex = 20;
+            // 
+            // label26
+            // 
+            this.label26.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(233, 0);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(61, 13);
+            this.label26.TabIndex = 19;
+            this.label26.Text = "Drawbridge";
+            // 
+            // txt_totalRampart
+            // 
+            this.txt_totalRampart.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalRampart.Location = new System.Drawing.Point(120, 33);
+            this.txt_totalRampart.Name = "txt_totalRampart";
+            this.txt_totalRampart.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalRampart.TabIndex = 11;
+            // 
+            // txt_totalDrawbridge
+            // 
+            this.txt_totalDrawbridge.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalDrawbridge.Location = new System.Drawing.Point(226, 33);
+            this.txt_totalDrawbridge.Name = "txt_totalDrawbridge";
+            this.txt_totalDrawbridge.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalDrawbridge.TabIndex = 13;
+            // 
+            // label27
+            // 
+            this.label27.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(16, 62);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(73, 13);
+            this.label27.TabIndex = 26;
+            this.label27.Text = "Freedom Fries";
+            // 
+            // label30
+            // 
+            this.label30.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(24, 126);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(57, 13);
+            this.label30.TabIndex = 29;
+            this.label30.Text = "Rock Wall";
+            // 
+            // txt_totalFreedomFries
+            // 
+            this.txt_totalFreedomFries.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalFreedomFries.Location = new System.Drawing.Point(15, 97);
+            this.txt_totalFreedomFries.Name = "txt_totalFreedomFries";
+            this.txt_totalFreedomFries.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalFreedomFries.TabIndex = 6;
+            // 
+            // label32
+            // 
+            this.label32.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(240, 126);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(46, 13);
+            this.label32.TabIndex = 30;
+            this.label32.Text = "Low Bar";
+            // 
+            // txt_totalPortcullis
+            // 
+            this.txt_totalPortcullis.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalPortcullis.Location = new System.Drawing.Point(15, 33);
+            this.txt_totalPortcullis.Name = "txt_totalPortcullis";
+            this.txt_totalPortcullis.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalPortcullis.TabIndex = 22;
+            // 
             // gbx_searchStats
             // 
-            this.gbx_searchStats.Controls.Add(this.btn_showTeamAggregate);
             this.gbx_searchStats.Controls.Add(this.tableLayoutPanel2);
-            this.gbx_searchStats.Controls.Add(this.cbx_showStats);
+            this.gbx_searchStats.Controls.Add(this.btn_showTeamAggregate);
+            this.gbx_searchStats.Controls.Add(this.btn_clearSearch);
+            this.gbx_searchStats.Controls.Add(this.btn_Search);
             this.gbx_searchStats.Location = new System.Drawing.Point(8, 284);
             this.gbx_searchStats.Name = "gbx_searchStats";
-            this.gbx_searchStats.Size = new System.Drawing.Size(649, 153);
+            this.gbx_searchStats.Size = new System.Drawing.Size(317, 215);
             this.gbx_searchStats.TabIndex = 5;
             this.gbx_searchStats.TabStop = false;
-            this.gbx_searchStats.Text = "groupBox12";
-            // 
-            // btn_showTeamAggregate
-            // 
-            this.btn_showTeamAggregate.Location = new System.Drawing.Point(453, 15);
-            this.btn_showTeamAggregate.Name = "btn_showTeamAggregate";
-            this.btn_showTeamAggregate.Size = new System.Drawing.Size(190, 24);
-            this.btn_showTeamAggregate.TabIndex = 8;
-            this.btn_showTeamAggregate.Text = "Show Team Aggregate Data";
-            this.btn_showTeamAggregate.UseVisualStyleBackColor = true;
-            this.btn_showTeamAggregate.Click += new System.EventHandler(this.btn_showTeamAggregate_Click);
+            this.gbx_searchStats.Text = "Robot Stats";
             // 
             // tableLayoutPanel2
             // 
-            this.tableLayoutPanel2.ColumnCount = 5;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.Controls.Add(this.label20, 2, 0);
-            this.tableLayoutPanel2.Controls.Add(this.label19, 1, 0);
+            this.tableLayoutPanel2.ColumnCount = 3;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 92F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 101F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 112F));
+            this.tableLayoutPanel2.Controls.Add(this.txt_totalAutoCrossing, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.txt_totalChallenge, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.txt_totalScales, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.txt_totalHighGoalsMissed, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txt_totalHighGoals, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.txt_totalLowGoals, 2, 1);
             this.tableLayoutPanel2.Controls.Add(this.label18, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.textBox1, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.label22, 3, 0);
-            this.tableLayoutPanel2.Controls.Add(this.label21, 4, 0);
-            this.tableLayoutPanel2.Controls.Add(this.textBox2, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.textBox3, 2, 1);
-            this.tableLayoutPanel2.Controls.Add(this.textBox4, 3, 1);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 42);
+            this.tableLayoutPanel2.Controls.Add(this.label20, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label23, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label22, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.label19, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.label21, 2, 2);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 19);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 5;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(426, 105);
+            this.tableLayoutPanel2.RowCount = 4;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(305, 126);
             this.tableLayoutPanel2.TabIndex = 7;
             // 
-            // label20
+            // txt_totalAutoCrossing
             // 
-            this.label20.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(185, 0);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(100, 13);
-            this.label20.TabIndex = 8;
-            this.label20.Text = "Preferred Auto Start";
+            this.txt_totalAutoCrossing.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalAutoCrossing.Location = new System.Drawing.Point(8, 92);
+            this.txt_totalAutoCrossing.Name = "txt_totalAutoCrossing";
+            this.txt_totalAutoCrossing.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalAutoCrossing.TabIndex = 25;
             // 
-            // label19
+            // txt_totalChallenge
             // 
-            this.label19.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(95, 0);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(84, 13);
-            this.label19.TabIndex = 7;
-            this.label19.Text = "Total Low Goals";
+            this.txt_totalChallenge.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalChallenge.Location = new System.Drawing.Point(105, 92);
+            this.txt_totalChallenge.Name = "txt_totalChallenge";
+            this.txt_totalChallenge.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalChallenge.TabIndex = 24;
+            // 
+            // txt_totalScales
+            // 
+            this.txt_totalScales.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalScales.Location = new System.Drawing.Point(211, 92);
+            this.txt_totalScales.Name = "txt_totalScales";
+            this.txt_totalScales.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalScales.TabIndex = 21;
+            // 
+            // txt_totalHighGoalsMissed
+            // 
+            this.txt_totalHighGoalsMissed.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalHighGoalsMissed.Location = new System.Drawing.Point(105, 32);
+            this.txt_totalHighGoalsMissed.Name = "txt_totalHighGoalsMissed";
+            this.txt_totalHighGoalsMissed.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalHighGoalsMissed.TabIndex = 16;
+            // 
+            // txt_totalHighGoals
+            // 
+            this.txt_totalHighGoals.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalHighGoals.Location = new System.Drawing.Point(8, 32);
+            this.txt_totalHighGoals.Name = "txt_totalHighGoals";
+            this.txt_totalHighGoals.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalHighGoals.TabIndex = 15;
+            // 
+            // txt_totalLowGoals
+            // 
+            this.txt_totalLowGoals.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_totalLowGoals.Location = new System.Drawing.Point(211, 32);
+            this.txt_totalLowGoals.Name = "txt_totalLowGoals";
+            this.txt_totalLowGoals.Size = new System.Drawing.Size(75, 20);
+            this.txt_totalLowGoals.TabIndex = 12;
             // 
             // label18
             // 
@@ -875,84 +1122,71 @@
             this.label18.TabIndex = 5;
             this.label18.Text = "Total High Goals";
             // 
-            // textBox1
+            // label20
             // 
-            this.textBox1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.textBox1.Location = new System.Drawing.Point(8, 16);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(75, 20);
-            this.textBox1.TabIndex = 6;
+            this.label20.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(3, 59);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(85, 26);
+            this.label20.TabIndex = 8;
+            this.label20.Text = "Total Crossing in AUTO";
+            // 
+            // label23
+            // 
+            this.label23.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(100, 59);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(84, 26);
+            this.label23.TabIndex = 14;
+            this.label23.Text = "Total Challenge Attempts";
             // 
             // label22
             // 
             this.label22.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(291, 0);
+            this.label22.Location = new System.Drawing.Point(207, 0);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(97, 13);
+            this.label22.Size = new System.Drawing.Size(84, 13);
             this.label22.TabIndex = 10;
-            this.label22.Text = "Preferred Auto End";
+            this.label22.Text = "Total Low Goals";
+            // 
+            // label19
+            // 
+            this.label19.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(95, 0);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(95, 26);
+            this.label19.TabIndex = 7;
+            this.label19.Text = "Total High Missed Goals";
             // 
             // label21
             // 
             this.label21.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(394, 0);
+            this.label21.Location = new System.Drawing.Point(196, 59);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(86, 13);
+            this.label21.Size = new System.Drawing.Size(105, 13);
             this.label21.TabIndex = 9;
-            this.label21.Text = "Total High Goals";
+            this.label21.Text = "Total Scale Attempts";
             // 
-            // textBox2
+            // btn_showTeamAggregate
             // 
-            this.textBox2.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.textBox2.Location = new System.Drawing.Point(99, 16);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(75, 20);
-            this.textBox2.TabIndex = 11;
-            // 
-            // textBox3
-            // 
-            this.textBox3.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.textBox3.Location = new System.Drawing.Point(197, 16);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(75, 20);
-            this.textBox3.TabIndex = 12;
-            // 
-            // textBox4
-            // 
-            this.textBox4.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.textBox4.Location = new System.Drawing.Point(302, 16);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(75, 20);
-            this.textBox4.TabIndex = 13;
-            // 
-            // cbx_showStats
-            // 
-            this.cbx_showStats.AutoSize = true;
-            this.cbx_showStats.Location = new System.Drawing.Point(6, 19);
-            this.cbx_showStats.Name = "cbx_showStats";
-            this.cbx_showStats.Size = new System.Drawing.Size(132, 17);
-            this.cbx_showStats.TabIndex = 4;
-            this.cbx_showStats.Text = "Populate Search Stats";
-            this.cbx_showStats.UseVisualStyleBackColor = true;
-            // 
-            // dgv_Search
-            // 
-            this.dgv_Search.AllowUserToAddRows = false;
-            this.dgv_Search.AllowUserToDeleteRows = false;
-            this.dgv_Search.AllowUserToOrderColumns = true;
-            this.dgv_Search.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_Search.Location = new System.Drawing.Point(6, 6);
-            this.dgv_Search.Name = "dgv_Search";
-            this.dgv_Search.Size = new System.Drawing.Size(651, 272);
-            this.dgv_Search.TabIndex = 3;
+            this.btn_showTeamAggregate.Location = new System.Drawing.Point(82, 187);
+            this.btn_showTeamAggregate.Name = "btn_showTeamAggregate";
+            this.btn_showTeamAggregate.Size = new System.Drawing.Size(190, 24);
+            this.btn_showTeamAggregate.TabIndex = 8;
+            this.btn_showTeamAggregate.Text = "Show Team Aggregate Data";
+            this.btn_showTeamAggregate.UseVisualStyleBackColor = true;
+            this.btn_showTeamAggregate.Click += new System.EventHandler(this.btn_showTeamAggregate_Click);
             // 
             // btn_clearSearch
             // 
-            this.btn_clearSearch.Location = new System.Drawing.Point(426, 443);
+            this.btn_clearSearch.Location = new System.Drawing.Point(206, 151);
             this.btn_clearSearch.Name = "btn_clearSearch";
-            this.btn_clearSearch.Size = new System.Drawing.Size(150, 40);
+            this.btn_clearSearch.Size = new System.Drawing.Size(100, 30);
             this.btn_clearSearch.TabIndex = 2;
             this.btn_clearSearch.Text = "Clear Search";
             this.btn_clearSearch.UseVisualStyleBackColor = true;
@@ -960,13 +1194,24 @@
             // 
             // btn_Search
             // 
-            this.btn_Search.Location = new System.Drawing.Point(115, 443);
+            this.btn_Search.Location = new System.Drawing.Point(39, 151);
             this.btn_Search.Name = "btn_Search";
-            this.btn_Search.Size = new System.Drawing.Size(150, 40);
+            this.btn_Search.Size = new System.Drawing.Size(100, 30);
             this.btn_Search.TabIndex = 1;
             this.btn_Search.Text = "Search";
             this.btn_Search.UseVisualStyleBackColor = true;
             this.btn_Search.Click += new System.EventHandler(this.btn_Search_Click);
+            // 
+            // dgv_Search
+            // 
+            this.dgv_Search.AllowUserToAddRows = false;
+            this.dgv_Search.AllowUserToDeleteRows = false;
+            this.dgv_Search.AllowUserToOrderColumns = true;
+            this.dgv_Search.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_Search.Location = new System.Drawing.Point(9, 6);
+            this.dgv_Search.Name = "dgv_Search";
+            this.dgv_Search.Size = new System.Drawing.Size(651, 272);
+            this.dgv_Search.TabIndex = 3;
             // 
             // statusStrip1
             // 
@@ -983,12 +1228,20 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
+            // nup_matchNum
+            // 
+            this.nup_matchNum.Location = new System.Drawing.Point(230, 10);
+            this.nup_matchNum.Name = "nup_matchNum";
+            this.nup_matchNum.Size = new System.Drawing.Size(100, 20);
+            this.nup_matchNum.TabIndex = 1;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(694, 592);
+            this.Controls.Add(this.nup_matchNum);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.rdo_allianceBlue);
@@ -996,7 +1249,6 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txt_scoutName);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.txt_matchNum);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txt_teamNum);
             this.Controls.Add(this.label1);
@@ -1027,13 +1279,16 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
+            this.groupBox12.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
             this.gbx_searchStats.ResumeLayout(false);
-            this.gbx_searchStats.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Search)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nup_matchNum)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1043,7 +1298,6 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txt_teamNum;
-        private System.Windows.Forms.TextBox txt_matchNum;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txt_scoutName;
         private System.Windows.Forms.Label label3;
@@ -1115,14 +1369,37 @@
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txt_totalFreedomFries;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.CheckBox cbx_showStats;
+        private System.Windows.Forms.TextBox txt_totalRampart;
+        private System.Windows.Forms.TextBox txt_totalLowGoals;
+        private System.Windows.Forms.TextBox txt_totalDrawbridge;
         private System.Windows.Forms.Button btn_showTeamAggregate;
+        private System.Windows.Forms.TextBox txt_totalHighGoalsMissed;
+        private System.Windows.Forms.TextBox txt_totalHighGoals;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.TextBox txt_totalAutoCrossing;
+        private System.Windows.Forms.TextBox txt_totalChallenge;
+        private System.Windows.Forms.TextBox txt_totalSallyPort;
+        private System.Windows.Forms.TextBox txt_totalScales;
+        private System.Windows.Forms.TextBox txt_totalMoat;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.TextBox txt_totalPortcullis;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.GroupBox groupBox12;
+        private System.Windows.Forms.TextBox txt_totalLowBar;
+        private System.Windows.Forms.TextBox txt_totalRoughTerrain;
+        private System.Windows.Forms.TextBox txt_totalRockWall;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.NumericUpDown nup_matchNum;
     }
 }
 
