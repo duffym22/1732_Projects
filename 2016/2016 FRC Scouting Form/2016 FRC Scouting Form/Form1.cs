@@ -160,7 +160,7 @@ namespace _2016_FRC_Scouting_Form
             try
             {
                 _Team_Num = Int32.TryParse(txt_teamNum.Text, out result) ? result : -1;
-                _Match_Num = Int32.TryParse(nup_matchNum.Text, out result) ? result : -1;
+                _Match_Num = Int32.TryParse(txt_matchNum.Text, out result) ? result : -1;
                 _Scout_Name = txt_scoutName.Text;
                 _Team_Alliance = rdo_allianceRed.Checked ? "Red" : "Blue";
 
@@ -552,6 +552,8 @@ namespace _2016_FRC_Scouting_Form
 
             int teamResult;
 
+            initializeProperties();     //initialize properties so they are empty when we use them     
+
             if (Int32.TryParse(txt_teamNum.Text, out teamResult))
                 _Team_Num = teamResult;
             if (_Team_Num.Equals(0))
@@ -571,14 +573,15 @@ namespace _2016_FRC_Scouting_Form
             //get maximum search range
             Range last = _xlws.Cells.SpecialCells(XlCellType.xlCellTypeLastCell);
             int lastRow = last.Row;
-            Range data = _xlApp.get_Range("A1", String.Format("AA" + lastRow.ToString()));
+            Range data = _xlApp.get_Range("A1", String.Format("A" + lastRow.ToString()));
             //get rows that have the data we want
             ArrayList rows = searchData(data);
 
-            initializeProperties();     //initialize properties so they are empty when we use them     
             initializeRobotStats();     //set search/stats properties to 0
             gatherSearchData(rows);     //gather data from rows and store in array
             displaySearchData();        //display data on datagridview
+            t = new Thread(() => setStatusBar("Search completed successfully", 10000));
+            t.Start();
 
 
 
@@ -754,8 +757,12 @@ namespace _2016_FRC_Scouting_Form
 
         private void btn_showTeamAggregate_Click(object sender, EventArgs e)
         {
-            //iterate across all the data and compile it so each team is only listed once and shows all of their stats
-            /*stats include: 
+            /*get all team numbers from excel sheet
+             * store all team numbers in array
+             * iterate over array and remove duplicates           
+             * go through each team number and search the data and compile their stats
+             * iterate across all the data and compile it so each team is only listed once and shows all of their stats
+             * Stats include: 
              * Total High Goals(1), 
              * Total High Goals Missed(1), 
              * Total Low Goals(1), 

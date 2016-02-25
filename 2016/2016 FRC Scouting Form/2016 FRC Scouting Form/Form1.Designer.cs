@@ -131,7 +131,7 @@
             this.dgv_Search = new System.Windows.Forms.DataGridView();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.nup_matchNum = new System.Windows.Forms.NumericUpDown();
+            this.txt_matchNum = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox6.SuspendLayout();
@@ -153,7 +153,6 @@
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Search)).BeginInit();
             this.statusStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nup_matchNum)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -1228,12 +1227,12 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
-            // nup_matchNum
+            // txt_matchNum
             // 
-            this.nup_matchNum.Location = new System.Drawing.Point(230, 10);
-            this.nup_matchNum.Name = "nup_matchNum";
-            this.nup_matchNum.Size = new System.Drawing.Size(100, 20);
-            this.nup_matchNum.TabIndex = 1;
+            this.txt_matchNum.Location = new System.Drawing.Point(230, 10);
+            this.txt_matchNum.Name = "txt_matchNum";
+            this.txt_matchNum.Size = new System.Drawing.Size(100, 20);
+            this.txt_matchNum.TabIndex = 2;
             // 
             // Form1
             // 
@@ -1241,7 +1240,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.ClientSize = new System.Drawing.Size(694, 592);
-            this.Controls.Add(this.nup_matchNum);
+            this.Controls.Add(this.txt_matchNum);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.rdo_allianceBlue);
@@ -1288,7 +1287,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Search)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nup_matchNum)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1399,7 +1397,7 @@
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.Label label32;
-        private System.Windows.Forms.NumericUpDown nup_matchNum;
+        private System.Windows.Forms.TextBox txt_matchNum;
     }
 }
 
