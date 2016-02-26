@@ -757,20 +757,30 @@ namespace _2016_FRC_Scouting_Form
 
         private void btn_showTeamAggregate_Click(object sender, EventArgs e)
         {
-            /*get all team numbers from excel sheet
-             * store all team numbers in array
-             * iterate over array and remove duplicates           
-             * go through each team number and search the data and compile their stats
-             * iterate across all the data and compile it so each team is only listed once and shows all of their stats
-             * Stats include: 
-             * Total High Goals(1), 
-             * Total High Goals Missed(1), 
-             * Total Low Goals(1), 
-             * Total Time each Defense Crossed(9), 
-             * Total times CROSSED in AUTO(1), 
-             * Total times scaled(1), 
-             * Total times challenged(1)
-             */
+            int tempTeamNum;
+            //get all team numbers from excel sheet
+            Range last = _xlws.Cells.SpecialCells(XlCellType.xlCellTypeLastCell);
+            int lastRow = last.Row;
+            Range teams = _xlApp.get_Range("A1", String.Format("A" + lastRow.ToString()));
+            foreach (int item in teams)
+            {
+                Range range1 = _xlws.Rows[item]; //For all columns in row selected
+                tempTeamNum = (int)_xlws.Cells[item, DATA_ROWS.Team_Num].Value2;
+            }
+            
+            //store all team numbers in array
+            //iterate over array and remove duplicates           
+            //go through each team number and search the data and compile their stats
+            //iterate across all the data and compile it so each team is only listed once and shows all of their stats
+            //Stats include: 
+            //Total High Goals(1), 
+            //Total High Goals Missed(1), 
+            //Total Low Goals(1), 
+            //Total Time each Defense Crossed(9), 
+            //Total times CROSSED in AUTO(1), 
+            //Total times scaled(1), 
+            //Total times challenged(1)
+            
         }
 
         private void txt_teamNum_KeyPress(object sender, KeyPressEventArgs e)
