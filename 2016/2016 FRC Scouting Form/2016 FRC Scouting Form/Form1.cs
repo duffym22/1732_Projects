@@ -129,13 +129,20 @@ namespace _2016_FRC_Scouting_Form
                     {
                         t = new Thread(() => setStatusBar("Please specify a team number", 10000));
                         t.Start();
+                        txt_teamNum.Focus();
                     }
                     else if (_Match_Num.Equals(-1))
                     {
                         t = new Thread(() => setStatusBar("Please specify the match number", 10000));
                         t.Start();
+                        txt_matchNum.Focus();
                     }
-
+                }
+                else if (_Match_Num.ToString().Length >= 3)
+                {
+                    t = new Thread(() => setStatusBar("Match number too large, typo?", 10000));
+                    t.Start();
+                    txt_matchNum.Focus();
                 }
                 else
                 {
@@ -143,6 +150,7 @@ namespace _2016_FRC_Scouting_Form
                     clearALLData();
                     t = new Thread(() => setStatusBar("Form submitted successfully"));
                     t.Start();
+                    txt_teamNum.Focus();
                 }
             }
         }
@@ -291,12 +299,9 @@ namespace _2016_FRC_Scouting_Form
 
         private void clearExcelObjects()
         {
-            _xlwb.Close(0);
-            _xlApp.Quit();
             releaseExcelObject(_xlws);
             releaseExcelObject(_xlwb);
             releaseExcelObject(_xlApp);
-            GC.Collect();
         }
 
         private void releaseExcelObject(object obj)
@@ -477,6 +482,7 @@ namespace _2016_FRC_Scouting_Form
             else
             {
                 rdoBtn.Checked = false;
+                rdoBtn.TabStop = true;
             }
         }
 

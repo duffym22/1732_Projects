@@ -620,7 +620,7 @@
             this.txt_roughTerrain.Location = new System.Drawing.Point(170, 213);
             this.txt_roughTerrain.Name = "txt_roughTerrain";
             this.txt_roughTerrain.Size = new System.Drawing.Size(75, 20);
-            this.txt_roughTerrain.TabIndex = 15;
+            this.txt_roughTerrain.TabIndex = 8;
             // 
             // txt_rockWall
             // 
@@ -628,7 +628,7 @@
             this.txt_rockWall.Location = new System.Drawing.Point(31, 213);
             this.txt_rockWall.Name = "txt_rockWall";
             this.txt_rockWall.Size = new System.Drawing.Size(75, 20);
-            this.txt_rockWall.TabIndex = 13;
+            this.txt_rockWall.TabIndex = 3;
             // 
             // label14
             // 
@@ -656,7 +656,7 @@
             this.txt_sallyPort.Location = new System.Drawing.Point(170, 153);
             this.txt_sallyPort.Name = "txt_sallyPort";
             this.txt_sallyPort.Size = new System.Drawing.Size(75, 20);
-            this.txt_sallyPort.TabIndex = 11;
+            this.txt_sallyPort.TabIndex = 7;
             // 
             // txt_drawbridge
             // 
@@ -664,7 +664,7 @@
             this.txt_drawbridge.Location = new System.Drawing.Point(31, 153);
             this.txt_drawbridge.Name = "txt_drawbridge";
             this.txt_drawbridge.Size = new System.Drawing.Size(75, 20);
-            this.txt_drawbridge.TabIndex = 9;
+            this.txt_drawbridge.TabIndex = 2;
             // 
             // label10
             // 
@@ -692,7 +692,7 @@
             this.txt_moat.Location = new System.Drawing.Point(170, 93);
             this.txt_moat.Name = "txt_moat";
             this.txt_moat.Size = new System.Drawing.Size(75, 20);
-            this.txt_moat.TabIndex = 7;
+            this.txt_moat.TabIndex = 6;
             // 
             // txt_rampart
             // 
@@ -700,7 +700,7 @@
             this.txt_rampart.Location = new System.Drawing.Point(31, 93);
             this.txt_rampart.Name = "txt_rampart";
             this.txt_rampart.Size = new System.Drawing.Size(75, 20);
-            this.txt_rampart.TabIndex = 5;
+            this.txt_rampart.TabIndex = 1;
             // 
             // txt_fries
             // 
@@ -708,7 +708,7 @@
             this.txt_fries.Location = new System.Drawing.Point(170, 33);
             this.txt_fries.Name = "txt_fries";
             this.txt_fries.Size = new System.Drawing.Size(75, 20);
-            this.txt_fries.TabIndex = 3;
+            this.txt_fries.TabIndex = 5;
             // 
             // txt_portcullis
             // 
@@ -716,7 +716,7 @@
             this.txt_portcullis.Location = new System.Drawing.Point(31, 33);
             this.txt_portcullis.Name = "txt_portcullis";
             this.txt_portcullis.Size = new System.Drawing.Size(75, 20);
-            this.txt_portcullis.TabIndex = 1;
+            this.txt_portcullis.TabIndex = 0;
             // 
             // label11
             // 
@@ -765,7 +765,7 @@
             this.txt_lowBar.Location = new System.Drawing.Point(101, 273);
             this.txt_lowBar.Name = "txt_lowBar";
             this.txt_lowBar.Size = new System.Drawing.Size(75, 20);
-            this.txt_lowBar.TabIndex = 17;
+            this.txt_lowBar.TabIndex = 4;
             // 
             // label15
             // 
@@ -1173,7 +1173,7 @@
             // 
             // btn_showTeamAggregate
             // 
-            this.btn_showTeamAggregate.Location = new System.Drawing.Point(82, 187);
+            this.btn_showTeamAggregate.Location = new System.Drawing.Point(75, 187);
             this.btn_showTeamAggregate.Name = "btn_showTeamAggregate";
             this.btn_showTeamAggregate.Size = new System.Drawing.Size(190, 24);
             this.btn_showTeamAggregate.TabIndex = 8;
