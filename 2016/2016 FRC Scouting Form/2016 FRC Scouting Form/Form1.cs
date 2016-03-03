@@ -777,6 +777,14 @@ namespace _2016_FRC_Scouting_Form
              * Total times scaled(1), 
              * Total times challenged(1)
              */
+
+            //get all team numbers
+            //get maximum search range
+            Range last = _xlws.Cells.SpecialCells(XlCellType.xlCellTypeLastCell);
+            int lastRow = last.Row;
+            Range data = _xlApp.get_Range("A1", String.Format("A" + lastRow.ToString()));
+            currentFind = data.Find(_Team_Num, Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlPart, XlSearchOrder.xlByRows, XlSearchDirection.xlNext, false, Type.Missing, Type.Missing);
+
         }
 
         private void txt_teamNum_KeyPress(object sender, KeyPressEventArgs e)
