@@ -530,6 +530,11 @@ namespace _2016_FRC_Scouting_Form
         private void btn_clearSearch_Click(object sender, EventArgs e)
         {
             dgv_Search.Rows.Clear();
+            clearTeamStats();
+        }
+
+        private void clearTeamStats()
+        {
             txt_teamNum.Text = String.Empty;
             txt_totalAutoCrossing.Text = String.Empty;
             txt_totalHighGoals.Text = String.Empty;
@@ -550,15 +555,13 @@ namespace _2016_FRC_Scouting_Form
 
         private void btn_Search_Click(object sender, EventArgs e)
         {
+            int teamResult;
 
             Thread t;
             if (_xlApp == null)
                 initExcel();
             if (_xlwb == null || _xlws == null)
                 openDataFile();
-
-            int teamResult;
-
             initializeProperties();     //initialize properties so they are empty when we use them     
 
             if (Int32.TryParse(txt_teamNum.Text, out teamResult))
@@ -571,9 +574,9 @@ namespace _2016_FRC_Scouting_Form
             }
             else
             {
-                if (!_datagridInit)
-                    initializeDatagridView();
                 dgv_Search.Rows.Clear();
+                dgv_Search.Columns.Clear();
+                initializeSearchDatagridView();
             }
 
 
@@ -701,7 +704,7 @@ namespace _2016_FRC_Scouting_Form
             }
         }
 
-        private void initializeDatagridView()
+        private void initializeSearchDatagridView()
         {
             dgv_Search.Columns.Add("Team_Num", "Team_Num");
             dgv_Search.Columns.Add("Match_Num", "Match_Num");
@@ -793,9 +796,11 @@ namespace _2016_FRC_Scouting_Form
                 initExcel();
             if (_xlwb == null || _xlws == null)
                 openDataFile();
-            if (!_datagridInit)
-                initializeDataGridAggregateView();
+
             dgv_Search.Rows.Clear();
+            dgv_Search.Columns.Clear();
+            clearTeamStats();
+            initializeDataGridAggregateView();
 
             //get all team numbers from excel sheet
             Range last = _xlws.Cells.SpecialCells(XlCellType.xlCellTypeLastCell);
