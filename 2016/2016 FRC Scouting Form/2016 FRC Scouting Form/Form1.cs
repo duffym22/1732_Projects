@@ -11,6 +11,7 @@ using Microsoft.Office.Interop.Excel;
 using System.Diagnostics;
 using System.Threading;
 using System.Collections;
+using System.Linq;
 
 namespace _2016_FRC_Scouting_Form
 {
@@ -632,7 +633,7 @@ namespace _2016_FRC_Scouting_Form
             txt_totalLowBar.Text = _Total_LowBar_Attempts.ToString();
         }
 
-        private void gatherSearchData(ArrayList rows)
+        private void gatherSearchData(ArrayList rows, Boolean displayToGrid = true)
         {
             foreach (int item in rows)
             {
@@ -643,7 +644,7 @@ namespace _2016_FRC_Scouting_Form
                 _Team_Alliance = (String)_xlws.Cells[item, DATA_ROWS.Alliance].Value2;
                 _Auto_Defense_Reached = (Boolean)_xlws.Cells[item, DATA_ROWS.Auto_Defense_Reached].Value2;
                 _Auto_Defense_Crossed = (Boolean)_xlws.Cells[item, DATA_ROWS.Auto_Defense_Crossed].Value2;
-                if(_Auto_Defense_Crossed)
+                if (_Auto_Defense_Crossed)
                     _Total_Auto_Crossing++;
                 _Auto_Low_Goal_Scored = (Boolean)_xlws.Cells[item, DATA_ROWS.Auto_Low_Goal_Scored].Value2;
                 _Auto_High_Goal_Scored = (Boolean)_xlws.Cells[item, DATA_ROWS.Auto_High_Goal_Scored].Value2;
@@ -695,7 +696,8 @@ namespace _2016_FRC_Scouting_Form
                 if (_End_Scaled)
                     _Total_Scale_Attempts++;
                 _Notes = (String)_xlws.Cells[item, DATA_ROWS.Notes].Value2;
-                dgv_Search.Rows.Add(_Team_Num, _Match_Num, _Scout_Name, _Team_Alliance, _Auto_Defense_Reached, _Auto_Defense_Crossed, _Auto_Low_Goal_Scored, _Auto_High_Goal_Scored, _Auto_Starting_Position, _Auto_Ending_Position, _Tele_Portcullis, _Tele_Fries, _Tele_Rampart, _Tele_Moat, _Tele_Drawbridge, _Tele_SallyPort, _Tele_RockWall, _Tele_RoughTerrain, _Tele_LowBar, _Tele_Low_Goal_Scored, _Tele_High_Goal_Scored, _Tele_High_Goal_Missed, _Robot_Disabled, _Time_Disabled, _End_Challenged, _End_Scaled, _Notes);
+                if (displayToGrid)
+                    dgv_Search.Rows.Add(_Team_Num, _Match_Num, _Scout_Name, _Team_Alliance, _Auto_Defense_Reached, _Auto_Defense_Crossed, _Auto_Low_Goal_Scored, _Auto_High_Goal_Scored, _Auto_Starting_Position, _Auto_Ending_Position, _Tele_Portcullis, _Tele_Fries, _Tele_Rampart, _Tele_Moat, _Tele_Drawbridge, _Tele_SallyPort, _Tele_RockWall, _Tele_RoughTerrain, _Tele_LowBar, _Tele_Low_Goal_Scored, _Tele_High_Goal_Scored, _Tele_High_Goal_Missed, _Robot_Disabled, _Time_Disabled, _End_Challenged, _End_Scaled, _Notes);
             }
         }
 
@@ -731,6 +733,26 @@ namespace _2016_FRC_Scouting_Form
             _datagridInit = true;
         }
 
+        private void initializeDataGridAggregateView()
+        {
+            dgv_Search.Columns.Add("Total_High_Goals", "Total_High_Goals");
+            dgv_Search.Columns.Add("Total_High_Goals_Missed", "Total_High_Goals_Missed");
+            dgv_Search.Columns.Add("Total_Low_Goals", "Total_Low_Goals");
+            dgv_Search.Columns.Add("Total_Auto_Crossing", "Total_Auto_Crossing");
+            dgv_Search.Columns.Add("Total_Portcullis_Attempts", "Total_Portcullis_Attempts");
+            dgv_Search.Columns.Add("Total_Rampart_Attempts", "Total_Rampart_Attempts");
+            dgv_Search.Columns.Add("Total_Drawbridge_Attempts", "Total_Drawbridge_Attempts");
+            dgv_Search.Columns.Add("Total_Freedom_Fries_Attempts", "Total_Freedom_Fries_Attempts");
+            dgv_Search.Columns.Add("Total_Moat_Attempts", "Total_Moat_Attempts");
+            dgv_Search.Columns.Add("Total_SallyPort_Attempts", "Total_SallyPort_Attempts");
+            dgv_Search.Columns.Add("Total_RockWall_Attempts", "Total_RockWall_Attempts");
+            dgv_Search.Columns.Add("Total_RoughTerrain_Attempts", "Total_RoughTerrain_Attempts");
+            dgv_Search.Columns.Add("Total_LowBar_Attempts", "Total_LowBar_Attempts");
+            dgv_Search.Columns.Add("Total_Scale_Attempts", "Total_Scale_Attempts");
+            dgv_Search.Columns.Add("Total_Challenge_Attempts", "Total_Challenge_Attempts");
+            _datagridInit = true;
+        }
+
         private ArrayList searchData(Range excelData)
         {
             ArrayList searchArray = new ArrayList();
@@ -763,33 +785,70 @@ namespace _2016_FRC_Scouting_Form
 
         private void btn_showTeamAggregate_Click(object sender, EventArgs e)
         {
-            /*get all team numbers from excel sheet
-             * store all team numbers in array
-             * iterate over array and remove duplicates           
-             * go through each team number and search the data and compile their stats
-             * iterate across all the data and compile it so each team is only listed once and shows all of their stats
-             * Stats include: 
-             * Total High Goals(1), 
-             * Total High Goals Missed(1), 
-             * Total Low Goals(1), 
-             * Total Time each Defense Crossed(9), 
-             * Total times CROSSED in AUTO(1), 
-             * Total times scaled(1), 
-             * Total times challenged(1)
-             */
+            string foundTeams = "";
+            ArrayList rows;
 
             //get all team numbers
-            //get maximum search range
+            if (_xlApp == null)
+                initExcel();
+            if (_xlwb == null || _xlws == null)
+                openDataFile();
+            if (!_datagridInit)
+                initializeDataGridAggregateView();
+            dgv_Search.Rows.Clear();
+
+            //get all team numbers from excel sheet
             Range last = _xlws.Cells.SpecialCells(XlCellType.xlCellTypeLastCell);
             int lastRow = last.Row;
-            Range data = _xlApp.get_Range("A1", String.Format("A" + lastRow.ToString()));
-            currentFind = data.Find(_Team_Num, Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlPart, XlSearchOrder.xlByRows, XlSearchDirection.xlNext, false, Type.Missing, Type.Missing);
+            Range data = _xlApp.get_Range("A2", String.Format("A" + lastRow.ToString()));
+
+            int temp;
+            //store all unique team numbers in string
+            foreach (Range item in data.Cells)
+            {
+                temp = (int)item.Value;
+                if (!foundTeams.Contains(temp.ToString()))
+                    foundTeams += item.Value + ";";
+            }
+
+            //create <key,value> list with team number as key and value is array of columns (7) 
+            String[] teams = foundTeams.Split(';');
+            Array.Resize(ref teams, teams.Length - 1);
+
+            //var dict = teams.ToDictionary(item => new int[7]);
+            var dict = teams.ToDictionary(v => v, v => new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
+
+            /* integer array stored in value of dictionary is organized as such
+             * Total High Goals, Total High Goals Missed, Total Low Goals, 
+             * Total AUTO crossings, Total Crossings of...Portcullis, Rampart, 
+             * Drawbridge, Fries, Moat, Sally Port, Rock Wall, Rough Terrain, 
+             * Low Bar, Total scales, Total challenges
+            */
+            Dictionary<int, int[]> finalSet = new Dictionary<int, int[]>();
+            foreach (var pair in dict)
+            {
+                _Team_Num = Int32.Parse(pair.Key);
+                rows = searchData(data);
+                gatherSearchData(rows, false);      //gather data from rows and store in array
+                finalSet.Add(_Team_Num, new int[] {_Total_High_Goals, _Total_High_Goals_Missed, _Total_Low_Goals, _Total_Auto_Crossing, 
+                _Total_Portcullis_Attempts, _Total_Rampart_Attempts, _Total_Drawbridge_Attempts, _Total_Freedom_Fries_Attempts, 
+                _Total_Moat_Attempts, _Total_SallyPort_Attempts, _Total_RockWall_Attempts, _Total_RoughTerrain_Attempts, 
+                _Total_LowBar_Attempts, _Total_Scale_Attempts, _Total_Challenge_Attempts});
+                initializeRobotStats();             //set search/stats properties to 0
+            }
+
+            //display data to datagrid
+            foreach (var pair in finalSet)
+            {
+                int teamNum = pair.Key;
+                dgv_Search.Rows.Add(pair.Key, pair.Value[0], pair.Value[1], pair.Value[2], pair.Value[3], pair.Value[4], pair.Value[5], pair.Value[6], pair.Value[7], pair.Value[8], pair.Value[9], pair.Value[10], pair.Value[11], pair.Value[12], pair.Value[13], pair.Value[14]);
+            }
 
         }
 
         private void txt_teamNum_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if(e.KeyChar.Equals(Convert.ToChar(Keys.Enter)))
+            if (e.KeyChar.Equals(Convert.ToChar(Keys.Enter)))
             {
                 if (tabControl1.SelectedTab.Text.Equals("Search"))
                     btn_Search_Click(sender, e);
