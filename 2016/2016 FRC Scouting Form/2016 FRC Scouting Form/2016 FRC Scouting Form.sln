@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2016 FRC Scouting Form", "2016 FRC Scouting Form\2016 FRC Scouting Form.csproj", "{BB5DC2E6-1E3D-48D2-8393-B28BFFC1D306}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2016 FRC Scouting Form", "2016 FRC Scouting Form.csproj", "{BB5DC2E6-1E3D-48D2-8393-B28BFFC1D306}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

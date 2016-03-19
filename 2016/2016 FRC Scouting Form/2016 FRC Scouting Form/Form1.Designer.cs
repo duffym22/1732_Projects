@@ -44,8 +44,6 @@
             this.rdo_startSpy = new System.Windows.Forms.RadioButton();
             this.rdo_startNeutral = new System.Windows.Forms.RadioButton();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.chk_crossed = new System.Windows.Forms.CheckBox();
-            this.chk_reached = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.chk_lowScore = new System.Windows.Forms.CheckBox();
             this.chk_highScore = new System.Windows.Forms.CheckBox();
@@ -132,6 +130,8 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.txt_matchNum = new System.Windows.Forms.TextBox();
+            this.rdo_reached = new System.Windows.Forms.RadioButton();
+            this.rdo_crossed = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.groupBox6.SuspendLayout();
@@ -309,34 +309,14 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.chk_crossed);
-            this.groupBox5.Controls.Add(this.chk_reached);
+            this.groupBox5.Controls.Add(this.rdo_crossed);
+            this.groupBox5.Controls.Add(this.rdo_reached);
             this.groupBox5.Location = new System.Drawing.Point(10, 19);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(155, 90);
             this.groupBox5.TabIndex = 0;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Defenses";
-            // 
-            // chk_crossed
-            // 
-            this.chk_crossed.AutoSize = true;
-            this.chk_crossed.Location = new System.Drawing.Point(21, 56);
-            this.chk_crossed.Name = "chk_crossed";
-            this.chk_crossed.Size = new System.Drawing.Size(107, 17);
-            this.chk_crossed.TabIndex = 1;
-            this.chk_crossed.Text = "Crossed Defense";
-            this.chk_crossed.UseVisualStyleBackColor = true;
-            // 
-            // chk_reached
-            // 
-            this.chk_reached.AutoSize = true;
-            this.chk_reached.Location = new System.Drawing.Point(21, 25);
-            this.chk_reached.Name = "chk_reached";
-            this.chk_reached.Size = new System.Drawing.Size(113, 17);
-            this.chk_reached.TabIndex = 0;
-            this.chk_reached.Text = "Reached Defense";
-            this.chk_reached.UseVisualStyleBackColor = true;
             // 
             // groupBox4
             // 
@@ -1234,6 +1214,28 @@
             this.txt_matchNum.Size = new System.Drawing.Size(100, 20);
             this.txt_matchNum.TabIndex = 2;
             // 
+            // rdo_reached
+            // 
+            this.rdo_reached.AutoSize = true;
+            this.rdo_reached.Location = new System.Drawing.Point(21, 26);
+            this.rdo_reached.Name = "rdo_reached";
+            this.rdo_reached.Size = new System.Drawing.Size(112, 17);
+            this.rdo_reached.TabIndex = 2;
+            this.rdo_reached.TabStop = true;
+            this.rdo_reached.Text = "Reached Defense";
+            this.rdo_reached.UseVisualStyleBackColor = true;
+            // 
+            // rdo_crossed
+            // 
+            this.rdo_crossed.AutoSize = true;
+            this.rdo_crossed.Location = new System.Drawing.Point(21, 56);
+            this.rdo_crossed.Name = "rdo_crossed";
+            this.rdo_crossed.Size = new System.Drawing.Size(106, 17);
+            this.rdo_crossed.TabIndex = 3;
+            this.rdo_crossed.TabStop = true;
+            this.rdo_crossed.Text = "Crossed Defense";
+            this.rdo_crossed.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1251,6 +1253,8 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txt_teamNum);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "2016 FRC Scouting Form";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -1311,8 +1315,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.CheckBox chk_lowScore;
         private System.Windows.Forms.CheckBox chk_highScore;
-        private System.Windows.Forms.CheckBox chk_crossed;
-        private System.Windows.Forms.CheckBox chk_reached;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.GroupBox groupBox5;
@@ -1398,6 +1400,8 @@
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.Label label32;
         private System.Windows.Forms.TextBox txt_matchNum;
+        private System.Windows.Forms.RadioButton rdo_reached;
+        private System.Windows.Forms.RadioButton rdo_crossed;
     }
 }
 

@@ -69,10 +69,10 @@ namespace _2016_FRC_Scouting_Form
         internal int _Match_Num { get; set; }
         internal String _Scout_Name { get; set; }
         internal String _Team_Alliance { get; set; }
-        internal Boolean _Auto_Defense_Reached { get; set; }
-        internal Boolean _Auto_Defense_Crossed { get; set; }
-        internal Boolean _Auto_Low_Goal_Scored { get; set; }
-        internal Boolean _Auto_High_Goal_Scored { get; set; }
+        internal int _Auto_Defense_Reached { get; set; }
+        internal int _Auto_Defense_Crossed { get; set; }
+        internal int _Auto_Low_Goal_Scored { get; set; }
+        internal int _Auto_High_Goal_Scored { get; set; }
         internal String _Auto_Starting_Position { get; set; }
         internal String _Auto_Ending_Position { get; set; }
         internal int _Tele_Portcullis { get; set; }
@@ -87,10 +87,10 @@ namespace _2016_FRC_Scouting_Form
         internal int _Tele_Low_Goal_Scored { get; set; }
         internal int _Tele_High_Goal_Scored { get; set; }
         internal int _Tele_High_Goal_Missed { get; set; }
-        internal Boolean _Robot_Disabled { get; set; }
+        internal int  _Robot_Disabled { get; set; }
         internal string _Time_Disabled { get; set; }
-        internal bool _End_Challenged { get; set; }
-        internal bool _End_Scaled { get; set; }
+        internal int _End_Challenged { get; set; }
+        internal int _End_Scaled { get; set; }
         internal String _Notes { get; set; }
         #endregion
 
@@ -173,10 +173,10 @@ namespace _2016_FRC_Scouting_Form
                 _Scout_Name = txt_scoutName.Text;
                 _Team_Alliance = rdo_allianceRed.Checked ? "Red" : "Blue";
 
-                _Auto_Defense_Reached = chk_reached.Checked;
-                _Auto_Defense_Crossed = chk_crossed.Checked;
-                _Auto_Low_Goal_Scored = chk_lowScore.Checked;
-                _Auto_High_Goal_Scored = chk_highScore.Checked;
+                _Auto_Defense_Reached = rdo_reached.Checked ? 1 : 0;
+                _Auto_Defense_Crossed = rdo_crossed.Checked ? 1 : 0;
+                _Auto_Low_Goal_Scored = chk_lowScore.Checked ? 1 : 0;
+                _Auto_High_Goal_Scored = chk_highScore.Checked ? 1 : 0;
                 _Auto_Starting_Position = rdo_startNeutral.Checked ? "Neutral Zone" : "Courtyard";
                 _Auto_Ending_Position = rdo_endNeutral.Checked ? "Neutral Zone" : "Courtyard";
 
@@ -193,10 +193,10 @@ namespace _2016_FRC_Scouting_Form
                 _Tele_High_Goal_Scored = Int32.TryParse(txt_highGoalsScored.Text, out result) ? result : 0;
                 _Tele_High_Goal_Scored = Int32.TryParse(txt_highGoalsScored.Text, out result) ? result : 0;
 
-                _Robot_Disabled = chk_robotDisabled.Checked;
+                _Robot_Disabled = chk_robotDisabled.Checked ? 1 : 0;
                 _Time_Disabled = mtb_timeDisabled.Enabled ? mtb_timeDisabled.Text : "N/A";
-                _End_Challenged = rdo_Challenged.Checked;
-                _End_Scaled = rdo_Scaled.Checked;
+                _End_Challenged = rdo_Challenged.Checked ? 1 : 0;
+                _End_Scaled = rdo_Scaled.Checked ? 1 : 0;
                 _Notes = rtb_Notes.Text;
             }
             catch (Exception ex)
@@ -212,10 +212,10 @@ namespace _2016_FRC_Scouting_Form
             _Scout_Name = "";
             _Team_Alliance = "";
 
-            _Auto_Defense_Reached = false;
-            _Auto_Defense_Crossed = false;
-            _Auto_Low_Goal_Scored = false;
-            _Auto_High_Goal_Scored = false;
+            _Auto_Defense_Reached = 0;
+            _Auto_Defense_Crossed = 0;
+            _Auto_Low_Goal_Scored = 0;
+            _Auto_High_Goal_Scored = 0;
             _Auto_Starting_Position = "";
             _Auto_Ending_Position = "";
 
@@ -231,10 +231,10 @@ namespace _2016_FRC_Scouting_Form
             _Tele_Low_Goal_Scored = 0;
             _Tele_High_Goal_Scored = 0;
 
-            _Robot_Disabled = false;
+            _Robot_Disabled = 0;
             _Time_Disabled = "";
-            _End_Challenged = false;
-            _End_Scaled = false;
+            _End_Challenged = 0;
+            _End_Scaled = 0;
             _Notes = "";
         }
 
@@ -303,6 +303,9 @@ namespace _2016_FRC_Scouting_Form
             releaseExcelObject(_xlws);
             releaseExcelObject(_xlwb);
             releaseExcelObject(_xlApp);
+            _xlApp = null;
+            _xlwb = null;
+            _xlws = null;
         }
 
         private void releaseExcelObject(object obj)
@@ -518,8 +521,22 @@ namespace _2016_FRC_Scouting_Form
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            closeWorkbooks();
             if (_xlApp != null)
                 clearExcelObjects();
+        }
+
+        private void closeWorkbooks()
+        {
+            try
+            {
+                _xlwb.Close(true);
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+
         }
 
         private void chk_robotDisabled_CheckedChanged(object sender, EventArgs e)
@@ -562,7 +579,17 @@ namespace _2016_FRC_Scouting_Form
                 initExcel();
             if (_xlwb == null || _xlws == null)
                 openDataFile();
-            initializeProperties();     //initialize properties so they are empty when we use them     
+            else
+            {
+                resetExcel();
+            }
+
+            initializeProperties();     //initialize properties so they are empty when we use them    
+
+
+            //what happens if we have been entering data and then want to quickly search a team? - Exception thrown @ GetCells()
+            //need to save and close file then re-open so it applies lastCell to worksheet?
+
 
             if (Int32.TryParse(txt_teamNum.Text, out teamResult))
                 _Team_Num = teamResult;
@@ -595,6 +622,14 @@ namespace _2016_FRC_Scouting_Form
 
 
 
+        }
+
+        private void resetExcel()
+        {
+            closeWorkbooks();
+            clearExcelObjects();
+            initExcel();
+            openDataFile();
         }
 
         private void initializeRobotStats()
@@ -645,12 +680,12 @@ namespace _2016_FRC_Scouting_Form
                 _Match_Num = (int)_xlws.Cells[item, DATA_ROWS.Match_Num].Value2;
                 _Scout_Name = (String)_xlws.Cells[item, DATA_ROWS.Scout_Name].Value2;
                 _Team_Alliance = (String)_xlws.Cells[item, DATA_ROWS.Alliance].Value2;
-                _Auto_Defense_Reached = (Boolean)_xlws.Cells[item, DATA_ROWS.Auto_Defense_Reached].Value2;
-                _Auto_Defense_Crossed = (Boolean)_xlws.Cells[item, DATA_ROWS.Auto_Defense_Crossed].Value2;
-                if (_Auto_Defense_Crossed)
+                _Auto_Defense_Reached = (int)_xlws.Cells[item, DATA_ROWS.Auto_Defense_Reached].Value2;
+                _Auto_Defense_Crossed = (int)_xlws.Cells[item, DATA_ROWS.Auto_Defense_Crossed].Value2;
+                if (_Auto_Defense_Crossed != 0)
                     _Total_Auto_Crossing++;
-                _Auto_Low_Goal_Scored = (Boolean)_xlws.Cells[item, DATA_ROWS.Auto_Low_Goal_Scored].Value2;
-                _Auto_High_Goal_Scored = (Boolean)_xlws.Cells[item, DATA_ROWS.Auto_High_Goal_Scored].Value2;
+                _Auto_Low_Goal_Scored = (int)_xlws.Cells[item, DATA_ROWS.Auto_Low_Goal_Scored].Value2;
+                _Auto_High_Goal_Scored = (int)_xlws.Cells[item, DATA_ROWS.Auto_High_Goal_Scored].Value2;
                 _Auto_Starting_Position = (String)_xlws.Cells[item, DATA_ROWS.Auto_Starting_Position].Value2;
                 _Auto_Ending_Position = (String)_xlws.Cells[item, DATA_ROWS.Auto_Ending_Position].Value2;
 
@@ -690,13 +725,13 @@ namespace _2016_FRC_Scouting_Form
                 _Tele_High_Goal_Missed = (int)_xlws.Cells[item, DATA_ROWS.Tele_Missed_High_Goal].Value2;
                 _Total_High_Goals_Missed += _Tele_High_Goal_Missed;
 
-                _Robot_Disabled = (Boolean)_xlws.Cells[item, DATA_ROWS.Robot_Disabled].Value2;
+                _Robot_Disabled = (int)_xlws.Cells[item, DATA_ROWS.Robot_Disabled].Value2;
                 _Time_Disabled = (String)_xlws.Cells[item, DATA_ROWS.Time_Disabled].Text.ToString();
-                _End_Challenged = (Boolean)_xlws.Cells[item, DATA_ROWS.End_Challenged].Value2;
-                if (_End_Challenged)
+                _End_Challenged = (int)_xlws.Cells[item, DATA_ROWS.End_Challenged].Value2;
+                if (_End_Challenged != 0)
                     _Total_Challenge_Attempts++;
-                _End_Scaled = (Boolean)_xlws.Cells[item, DATA_ROWS.End_Scaled].Value2;
-                if (_End_Scaled)
+                _End_Scaled = (int)_xlws.Cells[item, DATA_ROWS.End_Scaled].Value2;
+                if (_End_Scaled != 0)
                     _Total_Scale_Attempts++;
                 _Notes = (String)_xlws.Cells[item, DATA_ROWS.Notes].Value2;
                 if (displayToGrid)
@@ -738,6 +773,7 @@ namespace _2016_FRC_Scouting_Form
 
         private void initializeDataGridAggregateView()
         {
+            dgv_Search.Columns.Add("Team_Num", "Team_Num");
             dgv_Search.Columns.Add("Total_High_Goals", "Total_High_Goals");
             dgv_Search.Columns.Add("Total_High_Goals_Missed", "Total_High_Goals_Missed");
             dgv_Search.Columns.Add("Total_Low_Goals", "Total_Low_Goals");
@@ -796,6 +832,8 @@ namespace _2016_FRC_Scouting_Form
                 initExcel();
             if (_xlwb == null || _xlws == null)
                 openDataFile();
+            else
+                resetExcel();
 
             dgv_Search.Rows.Clear();
             dgv_Search.Columns.Clear();
@@ -821,7 +859,7 @@ namespace _2016_FRC_Scouting_Form
             Array.Resize(ref teams, teams.Length - 1);
 
             //var dict = teams.ToDictionary(item => new int[7]);
-            var dict = teams.ToDictionary(v => v, v => new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
+            var dict = teams.ToDictionary(v => v, v => new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
 
             /* integer array stored in value of dictionary is organized as such
              * Total High Goals, Total High Goals Missed, Total Low Goals, 
