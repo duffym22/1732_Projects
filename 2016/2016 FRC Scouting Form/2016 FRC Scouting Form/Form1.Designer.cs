@@ -58,7 +58,7 @@
             this.rdo_Challenged = new System.Windows.Forms.RadioButton();
             this.btn_submitData = new System.Windows.Forms.Button();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.txt_missedHighGoal = new System.Windows.Forms.TextBox();
+            this.txt_highGoalsMissed = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
             this.txt_highGoalsScored = new System.Windows.Forms.TextBox();
             this.txt_lowGoalsScored = new System.Windows.Forms.TextBox();
@@ -462,7 +462,7 @@
             // 
             // groupBox9
             // 
-            this.groupBox9.Controls.Add(this.txt_missedHighGoal);
+            this.groupBox9.Controls.Add(this.txt_highGoalsMissed);
             this.groupBox9.Controls.Add(this.label16);
             this.groupBox9.Controls.Add(this.txt_highGoalsScored);
             this.groupBox9.Controls.Add(this.txt_lowGoalsScored);
@@ -477,11 +477,11 @@
             // 
             // txt_missedHighGoal
             // 
-            this.txt_missedHighGoal.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.txt_missedHighGoal.Location = new System.Drawing.Point(97, 73);
-            this.txt_missedHighGoal.Name = "txt_missedHighGoal";
-            this.txt_missedHighGoal.Size = new System.Drawing.Size(48, 20);
-            this.txt_missedHighGoal.TabIndex = 5;
+            this.txt_highGoalsMissed.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.txt_highGoalsMissed.Location = new System.Drawing.Point(97, 73);
+            this.txt_highGoalsMissed.Name = "txt_missedHighGoal";
+            this.txt_highGoalsMissed.Size = new System.Drawing.Size(48, 20);
+            this.txt_highGoalsMissed.TabIndex = 5;
             // 
             // label16
             // 
@@ -1357,7 +1357,7 @@
         private System.Windows.Forms.TextBox txt_lowGoalsScored;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
-        private System.Windows.Forms.TextBox txt_missedHighGoal;
+        private System.Windows.Forms.TextBox txt_highGoalsMissed;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.GroupBox groupBox11;
         private System.Windows.Forms.MaskedTextBox mtb_timeDisabled;

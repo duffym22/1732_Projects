@@ -191,7 +191,7 @@ namespace _2016_FRC_Scouting_Form
                 _Tele_LowBar = Int32.TryParse(txt_lowBar.Text, out result) ? result : 0;
                 _Tele_Low_Goal_Scored = Int32.TryParse(txt_lowGoalsScored.Text, out result) ? result : 0;
                 _Tele_High_Goal_Scored = Int32.TryParse(txt_highGoalsScored.Text, out result) ? result : 0;
-                _Tele_High_Goal_Scored = Int32.TryParse(txt_highGoalsScored.Text, out result) ? result : 0;
+                _Tele_High_Goal_Missed = Int32.TryParse(txt_highGoalsMissed.Text, out result) ? result : 0;
 
                 _Robot_Disabled = chk_robotDisabled.Checked ? 1 : 0;
                 _Time_Disabled = mtb_timeDisabled.Enabled ? mtb_timeDisabled.Text : "N/A";
