@@ -1,17 +1,11 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using Microsoft.Office.Interop.Excel;
-using System.Diagnostics;
-using System.Threading;
 using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace _2016_FRC_Scouting_Form
 {
@@ -52,9 +46,9 @@ namespace _2016_FRC_Scouting_Form
         private const String _DATA_DIRECTORY = "C:\\2016_FRC_Scouting\\";
         private const String _EXCEL_FILENAME = "2016_FRC_Scouting_Data.xlsx";
         private const String dataSheet = "Scouting_Data";
-        private Microsoft.Office.Interop.Excel.Application _xlApp;
-        private Workbook _xlwb;
-        private Worksheet _xlws;
+        //private Microsoft.Office.Core.Interop.Excel.Application _xlApp;
+        //private Workbook _xlwb;
+        //private Worksheet _xlws;
         private object misValue = System.Reflection.Missing.Value;
         private Stopwatch timer = new Stopwatch();
         private Boolean _datagridInit = false;
@@ -189,8 +183,8 @@ namespace _2016_FRC_Scouting_Form
                 _Tele_RockWall = Int32.TryParse(txt_rockWall.Text, out result) ? result : 0;
                 _Tele_RoughTerrain = Int32.TryParse(txt_roughTerrain.Text, out result) ? result : 0;
                 _Tele_LowBar = Int32.TryParse(txt_lowBar.Text, out result) ? result : 0;
-                _Tele_Low_Goal_Scored = Int32.TryParse(txt_lowGoalsScored.Text, out result) ? result : 0;
-                _Tele_High_Goal_Scored = Int32.TryParse(txt_highGoalsScored.Text, out result) ? result : 0;
+                _Tele_Low_Goal_Scored = Int32.TryParse(txt_teleLowFuelScored.Text, out result) ? result : 0;
+                _Tele_High_Goal_Scored = Int32.TryParse(txt_teleHighFuelScored.Text, out result) ? result : 0;
                 _Tele_High_Goal_Missed = Int32.TryParse(txt_highGoalsMissed.Text, out result) ? result : 0;
 
                 _Robot_Disabled = chk_robotDisabled.Checked ? 1 : 0;
