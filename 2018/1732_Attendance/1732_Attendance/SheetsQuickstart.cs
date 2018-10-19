@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace _1732_Attendance
 {
-    class GSheetsQuery
+    class SheetsQuickstart
     {
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/sheets.googleapis.com-dotnet-quickstart.json
