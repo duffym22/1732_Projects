@@ -10,12 +10,13 @@
         <Color x:Key="Accent_2">#FF8BC81E</Color>
     </Window.Resources>
     <Grid Background="White">
-        <Button x:Name="btn_Login" Content="Login" HorizontalAlignment="Left" Margin="434,291,0,0" VerticalAlignment="Top" Width="75" Click="btn_Login_Click"/>
-        <TextBox x:Name="txt_ID_Scan" HorizontalAlignment="Center" Height="23" Margin="195,260,210,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="112" Cursor="AppStarting"/>
-        <TextBlock x:Name="txt_scanID" Margin="178,241,196,0" TextWrapping="Wrap" Text="Scan your student ID" FontFamily="Avenir" Width="145" TextAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" KeyDown="txt_scanID_KeyDown"/>
+        <Button x:Name="btn_Login" Content="Login" HorizontalAlignment="Left" Margin="469,296,0,0" VerticalAlignment="Top" Width="40" Click="btn_Login_Click" Height="15" FontSize="8"/>
+        <TextBox x:Name="txt_ID_Scan" HorizontalAlignment="Center" Height="23" Margin="195,260,210,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="112" Cursor="AppStarting" KeyDown="txt_ID_Scan_KeyDown"/>
+        <TextBlock x:Name="txt_scanID" Margin="178,241,196,66" TextWrapping="Wrap" Text="Scan your student ID" FontFamily="Avenir" Width="145" TextAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
         <Image x:Name="image" Height="146" Margin="124,10,0,0" VerticalAlignment="Top" Source="1080pRammmmo.png" Cursor="None" HorizontalAlignment="Left" Width="276"/>
         <Image x:Name="image2" Margin="114,161,117,0" VerticalAlignment="Top" Source="words_BLUE.png" Height="25" HorizontalAlignment="Center"/>
         <Image x:Name="image1" Margin="92,196,83,0" VerticalAlignment="Top" Source="Logo Vector.png" Height="40"/>
+        <Button x:Name="button" Content="Button" HorizontalAlignment="Left" Margin="27,29,0,0" VerticalAlignment="Top" Width="75"/>
 
     </Grid>
 </Window>
