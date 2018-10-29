@@ -16,7 +16,7 @@ namespace Test_GoogleSheetsAPI
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/sheets.googleapis.com-dotnet-quickstart.json
         static string[] Scopes = { SheetsService.Scope.Spreadsheets };
-        static string ApplicationName = "TimeSheetUpdation By Cybria Technology";
+        static string ApplicationName = "1732 Attendance Check-In Station";
         static string SheetId = "13U-gYgtXlh8Q0Qgaim6nzrFlkOAP4dJP2hvOTaO7nTg";
 
         static void Main(string[] args)
@@ -24,7 +24,7 @@ namespace Test_GoogleSheetsAPI
             var service = AuthorizeGoogleApp();
             string nextRange = GetRange(service);
             IList<IList<object>> appRows = GenerateData();
-            UpdatGoogleSheetinBatch(appRows, SheetId, nextRange, service);
+            UpdateGoogleSheetinBatch(appRows, SheetId, nextRange, service);
         }
 
         private static IList<IList<object>> CreateRecord()
@@ -108,7 +108,7 @@ namespace Test_GoogleSheetsAPI
             return objNewRecords;
         }
 
-        private static void UpdatGoogleSheetinBatch(IList<IList<Object>> values, string spreadsheetId, string newRange, SheetsService service)
+        private static void UpdateGoogleSheetinBatch(IList<IList<Object>> values, string spreadsheetId, string newRange, SheetsService service)
         {
             SpreadsheetsResource.ValuesResource.AppendRequest request =
                service.Spreadsheets.Values.Append(new ValueRange() { Values = values }, spreadsheetId, newRange);
