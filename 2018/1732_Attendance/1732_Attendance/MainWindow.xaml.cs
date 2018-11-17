@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿using log4net;
+using log4net.Config;
+using System.Drawing;
+using System.Reflection;
+using System.Windows;
 
 namespace _1732_Attendance
 {
@@ -7,12 +11,14 @@ namespace _1732_Attendance
     /// </summary>
     public partial class MainWindow : Window
     {
-
         internal string ID_Scan;
+        private GSheetsAPI gAPI;
+        private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public MainWindow()
         {
             InitializeComponent();
+            XmlConfigurator.Configure();
         }
 
         private void btn_Login_Click(object sender, RoutedEventArgs e)
@@ -37,14 +43,41 @@ namespace _1732_Attendance
                 ID_Scan = txt_ID_Scan.Text;
             }
 
-            /// 1. Connect to Google Sheet (team account)
-            /// 2. Lookup student ID against database (worksheet)
-            /// 3. Update student ID timestamp
-            /// 
+        }
 
-            /// ID | Name (LN, FN) | Timestamp | Status
-            /// ex: 60007 | Duffy, Matthew | 2018-10-18 19:27:39 | IN
-            /// ex: 60007 | Duffy, Matthew | 2018-10-18 20:27:39 | OUT
+        private void button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            gAPI = new GSheetsAPI();
+            if(!gAPI.AuthorizeGoogleApp())
+            {
+                Log("Unable to connect to Google Sheets");
+                Log("Verify internet connectivity");
+                Log("Verify API key still valid");
+                Log(gAPI.LastException);
+                //Disable UI
+                //Enable and show "reconnect button" to try to reconnect to sheets
+            }
+        }
+
+        internal void Log(string text)
+        {
+            _log.Info(text);
+        }
+
+        internal void DisplayText(string text)
+        {
+            rtb_Output.AppendText(text);
+        }
+
+        internal void DisplayText(string text, Color color)
+        {
+            rtb_Output.AppendText(text);
+
         }
     }
 }
