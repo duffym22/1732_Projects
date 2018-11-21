@@ -45,11 +45,6 @@ namespace _1732_Attendance
 
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             gAPI = new GSheetsAPI();
@@ -61,6 +56,10 @@ namespace _1732_Attendance
                 Log(gAPI.LastException);
                 //Disable UI
                 //Enable and show "reconnect button" to try to reconnect to sheets
+            }
+            else
+            {
+                gAPI.Refresh_Local_Data();
             }
         }
 

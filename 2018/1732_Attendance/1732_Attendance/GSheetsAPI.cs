@@ -75,11 +75,11 @@ namespace _1732_Attendance
         
         #region *** FEATURE FUNCTIONALITY METHODS ***
 
-        public void Add_User()
+        public void Add_User(int ID)
         {
             try
             {
-
+                InsertRows(Create_ID_Status_Row(ID, ATTENDANCE_STATUS.OUT), SheetId, _ATTENDANCE_STATUS_RANGE, service);
             }
             catch (Exception ex)
             {
@@ -115,7 +115,8 @@ namespace _1732_Attendance
         {
             try
             {
-
+                Get_Current_ID_List();
+                Get_Current_ID_Status();
             }
             catch (Exception ex)
             {
@@ -138,7 +139,7 @@ namespace _1732_Attendance
         #endregion
 
         #region *** GET METHODS ***
-        protected void Get_Current_ID_List()
+        private void Get_Current_ID_List()
         {
             try
             {
