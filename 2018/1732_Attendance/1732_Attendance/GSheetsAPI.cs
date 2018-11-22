@@ -5,7 +5,6 @@ using Google.Apis.Sheets.v4.Data;
 using Google.Apis.Util.Store;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -27,9 +26,11 @@ namespace _1732_Attendance
     class GSheetsAPI
     {
         #region *** FIELDS ***
-        const string _IDS_RANGE = "IDS!A:B";
-        const string _ATTENDANCE_STATUS_RANGE = "ATTENDANCE_STATUS!A:B";
+        const string _OUT_STATUS = "OUT";
+        const string _IN_STATUS = "IN";
+        const string _ATTENDANCE_STATUS_RANGE = "ATTENDANCE_STATUS!A:C";
         const string _ATTENDANCE_STAT_ID_RANGE = "ATTENDANCE_STATUS!A:A";
+        const string _ATTENDANCE_STAT_NAME_RANGE = "ATTENDANCE_STATUS!B:B";
         const string _LOG_RANGE = "LOG!A:C";
 
 
@@ -42,23 +43,12 @@ namespace _1732_Attendance
         string[] Scopes = { SheetsService.Scope.Spreadsheets };
         string ApplicationName = "1732 Attendance Check-In Station";
         string SheetId = "13U-gYgtXlh8Q0Qgaim6nzrFlkOAP4dJP2hvOTaO7nTg";
-        Dictionary<int, string> dict_ID_Name;
-        Dictionary<int, ATTENDANCE_STATUS> dict_ID_Status;
+        Dictionary<int, List<string>> dict_Attendance;
 
         #endregion
 
         #region *** PROPERTIES ***
         public string LastException { get { return _exMsg.ToString(); } }
-        #endregion
-
-        #region *** ENUMS/STRUCTURES ***
-        enum ATTENDANCE_STATUS
-        {
-            IN,
-            OUT,
-            UNKNOWN
-        }
-
         #endregion
 
         #region *** CONSTRUCTOR ***
@@ -67,19 +57,18 @@ namespace _1732_Attendance
         {
             service = new SheetsService();
             credential = null;
-            dict_ID_Name = new Dictionary<int, string>();
-            dict_ID_Status = new Dictionary<int, ATTENDANCE_STATUS>();
+            dict_Attendance = new Dictionary<int, List<string>>();
         }
 
         #endregion
-        
+
         #region *** FEATURE FUNCTIONALITY METHODS ***
 
-        public void Add_User(int ID)
+        public void Add_User(int ID, string name)
         {
             try
             {
-                InsertRows(Create_ID_Status_Row(ID, ATTENDANCE_STATUS.OUT), SheetId, _ATTENDANCE_STATUS_RANGE, service);
+                InsertRows(Create_Attendance_Status_Row(ID, name, _OUT_STATUS), SheetId, _ATTENDANCE_STATUS_RANGE, service);
             }
             catch (Exception ex)
             {
@@ -115,8 +104,7 @@ namespace _1732_Attendance
         {
             try
             {
-                Get_Current_ID_List();
-                Get_Current_ID_Status();
+                Read_Attendance_Status();
             }
             catch (Exception ex)
             {
@@ -124,11 +112,19 @@ namespace _1732_Attendance
             }
         }
 
-        public void Update_User_Status()
+        public void Update_User_Status(int ID)
         {
             try
             {
+                string rowToUpdate = Get_ID_Status_Row(ID);
+                UpdateRows(Create_Attendance_Status_Row(ID, dict_Attendance[ID][0],
+                    dict_Attendance[ID][1].Equals(_IN_STATUS)
+                    ? _OUT_STATUS
+                    : _IN_STATUS)
+                    , SheetId, rowToUpdate, service);
 
+                Read_Attendance_Status();
+                InsertRows(Create_Log_Row(ID, dict_Attendance[ID][1]), SheetId, Get_Next_Log_Row(), service);
             }
             catch (Exception ex)
             {
@@ -138,25 +134,8 @@ namespace _1732_Attendance
 
         #endregion
 
-        #region *** GET METHODS ***
-        private void Get_Current_ID_List()
-        {
-            try
-            {
-                GetRequest getRequest = service.Spreadsheets.Values.Get(SheetId, _IDS_RANGE);
-
-                ValueRange getResponse = getRequest.Execute();
-                IList<IList<Object>> idList = getResponse.Values;
-
-                Parse_IDS_Name(idList);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-        }
-
-        private void Get_Current_ID_Status()
+        #region *** GET/READ METHODS ***
+        private void Read_Attendance_Status()
         {
             try
             {
@@ -165,7 +144,7 @@ namespace _1732_Attendance
                 ValueRange getResponse = getRequest.Execute();
                 IList<IList<Object>> idList = getResponse.Values;
 
-                Parse_IDS_Status(idList);
+                Parse_Attendance_Status_Rows(idList);
             }
             catch (Exception ex)
             {
@@ -206,7 +185,7 @@ namespace _1732_Attendance
             return returnVal;
         }
 
-        private string Get_NextAttendanceRow()
+        private string Get_Next_Log_Row()
         {
             string returnVal = string.Empty;
             try
@@ -232,11 +211,11 @@ namespace _1732_Attendance
             string read;
             try
             {
-                if (dict_ID_Name.ContainsKey(checkID) && dict_ID_Status.ContainsKey(checkID))
+                if (dict_Attendance.ContainsKey(checkID))
                 {
                     Console.WriteLine("Exists!");
-                    Console.WriteLine("Name: " + dict_ID_Name[checkID]);
-                    Console.WriteLine("Status: " + dict_ID_Status[checkID]);
+                    Console.WriteLine("Name: " + dict_Attendance[checkID][0]);
+                    Console.WriteLine("Status: " + dict_Attendance[checkID][1]);
                     do
                     {
                         Console.WriteLine("Would you like to change the status?");
@@ -247,49 +226,14 @@ namespace _1732_Attendance
                     if (read.Equals("Y"))
                     {
                         string rowToUpdate = Get_ID_Status_Row(checkID);
-                        UpdateRows(Create_ID_Status_Row(checkID,
-                            dict_ID_Status[checkID].Equals(ATTENDANCE_STATUS.IN)
-                            ? ATTENDANCE_STATUS.OUT
-                            : ATTENDANCE_STATUS.IN)
+                        UpdateRows(
+                            Create_Attendance_Status_Row(checkID, dict_Attendance[checkID][0],
+                            dict_Attendance[checkID][1].Equals(_IN_STATUS)
+                            ? _OUT_STATUS
+                            : _IN_STATUS)
                             , SheetId, rowToUpdate, service);
-                        Get_Current_ID_Status();
-                        InsertRows(Create_ID_Timestamp_Row(checkID, dict_ID_Status[checkID]), SheetId, Get_NextAttendanceRow(), service);
-                    }
-                }
-                else if (dict_ID_Name.ContainsKey(checkID))
-                {
-                    Console.WriteLine("Only exists in ID|Name list!");
-                    Console.WriteLine("Name: " + dict_ID_Name[checkID]);
-
-                    do
-                    {
-                        Console.WriteLine("Add to ID|STATUS List?");
-                        read = Console.ReadLine().Trim().ToUpper();
-                    }
-                    while (!read.Equals("Y") && !read.Equals("N"));
-
-                    if (read.Equals("Y"))
-                    {
-                        InsertRows(Create_ID_Status_Row(checkID, ATTENDANCE_STATUS.OUT), SheetId, _ATTENDANCE_STATUS_RANGE, service);
-                    }
-                }
-                else if (dict_ID_Status.ContainsKey(checkID))
-                {
-                    Console.WriteLine("Only exists in ID|STATUS list!");
-                    Console.WriteLine("Status: " + dict_ID_Status[checkID]);
-                    do
-                    {
-                        Console.WriteLine("Add to ID|Name List?");
-                        read = Console.ReadLine().Trim().ToUpper();
-                    }
-                    while (!read.Equals("Y") && !read.Equals("N"));
-
-                    if (read.Equals("Y"))
-                    {
-                        Console.WriteLine("Please enter a name:");
-                        read = Console.ReadLine();
-                        InsertRows(Create_ID_Name_Row(checkID, read), SheetId, _IDS_RANGE, service);
-
+                        Read_Attendance_Status();
+                        InsertRows(Create_Log_Row(checkID, dict_Attendance[checkID][1]), SheetId, Get_Next_Log_Row(), service);
                     }
                 }
                 else
@@ -303,61 +247,31 @@ namespace _1732_Attendance
             }
         }
 
-        private void Parse_IDS_Name(IList<IList<object>> idNameList)
+        private void Parse_Attendance_Status_Rows(IList<IList<object>> idStatusList)
         {
-            string name = string.Empty;
-            int numId = 0;
-            try
-            {
-                //Start at 1 because first row is the header (ID | Name)
-                for (int i = 1; i < idNameList.Count; i++)
-                {
-                    name = string.Empty;
-                    numId = 0;
-                    IList<object> row = idNameList[i];
-                    if (row.Count.Equals(2))
-                    {
+            string 
+                name, 
+                stat;
 
-                        int.TryParse((string)row[0], out numId);
-                        name = (string)row[1];
-                        dict_ID_Name.Add(numId, name);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Only ID found for row " + i + 1);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-        }
-
-        private void Parse_IDS_Status(IList<IList<object>> idStatusList)
-        {
-            ATTENDANCE_STATUS stat;
             try
             {
                 //Start at 1 because first row is the header (ID | Name)
                 for (int i = 1; i < idStatusList.Count; i++)
                 {
-                    stat = ATTENDANCE_STATUS.UNKNOWN;
                     //Get the current row (ID | Current_Status)
                     IList<object> row = idStatusList[i];
-                    int numId;
-                    int.TryParse((string)row[0], out numId);
-                    try { stat = (ATTENDANCE_STATUS)Enum.Parse(typeof(ATTENDANCE_STATUS), row[1].ToString(), true); }
-                    catch { }
+                    int.TryParse((string)row[0], out int numId);
+                    name = row[1].ToString();
+                    stat = row[2].ToString();
 
                     //If the dictionary has already been populated, then just update the value
-                    if (dict_ID_Status.ContainsKey(numId))
+                    if (dict_Attendance.ContainsKey(numId))
                     {
-                        dict_ID_Status[numId] = stat;
+                        dict_Attendance[numId][1] = stat;
                     }
                     else
                     {
-                        dict_ID_Status.Add(numId, stat);
+                        dict_Attendance.Add(numId, new List<string> { name, stat });
                     }
                 }
             }
@@ -371,33 +285,18 @@ namespace _1732_Attendance
 
         #region *** RECORD CREATION METHODS ***
 
-        private IList<IList<object>> Create_ID_Name_Row(int ID, string name)
-        {
-            IList<IList<object>> newRow = new List<IList<object>>();
-            newRow.Add(new List<object>() { ID, name });
-            return newRow;
-        }
-
-        private IList<IList<object>> Create_ID_Timestamp_Row(int ID, ATTENDANCE_STATUS status)
+        private IList<IList<object>> Create_Log_Row(int ID, string status)
         {
             IList<IList<object>> newRow = new List<IList<object>>();
             newRow.Add(new List<object>() { ID, DateTime.Now.ToString(), status.ToString() });
             return newRow;
         }
 
-        private IList<IList<object>> Create_ID_Status_Row(int ID, ATTENDANCE_STATUS status)
+        private IList<IList<object>> Create_Attendance_Status_Row(int ID, string name, string status)
         {
             IList<IList<object>> newRow = new List<IList<object>>();
-            newRow.Add(new List<object>() { ID, status.ToString() });
+            newRow.Add(new List<object>() { ID, name, status.ToString() });
             return newRow;
-        }
-
-        private IList<IList<object>> CreateRecord()
-        {
-            IList<IList<object>> appRows = new List<IList<object>>();
-            IList<object> vals = new List<object>() { "2222", DateTime.UtcNow.ToString(), "IN" };
-            appRows.Add(vals);
-            return appRows;
         }
 
         #endregion
@@ -452,6 +351,32 @@ namespace _1732_Attendance
             var response = request.Execute();
         }
 
+        private void DeleteRows(int rowToDelete, string spreadsheetId, string newRange, SheetsService service)
+        {
+            //DELETE THIS ROW
+            Request RequestBody = new Request()
+            {
+                DeleteDimension = new DeleteDimensionRequest()
+                {
+                    Range = new DimensionRange()
+                    {
+                        SheetId = 0,
+                        Dimension = "ROWS",
+                        StartIndex = rowToDelete,
+                        EndIndex = rowToDelete + 1
+                    }
+                }
+            };
+
+            List<Request> RequestContainer = new List<Request> { RequestBody };
+
+            BatchUpdateSpreadsheetRequest DeleteRequest = new BatchUpdateSpreadsheetRequest();
+            DeleteRequest.Requests = RequestContainer;
+
+            SpreadsheetsResource.BatchUpdateRequest Deletion = new SpreadsheetsResource.BatchUpdateRequest(service, DeleteRequest, spreadsheetId);
+            Deletion.Execute();
+        }
+
         #endregion
 
         #region *** EXCEPTION/GUI HANDLING ***
@@ -463,10 +388,6 @@ namespace _1732_Attendance
             _exMsg.AppendLine(string.IsNullOrEmpty(ex.Message) ? "" : ex.Message);
             _exMsg.AppendLine(string.IsNullOrEmpty(ex.Source) ? "" : ex.Source);
             _exMsg.AppendLine(string.IsNullOrEmpty(ex.StackTrace.ToString()) ? "" : ex.StackTrace.ToString());
-
-            Console.WriteLine("");
-            Console.WriteLine(_exMsg);
-            Console.WriteLine("");
         }
         #endregion
     }

@@ -1,42 +1,39 @@
 ﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using System.Text;
 using System.Threading;
 using static Google.Apis.Sheets.v4.SpreadsheetsResource.ValuesResource;
-using System.Text;
-using System.Reflection;
-using System.Diagnostics;
 
 namespace Test_GoogleSheetsAPI
 {
     class Sheets_Append
     {
-        const string _IDS_RANGE = "IDS!A:B";
-        const string _ATTENDANCE_STATUS_RANGE = "ATTENDANCE_STATUS!A:B";
+        const string _ADDED_STATUS = "ADDED";
+        const string _DELETED_STATUS = "DELETED";
+        const string _OUT_STATUS = "OUT";
+        const string _IN_STATUS = "IN";
+        const string _ATTENDANCE_STATUS_RANGE = "ATTENDANCE_STATUS!A:C";
         const string _ATTENDANCE_STAT_ID_RANGE = "ATTENDANCE_STATUS!A:A";
+        const string _ATTENDANCE_STAT_NAME_RANGE = "ATTENDANCE_STATUS!B:B";
         const string _LOG_RANGE = "LOG!A:C";
-
-        enum ATTENDANCE_STATUS
-        {
-            IN,
-            OUT,
-            UNKNOWN
-        }
-
 
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/sheets.googleapis.com-dotnet-quickstart.json
         static SheetsService service;
+        static UserCredential credential;
+        static StringBuilder _exMsg;
         static string[] Scopes = { SheetsService.Scope.Spreadsheets };
         static string ApplicationName = "1732 Attendance Check-In Station";
         static string SheetId = "13U-gYgtXlh8Q0Qgaim6nzrFlkOAP4dJP2hvOTaO7nTg";
-        static Dictionary<int, string> dict_ID_Name = new Dictionary<int, string>();
-        static Dictionary<int, ATTENDANCE_STATUS> dict_ID_Status = new Dictionary<int, ATTENDANCE_STATUS>();
+        static Dictionary<int, List<string>> dict_Attendance = new Dictionary<int, List<string>>();
 
         /// ***** PSC: Normal Use *****
         /// 1. Scan ID over sensor
@@ -62,14 +59,9 @@ namespace Test_GoogleSheetsAPI
             Console.WriteLine(string.Format("T2-AUTH: {0}ms", watch.ElapsedMilliseconds));
 
             watch.Restart();
-            Get_Current_ID_List();
+            Read_Attendance_Status();
             watch.Stop();
-            Console.WriteLine(string.Format("T2-ID|NAME: {0}ms", watch.ElapsedMilliseconds));
-
-            watch.Restart();
-            Get_Current_ID_Status();
-            watch.Stop();
-            Console.WriteLine(string.Format("T2-ID|STATUS: {0}ms", watch.ElapsedMilliseconds));
+            Console.WriteLine(string.Format("T2-READ: {0}ms", watch.ElapsedMilliseconds));
 
             do
             {
@@ -83,17 +75,15 @@ namespace Test_GoogleSheetsAPI
                 cmd = Console.ReadLine().Trim().ToUpper();
             } while (cmd.Equals("Y"));
 
-            //IList<IList<object>> appRows = GenerateData();
-            //UpdateGoogleSheetinBatch(appRows, SheetId, nextRange, service);
         }
 
         #region *** FEATURE FUNCTIONALITY METHODS ***
 
-        public void Add_User()
+        public void Add_User(int ID, string name)
         {
             try
             {
-                
+                InsertRows(Create_Attendance_Status_Row(ID, name, _OUT_STATUS), SheetId, _ATTENDANCE_STATUS_RANGE, service);
             }
             catch (Exception ex)
             {
@@ -129,7 +119,7 @@ namespace Test_GoogleSheetsAPI
         {
             try
             {
-
+                Read_Attendance_Status();
             }
             catch (Exception ex)
             {
@@ -137,11 +127,21 @@ namespace Test_GoogleSheetsAPI
             }
         }
 
-        public void Update_User_Status()
+        public void Update_User_Status(int ID)
         {
             try
             {
+                int rowToUpdate = Get_Attendance_Status_Row(ID);
+                string rowRange = "ATTENDANCE_STATUS!A" + (rowToUpdate) + ":C" + (rowToUpdate);         //row to be updated
 
+                UpdateRows(Create_Attendance_Status_Row(ID, dict_Attendance[ID][0],
+                    dict_Attendance[ID][1].Equals(_IN_STATUS)
+                    ? _OUT_STATUS
+                    : _IN_STATUS)
+                    , SheetId, rowRange, service);
+
+                Read_Attendance_Status();
+                InsertRows(Create_Log_Row(ID, dict_Attendance[ID][1]), SheetId, Get_Next_Log_Row(), service);
             }
             catch (Exception ex)
             {
@@ -151,26 +151,8 @@ namespace Test_GoogleSheetsAPI
 
         #endregion
 
-
-        #region *** GET METHODS ***
-        protected static void Get_Current_ID_List()
-        {
-            try
-            {
-                GetRequest getRequest = service.Spreadsheets.Values.Get(SheetId, _IDS_RANGE);
-
-                ValueRange getResponse = getRequest.Execute();
-                IList<IList<Object>> idList = getResponse.Values;
-
-                Parse_IDS_Name(idList);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-        }
-
-        private static void Get_Current_ID_Status()
+        #region *** GET/READ METHODS ***
+        private static void Read_Attendance_Status()
         {
             try
             {
@@ -179,7 +161,7 @@ namespace Test_GoogleSheetsAPI
                 ValueRange getResponse = getRequest.Execute();
                 IList<IList<Object>> idList = getResponse.Values;
 
-                Parse_IDS_Status(idList);
+                Parse_Attendance_Status_Rows(idList);
             }
             catch (Exception ex)
             {
@@ -187,9 +169,9 @@ namespace Test_GoogleSheetsAPI
             }
         }
 
-        private static string Get_ID_Status_Row(int ID)
+        private static int Get_Attendance_Status_Row(int ID)
         {
-            string returnVal = string.Empty;
+            int returnVal = -1;
             int readID;
             try
             {
@@ -206,8 +188,7 @@ namespace Test_GoogleSheetsAPI
                         int.TryParse(row[0].ToString(), out readID);
                         if (readID.Equals(ID))
                         {
-                            Console.WriteLine("Found it! It's on row: " + i);
-                            returnVal = "ATTENDANCE_STATUS!A" + (i + 1) + ":B" + (i + 1);         //row to be updated
+                            returnVal = i + 1;         //increment by 1 because sheets start at "0"
                             break;
                         }
                     }
@@ -220,7 +201,26 @@ namespace Test_GoogleSheetsAPI
             return returnVal;
         }
 
-        protected static string Get_NextAttendanceRow()
+        private static int Get_Next_Attendance_Row()
+        {
+            int returnVal = -1;
+            try
+            {
+                GetRequest getRequest = service.Spreadsheets.Values.Get(SheetId, _ATTENDANCE_STATUS_RANGE);
+
+                ValueRange getResponse = getRequest.Execute();
+                IList<IList<Object>> getValues = getResponse.Values;
+
+                returnVal = getValues.Count + 1;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return returnVal;
+        }
+
+        private static string Get_Next_Log_Row()
         {
             string returnVal = string.Empty;
             try
@@ -246,95 +246,59 @@ namespace Test_GoogleSheetsAPI
             string read;
             try
             {
-                if (dict_ID_Name.ContainsKey(checkID) && dict_ID_Status.ContainsKey(checkID))
+                if (dict_Attendance.ContainsKey(checkID))
                 {
                     Console.WriteLine("Exists!");
-                    Console.WriteLine("Name: " + dict_ID_Name[checkID]);
-                    Console.WriteLine("Status: " + dict_ID_Status[checkID]);
+                    Console.WriteLine("Name: " + dict_Attendance[checkID][0]);
+                    Console.WriteLine("Status: " + dict_Attendance[checkID][1]);
                     do
                     {
-                        Console.WriteLine("Would you like to change the status?");
+                        Console.WriteLine("What would you like to do?");
+                        Console.WriteLine("C = Change Status | D = Delete User");
                         read = Console.ReadLine().Trim().ToUpper();
                     }
-                    while (!read.Equals("Y") && !read.Equals("N"));
+                    while (!read.Equals("C") && !read.Equals("A") && !read.Equals("D"));
 
-                    if (read.Equals("Y"))
+                    if (read.Equals("C"))
                     {
-                        string rowToUpdate = Get_ID_Status_Row(checkID);
-                        UpdateRows(Create_ID_Status_Row(checkID,
-                            dict_ID_Status[checkID].Equals(ATTENDANCE_STATUS.IN)
-                            ? ATTENDANCE_STATUS.OUT
-                            : ATTENDANCE_STATUS.IN)
-                            , SheetId, rowToUpdate, service);
-                        Get_Current_ID_Status();
-                        InsertRows(Create_ID_Timestamp_Row(checkID, dict_ID_Status[checkID]),SheetId, Get_NextAttendanceRow(), service);
+                        int rowToUpdate = Get_Attendance_Status_Row(checkID);
+                        string rowRange = "ATTENDANCE_STATUS!A" + (rowToUpdate) + ":C" + (rowToUpdate);         //row to be updated
+                        UpdateRows(
+                            Create_Attendance_Status_Row(checkID, dict_Attendance[checkID][0],
+                            dict_Attendance[checkID][1].Equals(_IN_STATUS)
+                            ? _OUT_STATUS
+                            : _IN_STATUS)
+                            , SheetId, rowRange, service);
+                        Read_Attendance_Status();
+                        InsertRows(Create_Log_Row(checkID, dict_Attendance[checkID][1]), SheetId, Get_Next_Log_Row(), service);
                     }
-                }
-                else if (dict_ID_Name.ContainsKey(checkID))
-                {
-                    Console.WriteLine("Only exists in ID|Name list!");
-                    Console.WriteLine("Name: " + dict_ID_Name[checkID]);
-
-                    do
+                    else if (read.Equals("D"))
                     {
-                        Console.WriteLine("Add to ID|STATUS List?");
-                        read = Console.ReadLine().Trim().ToUpper();
-                    }
-                    while (!read.Equals("Y") && !read.Equals("N"));
-
-                    if (read.Equals("Y"))
-                        InsertRows(Create_ID_Status_Row(checkID, ATTENDANCE_STATUS.OUT), SheetId, _ATTENDANCE_STATUS_RANGE, service);
-
-                }
-                else if (dict_ID_Status.ContainsKey(checkID))
-                {
-                    Console.WriteLine("Only exists in ID|STATUS list!");
-                    Console.WriteLine("Status: " + dict_ID_Status[checkID]);
-                    do
-                    {
-                        Console.WriteLine("Add to ID|Name List?");
-                        read = Console.ReadLine().Trim().ToUpper();
-                    }
-                    while (!read.Equals("Y") && !read.Equals("N"));
-
-                    if (read.Equals("Y"))
-                    {
-                        Console.WriteLine("Please enter a name:");
-                        read = Console.ReadLine();
-                        InsertRows(Create_ID_Name_Row(checkID, read), SheetId, _IDS_RANGE, service);
-
+                        int rowToRemove = Get_Attendance_Status_Row(checkID);
+                        DeleteRows(rowToRemove, SheetId, service);
                     }
                 }
                 else
-                    Console.WriteLine("Didn't find that ID in any list");
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-        }
-
-        private static void Parse_IDS_Name(IList<IList<object>> idNameList)
-        {
-            string name = string.Empty;
-            int numId = 0;
-            try
-            {
-                //Start at 1 because first row is the header (ID | Name)
-                for (int i = 1; i < idNameList.Count; i++)
                 {
-                    name = string.Empty;
-                    numId = 0;
-                    IList<object> row = idNameList[i];
-                    if (row.Count.Equals(2))
+                    Console.WriteLine("Didn't find that ID in any list");
+                    Console.WriteLine("Would you like to add it to the list?");
+                    read = Console.ReadLine().Trim().ToUpper();
+                    if (read.Equals("Y"))
                     {
+                        do
+                        {
+                            Console.WriteLine("Please enter a name in the following format: Last Name, First Name");
+                            read = Console.ReadLine().Trim();
+                        } while (!read.Contains(","));
 
-                        int.TryParse((string)row[0], out numId);
-                        name = (string)row[1];
-                        dict_ID_Name.Add(numId, name);
+                        InsertRows(Create_Attendance_Status_Row(checkID, read, "OUT"), SheetId, string.Format("ATTENDANCE_STATUS!A{0}:C", Get_Next_Attendance_Row()), service);
+                        Read_Attendance_Status();
+                        InsertRows(Create_Log_Row(checkID, "ADDED"), SheetId, Get_Next_Log_Row(), service);
                     }
                     else
-                        Console.WriteLine("Only ID found for row " + i + 1);
+                    {
+                        Console.WriteLine("User declined to add ID");
+                    }
 
                 }
             }
@@ -344,27 +308,35 @@ namespace Test_GoogleSheetsAPI
             }
         }
 
-        private static void Parse_IDS_Status(IList<IList<object>> idStatusList)
+        private static void Parse_Attendance_Status_Rows(IList<IList<object>> idStatusList)
         {
-            ATTENDANCE_STATUS stat;
+            int
+                ID;
+
+            string
+                name,
+                stat;
+
             try
             {
                 //Start at 1 because first row is the header (ID | Name)
                 for (int i = 1; i < idStatusList.Count; i++)
                 {
-                    stat = ATTENDANCE_STATUS.UNKNOWN;
                     //Get the current row (ID | Current_Status)
                     IList<object> row = idStatusList[i];
-                    int numId;
-                    int.TryParse((string)row[0], out numId);
-                    try { stat = (ATTENDANCE_STATUS)Enum.Parse(typeof(ATTENDANCE_STATUS), row[1].ToString(), true); }
-                    catch { }
+                    int.TryParse((string)row[0], out ID);
+                    name = row[1].ToString();
+                    stat = row[2].ToString();
 
                     //If the dictionary has already been populated, then just update the value
-                    if (dict_ID_Status.ContainsKey(numId))
-                        dict_ID_Status[numId] = stat;
+                    if (dict_Attendance.ContainsKey(ID))
+                    {
+                        dict_Attendance[ID][1] = stat;
+                    }
                     else
-                        dict_ID_Status.Add(numId, stat);
+                    {
+                        dict_Attendance.Add(ID, new List<string> { name, stat });
+                    }
                 }
             }
             catch (Exception ex)
@@ -377,64 +349,75 @@ namespace Test_GoogleSheetsAPI
 
         #region *** RECORD CREATION METHODS ***
 
-        private static IList<IList<object>> Create_ID_Name_Row(int ID, string name)
+        private static IList<IList<object>> Create_Log_Row(int ID, string status)
         {
+            string log = string.Empty;
             IList<IList<object>> newRow = new List<IList<object>>();
-            newRow.Add(new List<object>() { ID, name });
+
+            switch (status)
+            {
+                case _IN_STATUS:
+                    log = "User checked IN";
+                    break;
+                case _OUT_STATUS:
+                    log = "User checked OUT";
+                    break;
+                case _ADDED_STATUS:
+                    log = "User ADDED";
+                    break;
+                case _DELETED_STATUS:
+                    log = "User DELETED";
+                    break;
+                default:
+                    throw new Exception("Unable to parse status to create row for Log sheet");
+            }
+
+            newRow.Add(new List<object>() { ID, DateTime.Now.ToString(), log });
             return newRow;
         }
 
-        private static IList<IList<object>> Create_ID_Timestamp_Row(int ID, ATTENDANCE_STATUS status)
+        private static IList<IList<object>> Create_Attendance_Status_Row(int ID, string name, string status)
         {
             IList<IList<object>> newRow = new List<IList<object>>();
-            newRow.Add(new List<object>() { ID, DateTime.Now.ToString(), status.ToString() });
+            newRow.Add(new List<object>() { ID, name, status });
             return newRow;
-        }
-
-        private static IList<IList<object>> Create_ID_Status_Row(int ID, ATTENDANCE_STATUS status)
-        {
-            IList<IList<object>> newRow = new List<IList<object>>();
-            newRow.Add(new List<object>() { ID, status.ToString() });
-            return newRow;
-        }
-
-        private static IList<IList<object>> CreateRecord()
-        {
-            IList<IList<object>> appRows = new List<IList<object>>();
-            IList<object> vals = new List<object>() { "2222", DateTime.UtcNow.ToString(), "IN" };
-            appRows.Add(vals);
-            return appRows;
         }
 
         #endregion
 
         #region *** CONNECT/WRITE/UPDATE DATA METHODS ***
-        private static void AuthorizeGoogleApp()
+        public static bool AuthorizeGoogleApp()
         {
-            UserCredential credential;
-
-            using (var stream =
-                new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+            bool success = false;
+            try
             {
-                string credPath = System.Environment.GetFolderPath(
-                    System.Environment.SpecialFolder.Personal);
-                credPath = Path.Combine(credPath, ".credentials/sheets.googleapis.com-dotnet-quickstart.json");
+                using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
+                {
+                    string credPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                    credPath = Path.Combine(credPath, ".credentials/sheets.googleapis.com-dotnet-quickstart.json");
 
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    Scopes,
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore(credPath, true)).Result;
-                Console.WriteLine("Credential file saved to: " + credPath);
+                    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                        GoogleClientSecrets.Load(stream).Secrets,
+                        Scopes,
+                        "user",
+                        CancellationToken.None,
+                        new FileDataStore(credPath, true)).Result;
+                    Console.WriteLine("Credential file saved to: " + credPath);
+                }
+
+                // Create Google Sheets API service.
+                service = new SheetsService(new BaseClientService.Initializer()
+                {
+                    HttpClientInitializer = credential,
+                    ApplicationName = ApplicationName,
+                });
+                success = true;
             }
-
-            // Create Google Sheets API service.
-            service = new SheetsService(new BaseClientService.Initializer()
+            catch (Exception ex)
             {
-                HttpClientInitializer = credential,
-                ApplicationName = ApplicationName,
-            });
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return success;
         }
 
         private static void InsertRows(IList<IList<Object>> values, string spreadsheetId, string newRange, SheetsService service)
@@ -452,21 +435,44 @@ namespace Test_GoogleSheetsAPI
             var response = request.Execute();
         }
 
+        private static void DeleteRows(int rowToDelete, string spreadsheetId, SheetsService service)
+        {
+            Request RequestBody = new Request()
+            {
+                DeleteDimension = new DeleteDimensionRequest()
+                {
+                    Range = new DimensionRange()
+                    {
+                        SheetId = 0,
+                        Dimension = "ROWS",
+                        StartIndex = rowToDelete,
+                        EndIndex = rowToDelete + 1
+                    }
+                }
+            };
+
+            List<Request> RequestContainer = new List<Request> { RequestBody };
+
+            BatchUpdateSpreadsheetRequest DeleteRequest = new BatchUpdateSpreadsheetRequest();
+            DeleteRequest.Requests = RequestContainer;
+
+            SpreadsheetsResource.BatchUpdateRequest Deletion = new SpreadsheetsResource.BatchUpdateRequest(service, DeleteRequest, spreadsheetId);
+            Deletion.Execute();
+        }
+
         #endregion
 
         #region *** EXCEPTION/GUI HANDLING ***
         private static void HandleException(Exception ex, string callingMethod)
         {
-            StringBuilder exMsg = new StringBuilder();
+            _exMsg = new StringBuilder();
 
-            exMsg.AppendLine(string.Format("Exception thrown in: {0}", callingMethod));
-            exMsg.AppendLine(string.IsNullOrEmpty(ex.Message) ? "" : ex.Message);
-            exMsg.AppendLine(string.IsNullOrEmpty(ex.Source) ? "" : ex.Source);
-            exMsg.AppendLine(string.IsNullOrEmpty(ex.StackTrace.ToString()) ? "" : ex.StackTrace.ToString());
+            _exMsg.AppendLine(string.Format("Exception thrown in: {0}", callingMethod));
+            _exMsg.AppendLine(string.IsNullOrEmpty(ex.Message) ? "" : ex.Message);
+            _exMsg.AppendLine(string.IsNullOrEmpty(ex.Source) ? "" : ex.Source);
+            _exMsg.AppendLine(string.IsNullOrEmpty(ex.StackTrace.ToString()) ? "" : ex.StackTrace.ToString());
 
-            Console.WriteLine("");
-            Console.WriteLine(exMsg);
-            Console.WriteLine("");
+            Console.Write(_exMsg.ToString());
         }
         #endregion
     }
