@@ -20,19 +20,22 @@ namespace Test_GoogleSheetsAPI
         const string _DELETED_STATUS = "DELETED";
         const string _OUT_STATUS = "OUT";
         const string _IN_STATUS = "IN";
-        const string _ATTENDANCE_STATUS_RANGE = "ATTENDANCE_STATUS!A:C";
+        const string _ATTENDANCE_STATUS_RANGE = "ATTENDANCE_STATUS!A:D";
         const string _ATTENDANCE_STAT_ID_RANGE = "ATTENDANCE_STATUS!A:A";
         const string _ATTENDANCE_STAT_NAME_RANGE = "ATTENDANCE_STATUS!B:B";
         const string _LOG_RANGE = "LOG!A:C";
+
+        const int _ATTENDANCE_STATUS_GID = 741019777;
+        const int _ATTENDANCE_LOG_GID = 1617370344;
 
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/sheets.googleapis.com-dotnet-quickstart.json
         static SheetsService service;
         static UserCredential credential;
         static StringBuilder _exMsg;
-        static string[] Scopes = { SheetsService.Scope.Spreadsheets };
+        static readonly string[] Scopes = { SheetsService.Scope.Spreadsheets };
         static string ApplicationName = "1732 Attendance Check-In Station";
-        static string SheetId = "13U-gYgtXlh8Q0Qgaim6nzrFlkOAP4dJP2hvOTaO7nTg";
+        static readonly string SheetId = "13U-gYgtXlh8Q0Qgaim6nzrFlkOAP4dJP2hvOTaO7nTg";
         static Dictionary<int, List<string>> dict_Attendance = new Dictionary<int, List<string>>();
 
         /// ***** PSC: Normal Use *****
@@ -50,8 +53,11 @@ namespace Test_GoogleSheetsAPI
         static void Main(string[] args)
         {
             Stopwatch watch = new Stopwatch();
-            string cmd;
-            int idResult;
+            string 
+                cmd = string.Empty, 
+                name = string.Empty;
+
+            int ID = -1;
 
             watch.Start();
             AuthorizeGoogleApp();
@@ -65,16 +71,70 @@ namespace Test_GoogleSheetsAPI
 
             do
             {
-                Console.WriteLine("Enter an ID to check for");
-                int.TryParse(Console.ReadLine(), out idResult);
-                watch.Restart();
-                CheckID(idResult);
-                watch.Stop();
-                Console.WriteLine(string.Format("T2-CHK ID: {0}ms", watch.ElapsedMilliseconds));
-                Console.WriteLine("Again?");
+                Console.WriteLine("Enter a command");
+                Console.WriteLine("A = Add User | C = Change User Status | D = Delete User | R = Read User Status | Q = Quit");
                 cmd = Console.ReadLine().Trim().ToUpper();
-            } while (cmd.Equals("Y"));
+                if (!cmd.Equals("Q"))
+                {
+                    Console.WriteLine("Enter an ID of a user");
+                    int.TryParse(Console.ReadLine(), out ID);
+                    if (!dict_Attendance.ContainsKey(ID))
+                    {
+                        Console.WriteLine("ID does not exist");
+                        cmd = "X";
+                    }
 
+                    if (cmd.Equals("A"))
+                    {
+                        Console.WriteLine("Please enter a name in the following format: Last Name, First Name");
+                        name = Console.ReadLine();
+                    }
+                }
+
+                watch.Restart();
+                switch (cmd)
+                {
+                    case "A":
+                        InsertRows(Create_Attendance_Status_Row(ID, name, "OUT"), SheetId, string.Format("ATTENDANCE_STATUS!A{0}:D", Get_Next_Attendance_Row()), service);
+                        Read_Attendance_Status();
+                        InsertRows(Create_Log_Row(ID, _ADDED_STATUS), SheetId, Get_Next_Log_Row(), service);
+                        break;
+                    case "C":
+                        int rowToUpdate = Get_Attendance_Status_Row(ID);
+                        string rowRange = "ATTENDANCE_STATUS!A" + (rowToUpdate + 1) + ":D" + (rowToUpdate + 1);         //row to be updated - increment by 1 because sheets start at "0"
+                        UpdateRows(
+                            Create_Attendance_Status_Row(ID, dict_Attendance[ID][0],
+                            dict_Attendance[ID][1].Equals(_IN_STATUS)
+                            ? _OUT_STATUS
+                            : _IN_STATUS)
+                            , SheetId, rowRange, service);
+                        Read_Attendance_Status();
+                        InsertRows(Create_Log_Row(ID, dict_Attendance[ID][1]), SheetId, Get_Next_Log_Row(), service);
+                        break;
+                    case "D":
+                        int rowToRemove = Get_Attendance_Status_Row(ID);
+                        DeleteRows(rowToRemove, SheetId, service);
+                        Read_Attendance_Status();
+                        InsertRows(Create_Log_Row(ID, _DELETED_STATUS), SheetId, Get_Next_Log_Row(), service);
+                        break;
+                    case "R":
+                        if (dict_Attendance.ContainsKey(ID))
+                        {
+                            Console.WriteLine("Name: " + dict_Attendance[ID][0]);
+                            Console.WriteLine("Status: " + dict_Attendance[ID][1]);
+                            Console.WriteLine("Last Updated: " + dict_Attendance[ID][2]);
+                        }
+                        else
+                        {
+                            Console.WriteLine("ID does not exist");
+                        }
+
+                        break;
+                }
+                watch.Stop();
+                Console.WriteLine(string.Format("T2-CMD: {0}ms", watch.ElapsedMilliseconds));
+            }
+            while (!cmd.Equals("Q"));
         }
 
         #region *** FEATURE FUNCTIONALITY METHODS ***
@@ -83,43 +143,9 @@ namespace Test_GoogleSheetsAPI
         {
             try
             {
-                InsertRows(Create_Attendance_Status_Row(ID, name, _OUT_STATUS), SheetId, _ATTENDANCE_STATUS_RANGE, service);
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-        }
-
-        public void Update_User()
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-        }
-
-        public void Delete_User()
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-        }
-
-        public void Refresh_Local_Data()
-        {
-            try
-            {
+                InsertRows(Create_Attendance_Status_Row(ID, name, "OUT"), SheetId, string.Format("ATTENDANCE_STATUS!A{0}:C", Get_Next_Attendance_Row()), service);
                 Read_Attendance_Status();
+                InsertRows(Create_Log_Row(ID, _ADDED_STATUS), SheetId, Get_Next_Log_Row(), service);
             }
             catch (Exception ex)
             {
@@ -132,16 +158,44 @@ namespace Test_GoogleSheetsAPI
             try
             {
                 int rowToUpdate = Get_Attendance_Status_Row(ID);
-                string rowRange = "ATTENDANCE_STATUS!A" + (rowToUpdate) + ":C" + (rowToUpdate);         //row to be updated
-
-                UpdateRows(Create_Attendance_Status_Row(ID, dict_Attendance[ID][0],
+                string rowRange = "ATTENDANCE_STATUS!A" + (rowToUpdate + 1) + ":C" + (rowToUpdate + 1);         //row to be updated - increment by 1 because sheets start at "0"
+                UpdateRows(
+                    Create_Attendance_Status_Row(ID, dict_Attendance[ID][0],
                     dict_Attendance[ID][1].Equals(_IN_STATUS)
                     ? _OUT_STATUS
                     : _IN_STATUS)
-                    , SheetId, rowRange, service);
-
+                    , SheetId,
+                    rowRange,
+                    service);
                 Read_Attendance_Status();
                 InsertRows(Create_Log_Row(ID, dict_Attendance[ID][1]), SheetId, Get_Next_Log_Row(), service);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+        }
+
+        public void Delete_User(int ID)
+        {
+            try
+            {
+                int rowToRemove = Get_Attendance_Status_Row(ID);
+                DeleteRows(rowToRemove, SheetId, service);
+                Read_Attendance_Status();
+                InsertRows(Create_Log_Row(ID, _DELETED_STATUS), SheetId, Get_Next_Log_Row(), service);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+        }
+
+        public void Refresh_Local_Data()
+        {
+            try
+            {
+                Read_Attendance_Status();
             }
             catch (Exception ex)
             {
@@ -172,7 +226,6 @@ namespace Test_GoogleSheetsAPI
         private static int Get_Attendance_Status_Row(int ID)
         {
             int returnVal = -1;
-            int readID;
             try
             {
                 GetRequest getRequest = service.Spreadsheets.Values.Get(SheetId, _ATTENDANCE_STAT_ID_RANGE);
@@ -185,10 +238,10 @@ namespace Test_GoogleSheetsAPI
                     for (int i = 0; i < getValues.Count; i++)
                     {
                         IList<object> row = getValues[i];
-                        int.TryParse(row[0].ToString(), out readID);
+                        int.TryParse(row[0].ToString(), out int readID);
                         if (readID.Equals(ID))
                         {
-                            returnVal = i + 1;         //increment by 1 because sheets start at "0"
+                            returnVal = i;
                             break;
                         }
                     }
@@ -240,103 +293,31 @@ namespace Test_GoogleSheetsAPI
         }
         #endregion
 
-        #region *** CHECK/PARSE METHODS ***
-        private static void CheckID(int checkID)
-        {
-            string read;
-            try
-            {
-                if (dict_Attendance.ContainsKey(checkID))
-                {
-                    Console.WriteLine("Exists!");
-                    Console.WriteLine("Name: " + dict_Attendance[checkID][0]);
-                    Console.WriteLine("Status: " + dict_Attendance[checkID][1]);
-                    do
-                    {
-                        Console.WriteLine("What would you like to do?");
-                        Console.WriteLine("C = Change Status | D = Delete User");
-                        read = Console.ReadLine().Trim().ToUpper();
-                    }
-                    while (!read.Equals("C") && !read.Equals("A") && !read.Equals("D"));
-
-                    if (read.Equals("C"))
-                    {
-                        int rowToUpdate = Get_Attendance_Status_Row(checkID);
-                        string rowRange = "ATTENDANCE_STATUS!A" + (rowToUpdate) + ":C" + (rowToUpdate);         //row to be updated
-                        UpdateRows(
-                            Create_Attendance_Status_Row(checkID, dict_Attendance[checkID][0],
-                            dict_Attendance[checkID][1].Equals(_IN_STATUS)
-                            ? _OUT_STATUS
-                            : _IN_STATUS)
-                            , SheetId, rowRange, service);
-                        Read_Attendance_Status();
-                        InsertRows(Create_Log_Row(checkID, dict_Attendance[checkID][1]), SheetId, Get_Next_Log_Row(), service);
-                    }
-                    else if (read.Equals("D"))
-                    {
-                        int rowToRemove = Get_Attendance_Status_Row(checkID);
-                        DeleteRows(rowToRemove, SheetId, service);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Didn't find that ID in any list");
-                    Console.WriteLine("Would you like to add it to the list?");
-                    read = Console.ReadLine().Trim().ToUpper();
-                    if (read.Equals("Y"))
-                    {
-                        do
-                        {
-                            Console.WriteLine("Please enter a name in the following format: Last Name, First Name");
-                            read = Console.ReadLine().Trim();
-                        } while (!read.Contains(","));
-
-                        InsertRows(Create_Attendance_Status_Row(checkID, read, "OUT"), SheetId, string.Format("ATTENDANCE_STATUS!A{0}:C", Get_Next_Attendance_Row()), service);
-                        Read_Attendance_Status();
-                        InsertRows(Create_Log_Row(checkID, "ADDED"), SheetId, Get_Next_Log_Row(), service);
-                    }
-                    else
-                    {
-                        Console.WriteLine("User declined to add ID");
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
-            }
-        }
-
+        #region *** PARSE METHODS ***
         private static void Parse_Attendance_Status_Rows(IList<IList<object>> idStatusList)
         {
-            int
-                ID;
-
             string
                 name,
                 stat;
 
+            DateTime
+                lastUpdated;
+
             try
             {
+                //Wipe any previous dictionary values to start fresh with every request
+                //Treats the Google Sheet as the golden copy
+                dict_Attendance = new Dictionary<int, List<string>>();
                 //Start at 1 because first row is the header (ID | Name)
                 for (int i = 1; i < idStatusList.Count; i++)
                 {
                     //Get the current row (ID | Current_Status)
                     IList<object> row = idStatusList[i];
-                    int.TryParse((string)row[0], out ID);
+                    int.TryParse((string)row[0], out int ID);
                     name = row[1].ToString();
                     stat = row[2].ToString();
-
-                    //If the dictionary has already been populated, then just update the value
-                    if (dict_Attendance.ContainsKey(ID))
-                    {
-                        dict_Attendance[ID][1] = stat;
-                    }
-                    else
-                    {
-                        dict_Attendance.Add(ID, new List<string> { name, stat });
-                    }
+                    DateTime.TryParse(row[3].ToString(), out lastUpdated);
+                    dict_Attendance.Add(ID, new List<string> { name, stat, lastUpdated.ToString() });
                 }
             }
             catch (Exception ex)
@@ -352,8 +333,6 @@ namespace Test_GoogleSheetsAPI
         private static IList<IList<object>> Create_Log_Row(int ID, string status)
         {
             string log = string.Empty;
-            IList<IList<object>> newRow = new List<IList<object>>();
-
             switch (status)
             {
                 case _IN_STATUS:
@@ -371,15 +350,19 @@ namespace Test_GoogleSheetsAPI
                 default:
                     throw new Exception("Unable to parse status to create row for Log sheet");
             }
-
-            newRow.Add(new List<object>() { ID, DateTime.Now.ToString(), log });
+            IList<IList<object>> newRow = new List<IList<object>>
+            {
+                new List<object>() { ID, DateTime.Now.ToString(), log }
+            };
             return newRow;
         }
 
         private static IList<IList<object>> Create_Attendance_Status_Row(int ID, string name, string status)
         {
-            IList<IList<object>> newRow = new List<IList<object>>();
-            newRow.Add(new List<object>() { ID, name, status });
+            IList<IList<object>> newRow = new List<IList<object>>
+            {
+                new List<object>() { ID, name, status, DateTime.Now.ToString() }
+            };
             return newRow;
         }
 
@@ -425,25 +408,26 @@ namespace Test_GoogleSheetsAPI
             AppendRequest request = service.Spreadsheets.Values.Append(new ValueRange() { Values = values }, spreadsheetId, newRange);
             request.InsertDataOption = AppendRequest.InsertDataOptionEnum.INSERTROWS;
             request.ValueInputOption = AppendRequest.ValueInputOptionEnum.RAW;
-            var response = request.Execute();
+            AppendValuesResponse response = request.Execute();
         }
 
         private static void UpdateRows(IList<IList<Object>> values, string spreadsheetId, string newRange, SheetsService service)
         {
             UpdateRequest request = service.Spreadsheets.Values.Update(new ValueRange() { Values = values }, spreadsheetId, newRange);
             request.ValueInputOption = UpdateRequest.ValueInputOptionEnum.RAW;
-            var response = request.Execute();
+            UpdateValuesResponse response = request.Execute();
         }
 
         private static void DeleteRows(int rowToDelete, string spreadsheetId, SheetsService service)
         {
-            Request RequestBody = new Request()
+            BatchUpdateSpreadsheetRequest content = new BatchUpdateSpreadsheetRequest();
+            Request request = new Request()
             {
                 DeleteDimension = new DeleteDimensionRequest()
                 {
                     Range = new DimensionRange()
                     {
-                        SheetId = 0,
+                        SheetId = _ATTENDANCE_STATUS_GID,
                         Dimension = "ROWS",
                         StartIndex = rowToDelete,
                         EndIndex = rowToDelete + 1
@@ -451,13 +435,11 @@ namespace Test_GoogleSheetsAPI
                 }
             };
 
-            List<Request> RequestContainer = new List<Request> { RequestBody };
+            List<Request> listRequests = new List<Request> { request };
+            content.Requests = listRequests;
 
-            BatchUpdateSpreadsheetRequest DeleteRequest = new BatchUpdateSpreadsheetRequest();
-            DeleteRequest.Requests = RequestContainer;
-
-            SpreadsheetsResource.BatchUpdateRequest Deletion = new SpreadsheetsResource.BatchUpdateRequest(service, DeleteRequest, spreadsheetId);
-            Deletion.Execute();
+            SpreadsheetsResource.BatchUpdateRequest Deletion = new SpreadsheetsResource.BatchUpdateRequest(service, content, spreadsheetId);
+            BatchUpdateSpreadsheetResponse response = Deletion.Execute();
         }
 
         #endregion
