@@ -143,7 +143,7 @@ namespace Test_GoogleSheetsAPI
         {
             try
             {
-                InsertRows(Create_Attendance_Status_Row(ID, name, "OUT"), SheetId, string.Format("ATTENDANCE_STATUS!A{0}:C", Get_Next_Attendance_Row()), service);
+                InsertRows(Create_Attendance_Status_Row(ID, name, "OUT"), SheetId, string.Format("ATTENDANCE_STATUS!A{0}:D", Get_Next_Attendance_Row()), service);
                 Read_Attendance_Status();
                 InsertRows(Create_Log_Row(ID, _ADDED_STATUS), SheetId, Get_Next_Log_Row(), service);
             }
@@ -158,7 +158,7 @@ namespace Test_GoogleSheetsAPI
             try
             {
                 int rowToUpdate = Get_Attendance_Status_Row(ID);
-                string rowRange = "ATTENDANCE_STATUS!A" + (rowToUpdate + 1) + ":C" + (rowToUpdate + 1);         //row to be updated - increment by 1 because sheets start at "0"
+                string rowRange = "ATTENDANCE_STATUS!A" + (rowToUpdate + 1) + ":D" + (rowToUpdate + 1);         //row to be updated - increment by 1 because sheets start at "0"
                 UpdateRows(
                     Create_Attendance_Status_Row(ID, dict_Attendance[ID][0],
                     dict_Attendance[ID][1].Equals(_IN_STATUS)
