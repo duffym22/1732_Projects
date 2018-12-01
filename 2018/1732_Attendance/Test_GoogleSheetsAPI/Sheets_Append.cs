@@ -300,9 +300,6 @@ namespace Test_GoogleSheetsAPI
                 name,
                 stat;
 
-            DateTime
-                lastUpdated;
-
             try
             {
                 //Wipe any previous dictionary values to start fresh with every request
@@ -316,7 +313,7 @@ namespace Test_GoogleSheetsAPI
                     int.TryParse((string)row[0], out int ID);
                     name = row[1].ToString();
                     stat = row[2].ToString();
-                    DateTime.TryParse(row[3].ToString(), out lastUpdated);
+                    DateTime.TryParse(row[3].ToString(), out DateTime lastUpdated);
                     dict_Attendance.Add(ID, new List<string> { name, stat, lastUpdated.ToString() });
                 }
             }
