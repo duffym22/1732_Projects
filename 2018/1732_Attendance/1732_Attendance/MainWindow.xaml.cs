@@ -12,7 +12,7 @@ namespace _1732_Attendance
     /// </summary>
     public partial class MainWindow : Window
     {
-        internal int ID_Scan;
+        internal long ID_Scan;
         private GSheetsAPI gAPI;
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         const string _DARKORANGE = "#FFFF8C00";
@@ -48,7 +48,7 @@ namespace _1732_Attendance
             {
                 if (e.Key == System.Windows.Input.Key.Enter || e.Key == System.Windows.Input.Key.Return)
                 {
-                    if (Int32.TryParse(txt_ID_Scan.Text, out ID_Scan))
+                    if (long.TryParse(txt_ID_Scan.Text, out ID_Scan))
                     {
                         if (Lookup_ID())
                         {
