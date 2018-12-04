@@ -208,7 +208,7 @@ namespace _1732_Attendance
             }
             catch (Exception ex)
             {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+                throw new Exception(MethodBase.GetCurrentMethod().Name, ex);
             }
         }
 
@@ -238,7 +238,7 @@ namespace _1732_Attendance
             }
             catch (Exception ex)
             {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+                throw new Exception(MethodBase.GetCurrentMethod().Name, ex);
             }
             return returnVal;
         }
@@ -257,7 +257,7 @@ namespace _1732_Attendance
             }
             catch (Exception ex)
             {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+                throw new Exception(MethodBase.GetCurrentMethod().Name, ex);
             }
             return returnVal;
         }
@@ -276,7 +276,7 @@ namespace _1732_Attendance
             }
             catch (Exception ex)
             {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+                throw new Exception(MethodBase.GetCurrentMethod().Name, ex);
             }
             return returnVal;
         }
@@ -308,7 +308,7 @@ namespace _1732_Attendance
             }
             catch (Exception ex)
             {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+                throw new Exception(MethodBase.GetCurrentMethod().Name, ex);
             }
         }
 
@@ -384,7 +384,7 @@ namespace _1732_Attendance
             }
             catch (Exception ex)
             {
-                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+                throw new Exception(MethodBase.GetCurrentMethod().Name, ex);
             }
             return success;
         }
