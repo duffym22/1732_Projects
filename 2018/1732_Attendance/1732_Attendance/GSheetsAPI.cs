@@ -17,11 +17,11 @@ namespace _1732_Attendance
     /// 1. Scan ID over sensor
     /// 2. Text populates on field - automatic carriage return will invoke keypress
     /// 3. Check for carriage return in keypress event and if present, continue check
-    /// 4. Parse ID from field as longeger and check against existing dictionary read on startup of app (or from periodic invoke)
+    /// 4. Parse ID from field as ulongeger and check against existing dictionary read on startup of app (or from periodic invoke)
     /// 5. If ID is in dictionary, create new entry to record to LOG tab the ID and timestamp. 
     /// 5a. If ID is NOT in the directory, display to screen "ID: [IDVAL] is not in the list of valid IDs. Please contact a mentor to be added"
     /// 6. Read the current status' of all IDs from the ATTENDANCE_STATUS tab
-    /// 7. Enumerate current status of all IDs longo dict_ID_Status
+    /// 7. Enumerate current status of all IDs ulongo dict_ID_Status
     /// 8. Verify current status of the ID and invert it to write to the ATTENDANCE_STATUS tab
     class GSheetsAPI
     {
@@ -49,7 +49,7 @@ namespace _1732_Attendance
         readonly string[] _scopes = { SheetsService.Scope.Spreadsheets };
         string _applicationName = "1732 Attendance Check-In Station";
         readonly string _sheetId = "13U-gYgtXlh8Q0Qgaim6nzrFlkOAP4dJP2hvOTaO7nTg";
-        Dictionary<long, List<string>> dict_Attendance;
+        Dictionary<ulong, List<string>> dict_Attendance;
 
         #endregion
 
@@ -63,14 +63,14 @@ namespace _1732_Attendance
         {
             _service = new SheetsService();
             _credential = null;
-            dict_Attendance = new Dictionary<long, List<string>>();
+            dict_Attendance = new Dictionary<ulong, List<string>>();
         }
 
         #endregion
 
         #region *** FEATURE FUNCTIONALITY METHODS ***
 
-        public bool Check_Valid_ID(long ID)
+        public bool Check_Valid_ID(ulong ID)
         {
             bool success = false;
             try
@@ -84,7 +84,7 @@ namespace _1732_Attendance
             return success;
         }
 
-        public string Check_ID_Status(long ID)
+        public string Check_ID_Status(ulong ID)
         {
             string status = string.Empty;
             try
@@ -98,7 +98,7 @@ namespace _1732_Attendance
             return status;
         }
 
-        public string Get_ID_Name(long ID)
+        public string Get_ID_Name(ulong ID)
         {
             string name = string.Empty;
             try
@@ -112,7 +112,7 @@ namespace _1732_Attendance
             return name;
         }
 
-        public bool Add_User(long ID, string name)
+        public bool Add_User(ulong ID, string name)
         {
             bool
                 success = false;
@@ -131,14 +131,14 @@ namespace _1732_Attendance
             return success;
         }
 
-        public bool Update_User_Status(long ID)
+        public bool Update_User_Status(ulong ID)
         {
             bool
                 success = false;
 
             try
             {
-                long rowToUpdate = Get_Attendance_Status_Row(ID);
+                int rowToUpdate = Get_Attendance_Status_Row(ID);
 
                 //row to be updated - increment by 1 because sheets start at "0"
                 string rowRange = string.Format("{0}{1}:{2}{3}", _ATTENDANCE_STATUS_START_RANGE, (rowToUpdate + 1), _ATTENDANCE_STATUS_END_RANGE, (rowToUpdate + 1));
@@ -155,7 +155,7 @@ namespace _1732_Attendance
             return success;
         }
 
-        public bool Delete_User(long ID)
+        public bool Delete_User(ulong ID)
         {
             bool
                 success = false;
@@ -212,9 +212,9 @@ namespace _1732_Attendance
             }
         }
 
-        private long Get_Attendance_Status_Row(long ID)
+        private int Get_Attendance_Status_Row(ulong ID)
         {
-            long returnVal = -1;
+            int returnVal = -1;
             try
             {
                 GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ATTENDANCE_STAT_ID_RANGE);
@@ -227,7 +227,7 @@ namespace _1732_Attendance
                     for (int i = 0; i < getValues.Count; i++)
                     {
                         IList<object> row = getValues[i];
-                        long.TryParse(row[0].ToString(), out long readID);
+                        ulong.TryParse(row[0].ToString(), out ulong readID);
                         if (readID.Equals(ID))
                         {
                             returnVal = i;
@@ -243,9 +243,9 @@ namespace _1732_Attendance
             return returnVal;
         }
 
-        private long Get_Next_Attendance_Row()
+        private int Get_Next_Attendance_Row()
         {
-            long returnVal = -1;
+            int returnVal = -1;
             try
             {
                 GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ATTENDANCE_STATUS_RANGE);
@@ -293,13 +293,13 @@ namespace _1732_Attendance
             {
                 //Wipe any previous dictionary values to start fresh with every request
                 //Treats the Google Sheet as the golden copy
-                dict_Attendance = new Dictionary<long, List<string>>();
+                dict_Attendance = new Dictionary<ulong, List<string>>();
                 //Start at 1 because first row is the header (ID | Name)
                 for (int i = 1; i < idStatusList.Count; i++)
                 {
                     //Get the current row (ID | Current_Status)
                     IList<object> row = idStatusList[i];
-                    long.TryParse((string)row[0], out long ID);
+                    ulong.TryParse((string)row[0], out ulong ID);
                     name = row[1].ToString();
                     stat = row[2].ToString();
                     DateTime.TryParse(row[3].ToString(), out DateTime lastUpdated);
@@ -316,7 +316,7 @@ namespace _1732_Attendance
 
         #region *** RECORD CREATION METHODS ***
 
-        private IList<IList<object>> Create_Log_Row(long ID, string status)
+        private IList<IList<object>> Create_Log_Row(ulong ID, string status)
         {
             string log = string.Empty;
             switch (status)
@@ -343,7 +343,7 @@ namespace _1732_Attendance
             return newRow;
         }
 
-        private IList<IList<object>> Create_Attendance_Status_Row(long ID, string name, string status)
+        private IList<IList<object>> Create_Attendance_Status_Row(ulong ID, string name, string status)
         {
             IList<IList<object>> newRow = new List<IList<object>>
             {
