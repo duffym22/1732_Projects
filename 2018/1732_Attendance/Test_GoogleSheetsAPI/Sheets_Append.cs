@@ -59,6 +59,12 @@ namespace Test_GoogleSheetsAPI
 
             int ID = -1;
 
+            DateTime start = DateTime.Now;
+            DateTime end = DateTime.Now;
+
+            TimeSpan timeSpan = end - start;
+
+            string span = timeSpan.ToString("h'h 'm'm 's's'");
             watch.Start();
             AuthorizeGoogleApp();
             watch.Stop();

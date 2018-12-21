@@ -26,20 +26,37 @@ namespace _1732_Attendance
     class GSheetsAPI
     {
         #region *** FIELDS ***
+        const string _ROWS = "ROWS";
         const string _ADDED_STATUS = "ADDED";
         const string _DELETED_STATUS = "DELETED";
         const string _OUT_STATUS = "OUT";
         const string _IN_STATUS = "IN";
-        const string _ATTENDANCE_STATUS_RANGE = _ATTENDANCE_STATUS_START_RANGE + ":" + _ATTENDANCE_STATUS_END_RANGE;
-        const string _ATTENDANCE_STATUS_START_RANGE = "ATTENDANCE_STATUS!A";
-        const string _ATTENDANCE_STATUS_END_RANGE = "D";
-        const string _ATTENDANCE_STAT_ID_RANGE = "ATTENDANCE_STATUS!A:A";
-        const string _ATTENDANCE_STAT_NAME_RANGE = "ATTENDANCE_STATUS!B:B";
-        const string _LOG_RANGE = "LOG!A:C";
+
+
+        const string _ATTENDANCE_STATUS = "ATTENDANCE_STATUS!";
+
+        const string _ID_COL = "A";
+        const string _NAME_COL = "B";
+        const string _CURRENT_STATUS_COL = "C";
+        const string _CHECKIN_COL = "D";
+        const string _HOURS_COL = "E";
+        const string _CHECKOUT_COL = "F";
+        const string _TOTAL_HRS_COL = "G";
+
+        const string _RESET_HOURS = "00:00:00";
+
+        const string _LOG_START_RANGE = "LOG!A";
+        const string _LOG_END_RANGE = "C";
+        const string _LOG_RANGE = _LOG_START_RANGE + ":" + _LOG_END_RANGE;
+
+        const string _ACCUM_HOURS_DATE_RANGE = "ACCUMULATED_HOURS!1:1";
+        const string _ACCUM_HOURS_START_RANGE = "ACCUMULATED_HOURS!A";
+        const string _ACCUM_HOURS_END_RANGE = "B";
+        const string _ACCUM_HOURS_ID_NAME_RANGE = "ACCUMULATED_HOURS!A:B";
+        const string _ACCUM_HOURS_TOTAL_RANGE = _ACCUM_HOURS_START_RANGE + ":" + _ACCUM_HOURS_END_RANGE;
 
         const int _ATTENDANCE_STATUS_GID = 741019777;
         const int _ATTENDANCE_LOG_GID = 1617370344;
-
 
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/sheets.googleapis.com-dotnet-quickstart.json
@@ -50,6 +67,17 @@ namespace _1732_Attendance
         string _applicationName = "1732 Attendance Check-In Station";
         readonly string _sheetId = "13U-gYgtXlh8Q0Qgaim6nzrFlkOAP4dJP2hvOTaO7nTg";
         Dictionary<ulong, List<string>> dict_Attendance;
+
+        enum COLUMNS
+        {
+            ID = 0,
+            NAME = 1,
+            STATUS = 2,
+            LAST_CHECKIN = 3,
+            LAST_CHECKOUT = 4,
+            HOURS = 5,
+            TOTAL_HOURS = 6,
+        }
 
         #endregion
 
@@ -119,7 +147,8 @@ namespace _1732_Attendance
 
             try
             {
-                InsertRows(Create_Attendance_Status_Row(ID, name, "OUT"), string.Format("{0}{1}:{2}", _ATTENDANCE_STATUS_START_RANGE, Get_Next_Attendance_Row(), _ATTENDANCE_STATUS_END_RANGE));
+                InsertRows(Create_Attendance_Status_Row(ID, name, "OUT", "0", _RESET_HOURS, "0", _RESET_HOURS), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_Next_Attendance_Row(), _TOTAL_HRS_COL));
+                InsertRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}:{2}", _ACCUM_HOURS_START_RANGE, Get_Next_Accumulated_Hours_Row(), _ACCUM_HOURS_END_RANGE));
                 Read_Attendance_Status();
                 InsertRows(Create_Log_Row(ID, _ADDED_STATUS), Get_Next_Log_Row());
                 success = true;
@@ -136,14 +165,65 @@ namespace _1732_Attendance
             bool
                 success = false;
 
+            string
+                rowRange = string.Empty;
+
             try
             {
-                int rowToUpdate = Get_Attendance_Status_Row(ID);
+                int rowToUpdate = Get_User_Attendance_Status_Row(ID);
+                string status = dict_Attendance[ID][1].Equals(_IN_STATUS) ? _OUT_STATUS : _IN_STATUS;
+                string lastCheckIn = dict_Attendance[ID][2];
+                string lastCheckOut = dict_Attendance[ID][3];
+                string hours = dict_Attendance[ID][4];
+                string totalHours = dict_Attendance[ID][5];
 
-                //row to be updated - increment by 1 because sheets start at "0"
-                string rowRange = string.Format("{0}{1}:{2}{3}", _ATTENDANCE_STATUS_START_RANGE, (rowToUpdate + 1), _ATTENDANCE_STATUS_END_RANGE, (rowToUpdate + 1));
 
-                UpdateRows(Create_Attendance_Status_Row(ID, dict_Attendance[ID][0], dict_Attendance[ID][1].Equals(_IN_STATUS) ? _OUT_STATUS : _IN_STATUS), rowRange);
+                if (dict_Attendance[ID][1].Equals(_IN_STATUS))
+                {
+                    /// If user currently checked in
+                    /// 1) Set the user status to OUT
+                    /// 2) Calculate and set the hours field for that user
+                    /// 3) Set the checked-out field 
+                    /// 4) Add the hours field to the total hours field
+
+                    //calculate the hours and total time
+                    DateTime dLastCheckOut = DateTime.Now;
+                    DateTime.TryParse(lastCheckIn, out DateTime dlastCheckIn);
+                    TimeSpan.TryParse(hours, out TimeSpan hoursResult);
+                    TimeSpan.TryParse(totalHours, out TimeSpan totalHoursResult);
+                    TimeSpan timeSpan = dLastCheckOut - dlastCheckIn;
+
+                    hoursResult += timeSpan;
+                    totalHoursResult += timeSpan;
+
+                    //row to be updated - increment by 1 because sheets start at "0"
+                    rowRange = _ATTENDANCE_STATUS + _CURRENT_STATUS_COL + (rowToUpdate + 1);
+                    UpdateRows(Update_Attendance_Status(status), rowRange);
+
+                    rowRange = _ATTENDANCE_STATUS + _HOURS_COL + (rowToUpdate + 1) + ":" + _TOTAL_HRS_COL + (rowToUpdate + 1);
+                    UpdateRows(Update_Attendance_CheckOut(
+                        string.Format("{0:00}:{1:00}:{2:00}", hoursResult.TotalSeconds / 3600, (hoursResult.TotalSeconds % 3600) / 60, (hoursResult.TotalSeconds % 60)),
+                        dLastCheckOut.ToString(),
+                        string.Format("{0:00}:{1:00}:{2:00}", totalHoursResult.TotalSeconds / 3600, (totalHoursResult.TotalSeconds % 3600) / 60, (totalHoursResult.TotalSeconds % 60))),
+                        rowRange);
+
+                    ///TODO - Add UpdateRows(Update_Accumulated_Hours()) function to search 
+                    ///
+                    ///if current date is listed as a column and then search if user is in the list
+                    ///if date does not exist, add the column
+                    ///if the user does not exist on the sheet, add the user and then update their hours for that day
+                }
+                else
+                {
+                    ///If user currently checked out 
+                    /// 1) Set the user status to IN
+                    /// 2) Set the user check-in time
+                    /// 3) Set the hours field for that user to 0
+                    /// leave the rest of the data alone
+                    rowRange = _ATTENDANCE_STATUS + _CURRENT_STATUS_COL + (rowToUpdate + 1) + ":" + _HOURS_COL + (rowToUpdate + 1);
+                    UpdateRows(Update_Attendance_CheckIn(status, DateTime.Now.ToString(), _RESET_HOURS), rowRange);
+                }
+
                 Read_Attendance_Status();
                 InsertRows(Create_Log_Row(ID, dict_Attendance[ID][1]), Get_Next_Log_Row());
                 success = true;
@@ -162,7 +242,7 @@ namespace _1732_Attendance
 
             try
             {
-                int rowToRemove = Get_Attendance_Status_Row(ID);
+                int rowToRemove = Get_User_Attendance_Status_Row(ID);
                 DeleteRows(rowToRemove);
                 Read_Attendance_Status();
                 InsertRows(Create_Log_Row(ID, _DELETED_STATUS), Get_Next_Log_Row());
@@ -199,7 +279,7 @@ namespace _1732_Attendance
         {
             try
             {
-                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ATTENDANCE_STATUS_RANGE);
+                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ATTENDANCE_STATUS + _ID_COL + ":" + _TOTAL_HRS_COL);
 
                 ValueRange getResponse = getRequest.Execute();
                 IList<IList<Object>> idList = getResponse.Values;
@@ -212,12 +292,12 @@ namespace _1732_Attendance
             }
         }
 
-        private int Get_Attendance_Status_Row(ulong ID)
+        private int Get_User_Attendance_Status_Row(ulong ID)
         {
             int returnVal = -1;
             try
             {
-                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ATTENDANCE_STAT_ID_RANGE);
+                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ATTENDANCE_STATUS + _ID_COL + ":" + _ID_COL);
 
                 ValueRange getResponse = getRequest.Execute();
                 IList<IList<Object>> getValues = getResponse.Values;
@@ -248,7 +328,45 @@ namespace _1732_Attendance
             int returnVal = -1;
             try
             {
-                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ATTENDANCE_STATUS_RANGE);
+                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ID_COL);
+
+                ValueRange getResponse = getRequest.Execute();
+                IList<IList<Object>> getValues = getResponse.Values;
+
+                returnVal = getValues.Count + 1;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(MethodBase.GetCurrentMethod().Name, ex);
+            }
+            return returnVal;
+        }
+
+        private int Get_Next_Accumulated_Hours_Row()
+        {
+            int returnVal = -1;
+            try
+            {
+                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ACCUM_HOURS_ID_NAME_RANGE);
+
+                ValueRange getResponse = getRequest.Execute();
+                IList<IList<Object>> getValues = getResponse.Values;
+
+                returnVal = getValues.Count + 1;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(MethodBase.GetCurrentMethod().Name, ex);
+            }
+            return returnVal;
+        }
+
+        private int Find_Date_Column_Accumulated_Hours()
+        {
+            int returnVal = -1;
+            try
+            {
+                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ACCUM_HOURS_DATE_RANGE);
 
                 ValueRange getResponse = getRequest.Execute();
                 IList<IList<Object>> getValues = getResponse.Values;
@@ -272,7 +390,7 @@ namespace _1732_Attendance
                 ValueRange getResponse = getRequest.Execute();
                 IList<IList<Object>> getValues = getResponse.Values;
 
-                returnVal = string.Format("LOG!A{0}:C", getValues.Count + 1);
+                returnVal = string.Format("{0}{1}:{2}", _LOG_START_RANGE, getValues.Count + 1, _LOG_END_RANGE);
             }
             catch (Exception ex)
             {
@@ -280,6 +398,8 @@ namespace _1732_Attendance
             }
             return returnVal;
         }
+
+
         #endregion
 
         #region *** PARSE METHODS ***
@@ -294,16 +414,20 @@ namespace _1732_Attendance
                 //Wipe any previous dictionary values to start fresh with every request
                 //Treats the Google Sheet as the golden copy
                 dict_Attendance = new Dictionary<ulong, List<string>>();
-                //Start at 1 because first row is the header (ID | Name)
+
+                //Start at 1 because first row is the header row (ID | Name)
                 for (int i = 1; i < idStatusList.Count; i++)
                 {
                     //Get the current row (ID | Current_Status)
                     IList<object> row = idStatusList[i];
-                    ulong.TryParse((string)row[0], out ulong ID);
-                    name = row[1].ToString();
-                    stat = row[2].ToString();
-                    DateTime.TryParse(row[3].ToString(), out DateTime lastUpdated);
-                    dict_Attendance.Add(ID, new List<string> { name, stat, lastUpdated.ToString() });
+                    ulong.TryParse((string)row[(int)COLUMNS.ID], out ulong ID);
+                    name = row[(int)COLUMNS.NAME].ToString();
+                    stat = row[(int)COLUMNS.STATUS].ToString();
+                    DateTime.TryParse(row[(int)COLUMNS.LAST_CHECKIN].ToString(), out DateTime lastCheckIn);
+                    DateTime.TryParse(row[(int)COLUMNS.LAST_CHECKOUT].ToString(), out DateTime lastCheckOut);
+                    TimeSpan.TryParse(row[(int)COLUMNS.HOURS].ToString(), out TimeSpan hours);
+                    TimeSpan.TryParse(row[(int)COLUMNS.TOTAL_HOURS].ToString(), out TimeSpan totalHours);
+                    dict_Attendance.Add(ID, new List<string> { name, stat, lastCheckIn.ToString(), lastCheckOut.ToString(), hours.ToString(), totalHours.ToString() });
                 }
             }
             catch (Exception ex)
@@ -343,11 +467,20 @@ namespace _1732_Attendance
             return newRow;
         }
 
-        private IList<IList<object>> Create_Attendance_Status_Row(ulong ID, string name, string status)
+        private IList<IList<object>> Create_Attendance_Status_Row(ulong ID, string name, string status, string lastCheckIn, string lastCheckout, string hours, string totalHours)
         {
             IList<IList<object>> newRow = new List<IList<object>>
             {
-                new List<object>() { ID, name, status, DateTime.Now.ToString() }
+                new List<object>() { ID, name, status, lastCheckIn, lastCheckout, hours, totalHours }
+            };
+            return newRow;
+        }
+
+        private IList<IList<object>> Create_Accumulated_Hours_Row(ulong ID, string name)
+        {
+            IList<IList<object>> newRow = new List<IList<object>>
+            {
+                new List<object>() { ID, name }
             };
             return newRow;
         }
@@ -414,7 +547,7 @@ namespace _1732_Attendance
                     Range = new DimensionRange()
                     {
                         SheetId = _ATTENDANCE_STATUS_GID,
-                        Dimension = "ROWS",
+                        Dimension = _ROWS,
                         StartIndex = rowToDelete,
                         EndIndex = rowToDelete + 1
                     }
@@ -426,6 +559,42 @@ namespace _1732_Attendance
 
             SpreadsheetsResource.BatchUpdateRequest Deletion = new SpreadsheetsResource.BatchUpdateRequest(_service, content, _sheetId);
             BatchUpdateSpreadsheetResponse response = Deletion.Execute();
+        }
+
+        private IList<IList<object>> Update_Attendance_Status(string status)
+        {
+            IList<IList<object>> newRow = new List<IList<object>>
+            {
+                new List<object>() { status }
+            };
+            return newRow;
+        }
+
+        private IList<IList<object>> Update_Attendance_CheckIn(string status, string lastCheckIn, string hours)
+        {
+            IList<IList<object>> newRow = new List<IList<object>>
+            {
+                new List<object>() { status, lastCheckIn, hours }
+            };
+            return newRow;
+        }
+
+        private IList<IList<object>> Update_Attendance_CheckOut(string hours, string lastCheckOut, string totalHours)
+        {
+            IList<IList<object>> newRow = new List<IList<object>>
+            {
+                new List<object>() { hours, lastCheckOut, totalHours }
+            };
+            return newRow;
+        }
+
+        private IList<IList<object>> Update_Accumulated_Hours(string hours)
+        {
+            IList<IList<object>> newRow = new List<IList<object>>
+            {
+                new List<object>() { hours }
+            };
+            return newRow;
         }
 
         #endregion

@@ -32,14 +32,36 @@ namespace _1732_Attendance
             Initialize();
         }
 
-        private void btn_Login_Click(object sender, RoutedEventArgs e)
+        private void BTN_Login_Click(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void btn_Reconnect_Click(object sender, RoutedEventArgs e)
+        private void BTN_Reconnect_Click(object sender, RoutedEventArgs e)
         {
             Initialize();
+        }
+
+        private void BTN_Add_User_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_Name.Text))
+            {
+                ulong.TryParse(TXT_ID.Text, out ulong ID);
+                gAPI.Add_User(ID, TXT_Name.Text);
+                Log(string.Format("Added ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+                TXT_ID.Clear();
+                TXT_Name.Clear();
+            }
+        }
+
+        private void BTN_Delete_User_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(TXT_ID.Text))
+            {
+                ulong.TryParse(TXT_ID.Text, out ulong ID);
+                gAPI.Delete_User(ID);
+                Log(string.Format("Deleted ID: {0}", TXT_ID.Text));
+            }
         }
 
         private void txt_ID_Scan_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -103,7 +125,7 @@ namespace _1732_Attendance
                 {
                     Log("Failed to refresh local data");
                     UI_Control(false);
-                    btn_Reconnect.Focus();
+                    BTN_Reconnect.Focus();
                 }
             }
             else
@@ -131,8 +153,8 @@ namespace _1732_Attendance
                 txt_ID_Scan.IsEnabled = true;
                 txt_ID_Scan.Visibility = Visibility.Visible;
                 Log("Disabling reconnect button");
-                btn_Reconnect.Visibility = Visibility.Hidden;
-                btn_Reconnect.IsEnabled = false;
+                BTN_Reconnect.Visibility = Visibility.Hidden;
+                BTN_Reconnect.IsEnabled = false;
 
             }
             else
@@ -141,8 +163,8 @@ namespace _1732_Attendance
                 txt_ID_Scan.IsEnabled = false;
                 txt_ID_Scan.Visibility = Visibility.Hidden;
                 Log("Enabling reconnect button");
-                btn_Reconnect.Visibility = Visibility.Visible;
-                btn_Reconnect.IsEnabled = true;
+                BTN_Reconnect.Visibility = Visibility.Visible;
+                BTN_Reconnect.IsEnabled = true;
             }
         }
 
