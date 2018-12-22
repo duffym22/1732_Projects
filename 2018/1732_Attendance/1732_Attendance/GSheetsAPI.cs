@@ -44,6 +44,7 @@ namespace _1732_Attendance
         const string _TOTAL_HRS_COL = "G";
 
         const string _RESET_HOURS = "00:00:00";
+        const string _RESET_TOTAL_HOURS = "0.00:00:00";
 
         const string _LOG_START_RANGE = "LOG!A";
         const string _LOG_END_RANGE = "C";
@@ -74,8 +75,8 @@ namespace _1732_Attendance
             NAME = 1,
             STATUS = 2,
             LAST_CHECKIN = 3,
-            LAST_CHECKOUT = 4,
-            HOURS = 5,
+            HOURS = 4,
+            LAST_CHECKOUT = 5,
             TOTAL_HOURS = 6,
         }
 
@@ -147,7 +148,7 @@ namespace _1732_Attendance
 
             try
             {
-                InsertRows(Create_Attendance_Status_Row(ID, name, "OUT", "0", _RESET_HOURS, "0", _RESET_HOURS), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_Next_Attendance_Row(), _TOTAL_HRS_COL));
+                InsertRows(Create_Attendance_Status_Row(ID, name, "OUT", "0", _RESET_HOURS, "0", _RESET_TOTAL_HOURS), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_Next_Attendance_Row(), _TOTAL_HRS_COL));
                 InsertRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}:{2}", _ACCUM_HOURS_START_RANGE, Get_Next_Accumulated_Hours_Row(), _ACCUM_HOURS_END_RANGE));
                 Read_Attendance_Status();
                 InsertRows(Create_Log_Row(ID, _ADDED_STATUS), Get_Next_Log_Row());
@@ -173,8 +174,8 @@ namespace _1732_Attendance
                 int rowToUpdate = Get_User_Attendance_Status_Row(ID);
                 string status = dict_Attendance[ID][1].Equals(_IN_STATUS) ? _OUT_STATUS : _IN_STATUS;
                 string lastCheckIn = dict_Attendance[ID][2];
-                string lastCheckOut = dict_Attendance[ID][3];
-                string hours = dict_Attendance[ID][4];
+                string hours = dict_Attendance[ID][3];
+                string lastCheckOut = dict_Attendance[ID][4];
                 string totalHours = dict_Attendance[ID][5];
 
 
@@ -202,9 +203,9 @@ namespace _1732_Attendance
 
                     rowRange = _ATTENDANCE_STATUS + _HOURS_COL + (rowToUpdate + 1) + ":" + _TOTAL_HRS_COL + (rowToUpdate + 1);
                     UpdateRows(Update_Attendance_CheckOut(
-                        string.Format("{0:00}:{1:00}:{2:00}", hoursResult.TotalSeconds / 3600, (hoursResult.TotalSeconds % 3600) / 60, (hoursResult.TotalSeconds % 60)),
+                        string.Format("{0:00}:{1:00}:{2:00}", hoursResult.TotalHours, hoursResult.TotalMinutes, hoursResult.TotalSeconds),
                         dLastCheckOut.ToString(),
-                        string.Format("{0:00}:{1:00}:{2:00}", totalHoursResult.TotalSeconds / 3600, (totalHoursResult.TotalSeconds % 3600) / 60, (totalHoursResult.TotalSeconds % 60))),
+                        string.Format("{0:00}.{1:00}:{2:00}:{3:00}", totalHoursResult.Days, totalHoursResult.Hours, totalHoursResult.Minutes, totalHoursResult.Seconds)),
                         rowRange);
 
                     ///TODO - Add UpdateRows(Update_Accumulated_Hours()) function to search 
@@ -243,10 +244,13 @@ namespace _1732_Attendance
             try
             {
                 int rowToRemove = Get_User_Attendance_Status_Row(ID);
-                DeleteRows(rowToRemove);
-                Read_Attendance_Status();
-                InsertRows(Create_Log_Row(ID, _DELETED_STATUS), Get_Next_Log_Row());
-                success = true;
+                if (!rowToRemove.Equals(-1))
+                {
+                    DeleteRows(rowToRemove);
+                    Read_Attendance_Status();
+                    InsertRows(Create_Log_Row(ID, _DELETED_STATUS), Get_Next_Log_Row());
+                    success = true;
+                }
             }
             catch (Exception ex)
             {
@@ -279,7 +283,7 @@ namespace _1732_Attendance
         {
             try
             {
-                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ATTENDANCE_STATUS + _ID_COL + ":" + _TOTAL_HRS_COL);
+                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, string.Format("{0}{1}:{2}", _ATTENDANCE_STATUS, _ID_COL, _TOTAL_HRS_COL));
 
                 ValueRange getResponse = getRequest.Execute();
                 IList<IList<Object>> idList = getResponse.Values;
@@ -297,7 +301,7 @@ namespace _1732_Attendance
             int returnVal = -1;
             try
             {
-                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ATTENDANCE_STATUS + _ID_COL + ":" + _ID_COL);
+                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, string.Format("{0}{1}:{2}", _ATTENDANCE_STATUS, _ID_COL, _ID_COL));
 
                 ValueRange getResponse = getRequest.Execute();
                 IList<IList<Object>> getValues = getResponse.Values;
@@ -328,7 +332,7 @@ namespace _1732_Attendance
             int returnVal = -1;
             try
             {
-                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, _ID_COL);
+                GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, string.Format("{0}{1}:{2}", _ATTENDANCE_STATUS, _ID_COL, _ID_COL));
 
                 ValueRange getResponse = getRequest.Execute();
                 IList<IList<Object>> getValues = getResponse.Values;
@@ -424,10 +428,10 @@ namespace _1732_Attendance
                     name = row[(int)COLUMNS.NAME].ToString();
                     stat = row[(int)COLUMNS.STATUS].ToString();
                     DateTime.TryParse(row[(int)COLUMNS.LAST_CHECKIN].ToString(), out DateTime lastCheckIn);
-                    DateTime.TryParse(row[(int)COLUMNS.LAST_CHECKOUT].ToString(), out DateTime lastCheckOut);
                     TimeSpan.TryParse(row[(int)COLUMNS.HOURS].ToString(), out TimeSpan hours);
+                    DateTime.TryParse(row[(int)COLUMNS.LAST_CHECKOUT].ToString(), out DateTime lastCheckOut);
                     TimeSpan.TryParse(row[(int)COLUMNS.TOTAL_HOURS].ToString(), out TimeSpan totalHours);
-                    dict_Attendance.Add(ID, new List<string> { name, stat, lastCheckIn.ToString(), lastCheckOut.ToString(), hours.ToString(), totalHours.ToString() });
+                    dict_Attendance.Add(ID, new List<string> { name, stat, lastCheckIn.ToString(), hours.ToString(), lastCheckOut.ToString(), totalHours.ToString() });
                 }
             }
             catch (Exception ex)
@@ -467,11 +471,11 @@ namespace _1732_Attendance
             return newRow;
         }
 
-        private IList<IList<object>> Create_Attendance_Status_Row(ulong ID, string name, string status, string lastCheckIn, string lastCheckout, string hours, string totalHours)
+        private IList<IList<object>> Create_Attendance_Status_Row(ulong ID, string name, string status, string lastCheckIn, string hours, string lastCheckout, string totalHours)
         {
             IList<IList<object>> newRow = new List<IList<object>>
             {
-                new List<object>() { ID, name, status, lastCheckIn, lastCheckout, hours, totalHours }
+                new List<object>() { ID, name, status, lastCheckIn, hours, lastCheckout, totalHours }
             };
             return newRow;
         }
