@@ -1,6 +1,7 @@
 ﻿using log4net;
 using log4net.Config;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Windows;
@@ -15,10 +16,6 @@ namespace _1732_Attendance
         internal ulong ID_Scan;
         private GSheetsAPI gAPI;
         private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        const string _DARKORANGE = "#FFFF8C00";
-        const string _GREEN = "#FF008000";
-        const string _RED = "#FFFF0000";
-        const string _BLACK = "#FFFFFFFF";
 
         #region *** MAIN FORM ***
         public MainWindow()
@@ -80,6 +77,52 @@ namespace _1732_Attendance
                     Log(gAPI.LastException);
                 }
                 TXT_ID.Clear();
+            }
+        }
+
+        private void BTN_Who_CheckedIn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                List<List<string>> users = gAPI.Get_CheckedIn_Users();
+                if (users.Count > 0)
+                {
+                    List<User> checkedIn = new List<User>();
+                    foreach (List<string> person in users)
+                    {
+                        checkedIn.Add(new User() { Name = person[0], Time_Checked_In = person[1] });
+                    }
+
+                    UserDataGrid.ItemsSource = checkedIn;
+                }
+                else
+                {
+                    Log("No users currently logged in");
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+        }
+
+        private void BTN_Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (gAPI.Refresh_Local_Data())
+                {
+                    Log("Local data refreshed");
+                }
+                else
+                {
+                    Log("Failed to refresh local data");
+                    Log(gAPI.LastException);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
             }
         }
 
@@ -267,5 +310,11 @@ namespace _1732_Attendance
             Log(_exMsg.ToString());
         }
         #endregion
+    }
+
+    internal class User
+    {
+        public string Name { get; set; }
+        public string Time_Checked_In { get; set; }
     }
 }
