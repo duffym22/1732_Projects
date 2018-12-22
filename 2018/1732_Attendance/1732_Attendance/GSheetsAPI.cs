@@ -32,7 +32,6 @@ namespace _1732_Attendance
         const string _OUT_STATUS = "OUT";
         const string _IN_STATUS = "IN";
 
-
         const string _ATTENDANCE_STATUS = "ATTENDANCE_STATUS!";
 
         const string _ID_COL = "A";
@@ -274,6 +273,27 @@ namespace _1732_Attendance
                 HandleException(ex, MethodBase.GetCurrentMethod().Name);
             }
             return success;
+        }
+
+        public List<List<string>> Get_CheckedIn_Users()
+        {
+            List<List<string>> users = new List<List<string>>();
+            try
+            {
+                List<ulong> keys = new List<ulong>(dict_Attendance.Keys);
+                foreach (ulong ID in keys)
+                {
+                    if (dict_Attendance[ID][(int)COLUMNS.STATUS - 1].Equals(_IN_STATUS))
+                    {
+                        users.Add(new List<string>() { dict_Attendance[ID][(int)COLUMNS.NAME - 1], dict_Attendance[ID][(int)COLUMNS.LAST_CHECKIN - 1] });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return users;
         }
 
         #endregion
