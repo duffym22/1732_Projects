@@ -47,8 +47,17 @@ namespace _1732_Attendance
             if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_Name.Text))
             {
                 ulong.TryParse(TXT_ID.Text, out ulong ID);
-                gAPI.Add_User(ID, TXT_Name.Text);
-                Log(string.Format("Added ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+                if (gAPI.Add_User(ID, TXT_Name.Text))
+                {
+                    DisplayText(string.Format("Successfully added ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+                    Log(string.Format("Added ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+                }
+                else
+                {
+                    DisplayText(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+                    Log(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+                    Log(gAPI.LastException);
+                }
                 TXT_ID.Clear();
                 TXT_Name.Clear();
             }
@@ -59,8 +68,18 @@ namespace _1732_Attendance
             if (!string.IsNullOrEmpty(TXT_ID.Text))
             {
                 ulong.TryParse(TXT_ID.Text, out ulong ID);
-                gAPI.Delete_User(ID);
-                Log(string.Format("Deleted ID: {0}", TXT_ID.Text));
+                if (gAPI.Delete_User(ID))
+                {
+                    DisplayText(string.Format("Successfully deleted ID: {0}", TXT_ID.Text));
+                    Log(string.Format("Deleted ID: {0}", TXT_ID.Text));
+                }
+                else
+                {
+                    DisplayText(string.Format("Failed to delete ID: {0}", TXT_ID.Text));
+                    Log(string.Format("Did not find ID: {0}", TXT_ID.Text));
+                    Log(gAPI.LastException);
+                }
+                TXT_ID.Clear();
             }
         }
 
