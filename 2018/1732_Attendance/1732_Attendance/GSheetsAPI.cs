@@ -23,11 +23,12 @@ namespace _1732_Attendance
    /// 6. Read the current status' of all IDs from the ATTENDANCE_STATUS tab
    /// 7. Enumerate current status of all IDs ulongo dict_ID_Status
    /// 8. Verify current status of the ID and invert it to write to the ATTENDANCE_STATUS tab
-   class GSheetsAPI
+   internal class GSheetsAPI : IDisposable
    {
       #region *** FIELDS ***
       const string _ROWS = "ROWS";
       const string _ADDED_STATUS = "ADDED";
+      const string _UPDATED_STATUS = "UPDATED";
       const string _DELETED_STATUS = "DELETED";
       const string _OUT_STATUS = "OUT";
       const string _IN_STATUS = "IN";
@@ -95,7 +96,10 @@ namespace _1732_Attendance
          _credential = null;
          dict_Attendance = new Dictionary<ulong, User>();
       }
-
+      public void Dispose()
+      {
+         ((IDisposable)_service).Dispose();
+      }
       #endregion
 
       #region *** FEATURE FUNCTIONALITY METHODS ***
@@ -140,6 +144,27 @@ namespace _1732_Attendance
          return success;
       }
 
+      public bool Update_User(ulong ID, string name, bool isMentor)
+      {
+         bool
+             success = false;
+
+         try
+         {
+            UpdateRows(Create_Updated_Attendance_Status_Row(ID, name, isMentor ? "X" : ""), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_User_Attendance_Status_Row(ID) + 1, _IS_MENTOR_COL));
+            UpdateRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}{2}:{3}", _ACCUM_HOURS, _ID_COL, Get_Accumulated_Hours_User_Row(ID) + 1, _NAME_COL));
+            Read_Attendance_Status();
+            InsertRows(Create_Log_Row(ID, _UPDATED_STATUS), Get_Next_Log_Row());
+            success = true;
+         }
+         catch (Exception ex)
+         {
+            HandleException(ex, MethodBase.GetCurrentMethod().Name);
+         }
+         return success;
+      }
+
+
       public bool Update_User_Status(ulong ID)
       {
          bool
@@ -180,7 +205,7 @@ namespace _1732_Attendance
                ///if date does not exist, add the column
                ///if the user does not exist on the sheet, add the user and then update their hours for that day
                dateColumn = Get_Accumulated_Hours_Date_Column();
-               rowToUpdate = Get_Accumulated_Hours_User_Cell(ID);
+               rowToUpdate = Get_Accumulated_Hours_User_Row(ID);
                string userCell = string.Format("{0}{1}", dateColumn, rowToUpdate + 1);
 
                //in case the user has split hours (left and came back)
@@ -230,12 +255,51 @@ namespace _1732_Attendance
                Read_Attendance_Status();
 
                //Delete user from ACCUMULATED HOURS tab
-               rowToRemove = Get_Accumulated_Hours_User_Cell(ID);
+               rowToRemove = Get_Accumulated_Hours_User_Row(ID);
                DeleteRows(rowToRemove, _GID_ACCUMULATED_HOURS);
 
                InsertRows(Create_Log_Row(ID, _DELETED_STATUS), Get_Next_Log_Row());
                success = true;
             }
+         }
+         catch (Exception ex)
+         {
+            HandleException(ex, MethodBase.GetCurrentMethod().Name);
+         }
+         return success;
+      }
+
+      public bool Force_Logoff_User(ulong ID)
+      {
+         bool
+            success = false;
+
+         int
+            rowToUpdate;
+
+         string
+            dateColumn = string.Empty,
+            rowRange = string.Empty;
+
+         try
+         {
+            rowToUpdate = Get_User_Attendance_Status_Row(ID);
+
+            /// If user is still checked in at the cut-off time 
+            /// 1) Set the user status to OUT
+            /// --- Do not accumulate hours 
+            /// --- All hours are forfeit for that day
+            /// --- Leave all other fields alone 
+            dict_Attendance[ID].Status = _OUT_STATUS;
+
+            //row to be updated - increment by 1 because sheets start at "0"
+            rowRange = string.Format("{0}{1}{2}", _ATTENDANCE_STATUS, _CURRENT_STATUS_COL, (rowToUpdate + 1));
+            UpdateRows(Update_Attendance_Status(dict_Attendance[ID].Status), rowRange);
+
+            ///update the dictionary?
+            Read_Attendance_Status();
+            InsertRows(Create_Log_Row(ID, dict_Attendance[ID].Status, true), Get_Next_Log_Row());
+            success = true;
          }
          catch (Exception ex)
          {
@@ -401,7 +465,7 @@ namespace _1732_Attendance
          return returnVal;
       }
 
-      private int Get_Accumulated_Hours_User_Cell(ulong ID)
+      private int Get_Accumulated_Hours_User_Row(ulong ID)
       {
          int returnVal = -1;
          try
@@ -613,7 +677,7 @@ namespace _1732_Attendance
 
       #region *** RECORD CREATION METHODS ***
 
-      private IList<IList<object>> Create_Log_Row(ulong ID, string status)
+      private IList<IList<object>> Create_Log_Row(ulong ID, string status, bool forceLogOff = false)
       {
          string log = string.Empty;
          switch (status)
@@ -622,10 +686,13 @@ namespace _1732_Attendance
                log = "User checked IN";
                break;
             case _OUT_STATUS:
-               log = "User checked OUT";
+               log = forceLogOff ? "Forced user check OUT" : "User checked OUT";
                break;
             case _ADDED_STATUS:
                log = "User ADDED";
+               break;
+            case _UPDATED_STATUS:
+               log = "User UPDATED";
                break;
             case _DELETED_STATUS:
                log = "User DELETED";
@@ -645,6 +712,15 @@ namespace _1732_Attendance
          IList<IList<object>> newRow = new List<IList<object>>
             {
                 new List<object>() { ID, name, isMentor, status, lastCheckIn, hours, lastCheckout, totalHours }
+            };
+         return newRow;
+      }
+
+      private IList<IList<object>> Create_Updated_Attendance_Status_Row(ulong ID, string name, string isMentor)
+      {
+         IList<IList<object>> newRow = new List<IList<object>>
+            {
+                new List<object>() { ID, name, isMentor }
             };
          return newRow;
       }
