@@ -41,42 +41,70 @@ namespace _1732_Attendance
 
       private void BTN_Add_User_Click(object sender, RoutedEventArgs e)
       {
-         if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_Name.Text))
+         try
          {
-            ulong.TryParse(TXT_ID.Text, out ulong ID);
-            if (gAPI.Add_User(ID, TXT_Name.Text))
+            if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_Name.Text))
             {
-               DisplayText(string.Format("Successfully added ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
-               Log(string.Format("Added ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+
+               if (TXT_ID.Text.Length > 10)
+               {
+                  string shortID = TXT_ID.Text.Substring(txt_ID_Scan.Text.Length / 2, (TXT_ID.Text.Length - (TXT_ID.Text.Length / 2) - 1));
+                  TXT_ID.Text = shortID;
+               }
+
+               ulong.TryParse(TXT_ID.Text, out ulong ID);
+               if (gAPI.Add_User(ID, TXT_Name.Text, (bool)CHK_Is_Mentor.IsChecked))
+               {
+                  DisplayText(string.Format("Successfully added ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+                  Log(string.Format("Added ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+               }
+               else
+               {
+                  DisplayText(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+                  Log(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+                  Log(gAPI.LastException);
+               }
+               TXT_ID.Clear();
+               TXT_Name.Clear();
+               CHK_Is_Mentor.IsChecked = false;
             }
-            else
-            {
-               DisplayText(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
-               Log(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
-               Log(gAPI.LastException);
-            }
-            TXT_ID.Clear();
-            TXT_Name.Clear();
+         }
+         catch (Exception ex)
+         {
+            HandleException(ex, MethodBase.GetCurrentMethod().Name);
          }
       }
 
       private void BTN_Delete_User_Click(object sender, RoutedEventArgs e)
       {
-         if (!string.IsNullOrEmpty(TXT_ID.Text))
+         try
          {
-            ulong.TryParse(TXT_ID.Text, out ulong ID);
-            if (gAPI.Delete_User(ID))
+            if (!string.IsNullOrEmpty(TXT_ID.Text))
             {
-               DisplayText(string.Format("Successfully deleted ID: {0}", TXT_ID.Text));
-               Log(string.Format("Deleted ID: {0}", TXT_ID.Text));
+               if (TXT_ID.Text.Length > 10)
+               {
+                  string shortID = TXT_ID.Text.Substring(txt_ID_Scan.Text.Length / 2, (TXT_ID.Text.Length - (TXT_ID.Text.Length / 2) - 1));
+                  TXT_ID.Text = shortID;
+               }
+
+               ulong.TryParse(TXT_ID.Text, out ulong ID);
+               if (gAPI.Delete_User(ID))
+               {
+                  DisplayText(string.Format("Successfully deleted ID: {0}", TXT_ID.Text));
+                  Log(string.Format("Deleted ID: {0}", TXT_ID.Text));
+               }
+               else
+               {
+                  DisplayText(string.Format("Failed to delete ID: {0}", TXT_ID.Text));
+                  Log(string.Format("Did not find ID: {0}", TXT_ID.Text));
+                  Log(gAPI.LastException);
+               }
+               TXT_ID.Clear();
             }
-            else
-            {
-               DisplayText(string.Format("Failed to delete ID: {0}", TXT_ID.Text));
-               Log(string.Format("Did not find ID: {0}", TXT_ID.Text));
-               Log(gAPI.LastException);
-            }
-            TXT_ID.Clear();
+         }
+         catch (Exception ex)
+         {
+            HandleException(ex, MethodBase.GetCurrentMethod().Name);
          }
       }
 
@@ -158,6 +186,12 @@ namespace _1732_Attendance
          {
             if (e.Key == System.Windows.Input.Key.Enter || e.Key == System.Windows.Input.Key.Return)
             {
+               if (txt_ID_Scan.Text.Length > 10)
+               {
+                  string shortID = txt_ID_Scan.Text.Substring(txt_ID_Scan.Text.Length / 2, (txt_ID_Scan.Text.Length - (txt_ID_Scan.Text.Length / 2) - 1));
+                  txt_ID_Scan.Text = shortID;
+               }
+
                if (ulong.TryParse(txt_ID_Scan.Text, out ID_Scan))
                {
                   if (Lookup_ID())

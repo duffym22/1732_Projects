@@ -19,15 +19,16 @@
         <Button x:Name="BTN_Login" Content="Login" Click="BTN_Login_Click" FontSize="14" Margin="713,408,10,10" Width="67"/>
         <TextBox x:Name="txt_Status" HorizontalAlignment="Left" Height="23" Margin="188,391,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="424" BorderThickness="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold"/>
         <Button x:Name="BTN_Add_User" Content="Add User" HorizontalAlignment="Left" Margin="705,81,0,0" VerticalAlignment="Top" Width="75" Click="BTN_Add_User_Click"/>
-        <Button x:Name="BTN_Delete_User" Content="Delete User" HorizontalAlignment="Left" Margin="705,162,0,0" VerticalAlignment="Top" Width="75" Click="BTN_Delete_User_Click"/>
+        <Button x:Name="BTN_Delete_User" Content="Delete User" HorizontalAlignment="Left" Margin="705,201,0,0" VerticalAlignment="Top" Width="75" Click="BTN_Delete_User_Click"/>
         <TextBox x:Name="TXT_ID" HorizontalAlignment="Left" Height="23" Margin="705,106,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="75"/>
         <Label x:Name="label" Content="ID" HorizontalAlignment="Left" Margin="635,106,0,0" VerticalAlignment="Top" Height="23" Width="49" HorizontalContentAlignment="Right"/>
         <Label x:Name="label_Copy" Content="Name" HorizontalAlignment="Left" Margin="635,134,0,0" VerticalAlignment="Top" Height="23" Width="49" HorizontalContentAlignment="Right"/>
         <TextBox x:Name="TXT_Name" HorizontalAlignment="Left" Height="23" Margin="705,134,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="75"/>
-        <Button x:Name="BTN_Who_CheckedIn" Content="Who's Checked In" HorizontalAlignment="Left" Margin="651,212,0,0" VerticalAlignment="Top" Width="129" Height="39" Click="BTN_Who_CheckedIn_Click"/>
-        <Button x:Name="BTN_Refresh" Content="Refresh Data" HorizontalAlignment="Left" Margin="705,187,0,0" VerticalAlignment="Top" Width="75" Click="BTN_Refresh_Click"/>
+        <Button x:Name="BTN_Who_CheckedIn" Content="Who's Checked In" HorizontalAlignment="Left" Margin="651,251,0,0" VerticalAlignment="Top" Width="129" Height="39" Click="BTN_Who_CheckedIn_Click"/>
+        <Button x:Name="BTN_Refresh" Content="Refresh Data" HorizontalAlignment="Left" Margin="705,226,0,0" VerticalAlignment="Top" Width="75" Click="BTN_Refresh_Click"/>
         <DataGrid x:Name="UserDataGrid" HorizontalAlignment="Left" Height="245" Margin="10,10,0,0" VerticalAlignment="Top" Width="602" LostFocus="UserDataGrid_LostFocus" FocusableChanged="UserDataGrid_FocusableChanged" Visibility="Hidden"/>
-        <Button x:Name="BTN_Recently_Checked_Out" Content="Recently Checked Out" HorizontalAlignment="Left" Margin="651,256,0,0" VerticalAlignment="Top" Width="129" Height="39" Click="BTN_Recently_Checked_Out_Click"/>
+        <Button x:Name="BTN_Recently_Checked_Out" Content="Recently Checked Out" HorizontalAlignment="Left" Margin="651,295,0,0" VerticalAlignment="Top" Width="129" Height="39" Click="BTN_Recently_Checked_Out_Click"/>
+        <CheckBox x:Name="CHK_Is_Mentor" Content="Is Mentor?" HorizontalAlignment="Left" Margin="704,162,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

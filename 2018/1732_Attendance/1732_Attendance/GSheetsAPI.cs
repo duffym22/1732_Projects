@@ -36,11 +36,12 @@ namespace _1732_Attendance
 
       const string _ID_COL = "A";
       const string _NAME_COL = "B";
-      const string _CURRENT_STATUS_COL = "C";
-      const string _CHECKIN_COL = "D";
-      const string _HOURS_COL = "E";
-      const string _CHECKOUT_COL = "F";
-      const string _TOTAL_HRS_COL = "G";
+      const string _IS_MENTOR_COL = "C";
+      const string _CURRENT_STATUS_COL = "D";
+      const string _CHECKIN_COL = "E";
+      const string _HOURS_COL = "F";
+      const string _CHECKOUT_COL = "G";
+      const string _TOTAL_HRS_COL = "H";
 
       const string _RESET_HOURS = "00:00:00";
       const string _RESET_TOTAL_HOURS = "0.00:00:00";
@@ -51,8 +52,6 @@ namespace _1732_Attendance
 
       const string _ACCUM_HOURS = "ACCUMULATED_HOURS!";
       const string _DATE_RANGE = "1";
-      const string _START_RANGE = "A";
-      const string _END_RANGE = "B";
       const string _ID_NAME_RANGE = "A:B";
 
       const int _GID_ATTENDANCE_STATUS = 741019777;
@@ -73,11 +72,12 @@ namespace _1732_Attendance
       {
          ID = 0,
          NAME = 1,
-         STATUS = 2,
-         LAST_CHECKIN = 3,
-         HOURS = 4,
-         LAST_CHECKOUT = 5,
-         TOTAL_HOURS = 6,
+         IS_MENTOR = 2,
+         STATUS = 3,
+         LAST_CHECKIN = 4,
+         HOURS = 5,
+         LAST_CHECKOUT = 6,
+         TOTAL_HOURS = 7,
       }
 
       #endregion
@@ -114,15 +114,15 @@ namespace _1732_Attendance
          return dict_Attendance[ID].Name;
       }
 
-      public bool Add_User(ulong ID, string name)
+      public bool Add_User(ulong ID, string name, bool isMentor)
       {
          bool
              success = false;
 
          try
          {
-            InsertRows(Create_Attendance_Status_Row(ID, name, "OUT", "0", _RESET_HOURS, "0", _RESET_TOTAL_HOURS), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_Next_Attendance_Row(), _TOTAL_HRS_COL));
-            InsertRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}:{2}", _START_RANGE, Get_Next_Accumulated_Hours_Row(), _END_RANGE));
+            InsertRows(Create_Attendance_Status_Row(ID, name, isMentor ? "X" : "", "OUT", "0", _RESET_HOURS, "0", _RESET_TOTAL_HOURS), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_Next_Attendance_Row(), _TOTAL_HRS_COL));
+            InsertRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}{2}:{3}", _ACCUM_HOURS, _ID_COL, Get_Next_Accumulated_Hours_Row(), _NAME_COL));
             Read_Attendance_Status();
             InsertRows(Create_Log_Row(ID, _ADDED_STATUS), Get_Next_Log_Row());
             success = true;
@@ -175,12 +175,12 @@ namespace _1732_Attendance
                ///if the user does not exist on the sheet, add the user and then update their hours for that day
                dateColumn = Get_Accumulated_Hours_Date_Column();
                rowToUpdate = Get_Accumulated_Hours_User_Cell(ID);
-               string userCell = string.Format("{0}{1}", dateColumn, rowToUpdate);
+               string userCell = string.Format("{0}{1}", dateColumn, rowToUpdate + 1);
 
                //in case the user has split hours (left and came back)
                //read what is in the cell and add to it
                TimeSpan sessionHours = Read_User_Accumulated_Hours(userCell) + dict_Attendance[ID].User_Hours;
-               UpdateRows(Update_Accumulated_Hours(sessionHours), userCell);
+               UpdateRows(Update_Accumulated_Hours(sessionHours), string.Format("{0}{1}", _ACCUM_HOURS, userCell));
             }
             else
             {
@@ -322,12 +322,19 @@ namespace _1732_Attendance
          TimeSpan hoursRead;
          try
          {
-            GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, userCell);
+            GetRequest getRequest = _service.Spreadsheets.Values.Get(_sheetId, string.Format("{0}{1}", _ACCUM_HOURS, userCell));
 
             ValueRange getResponse = getRequest.Execute();
             IList<IList<Object>> userHours = getResponse.Values;
-            IList<object> cell = userHours[0];
-            TimeSpan.TryParse(cell[0].ToString(), out hoursRead);
+            if (userHours != null)
+            {
+               IList<object> cell = userHours[0];
+               TimeSpan.TryParse(cell[0].ToString(), out hoursRead);
+            }
+            else
+            {
+               TimeSpan.TryParse(_RESET_TOTAL_HOURS, out hoursRead);
+            }
          }
          catch (Exception ex)
          {
@@ -379,7 +386,7 @@ namespace _1732_Attendance
 
             if (getValues != null)
             {
-               for (int i = 0; i < getValues.Count; i++)
+               for (int i = 1; i < getValues.Count; i++)
                {
                   IList<object> row = getValues[i];
                   ulong.TryParse(row[0].ToString(), out ulong readID);
@@ -456,7 +463,8 @@ namespace _1732_Attendance
             //otherwise return the index of the column
             if (!Parse_Accumulated_Hours_Dates(getValues, out lastColumn))
             {
-               InsertRows(Create_Accumulated_Hours_Date_Cell(), string.Format("{0}{1}{2}", _ACCUM_HOURS, Get_Next_Accum_Cell(lastColumn + 1), _DATE_RANGE));
+               UpdateRows(Create_Accumulated_Hours_Date_Cell(), string.Format("{0}{1}{2}", _ACCUM_HOURS, Get_Next_Accum_Cell(lastColumn + 1), _DATE_RANGE));
+               returnVal = Get_Next_Accum_Cell(lastColumn + 1);
             }
             else
             {
@@ -520,10 +528,6 @@ namespace _1732_Attendance
       #region *** PARSE METHODS ***
       private void Parse_Attendance_Status_Rows(IList<IList<object>> idStatusList)
       {
-         string
-             name,
-             stat;
-
          try
          {
             //Wipe any previous dictionary values to start fresh with every request
@@ -536,14 +540,15 @@ namespace _1732_Attendance
                //Get the current row (ID | Current_Status)
                IList<object> row = idStatusList[i];
                ulong.TryParse((string)row[(int)COLUMNS.ID], out ulong ID);
-               name = row[(int)COLUMNS.NAME].ToString();
-               stat = row[(int)COLUMNS.STATUS].ToString();
+               string name = row[(int)COLUMNS.NAME].ToString();
+               bool mentor = row[(int)COLUMNS.IS_MENTOR].ToString().Equals("X") ? true : false;
+               string stat = row[(int)COLUMNS.STATUS].ToString();
                DateTime.TryParse(row[(int)COLUMNS.LAST_CHECKIN].ToString(), out DateTime lastCheckIn);
                TimeSpan.TryParse(row[(int)COLUMNS.HOURS].ToString(), out TimeSpan hours);
                DateTime.TryParse(row[(int)COLUMNS.LAST_CHECKOUT].ToString(), out DateTime lastCheckOut);
                TimeSpan.TryParse(row[(int)COLUMNS.TOTAL_HOURS].ToString(), out TimeSpan totalHours);
 
-               dict_Attendance.Add(ID, new User() { ID = ID, Name = name, Status = stat, Check_In_Time = lastCheckIn, User_Hours = hours, Check_Out_Time = lastCheckOut, User_TotalHours = totalHours });
+               dict_Attendance.Add(ID, new User() { ID = ID, Name = name, Is_Mentor = mentor, Status = stat, Check_In_Time = lastCheckIn, User_Hours = hours, Check_Out_Time = lastCheckOut, User_TotalHours = totalHours });
             }
          }
          catch (Exception ex)
@@ -565,6 +570,7 @@ namespace _1732_Attendance
                if (date.Equals(DateTime.Today))
                {
                   success = true;
+                  break;
                }
             }
          }
@@ -607,11 +613,11 @@ namespace _1732_Attendance
          return newRow;
       }
 
-      private IList<IList<object>> Create_Attendance_Status_Row(ulong ID, string name, string status, string lastCheckIn, string hours, string lastCheckout, string totalHours)
+      private IList<IList<object>> Create_Attendance_Status_Row(ulong ID, string name, string isMentor, string status, string lastCheckIn, string hours, string lastCheckout, string totalHours)
       {
          IList<IList<object>> newRow = new List<IList<object>>
             {
-                new List<object>() { ID, name, status, lastCheckIn, hours, lastCheckout, totalHours }
+                new List<object>() { ID, name, isMentor, status, lastCheckIn, hours, lastCheckout, totalHours }
             };
          return newRow;
       }
