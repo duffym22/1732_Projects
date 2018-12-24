@@ -10,11 +10,11 @@
         <Color x:Key="Accent_2">#FF8BC81E</Color>
     </Window.Resources>
     <Grid Background="White" Margin="0,0,4,0">
-        <TextBox x:Name="txt_ID_Scan" HorizontalAlignment="Left" Margin="304,351,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="192" Cursor="AppStarting" KeyDown="txt_ID_Scan_KeyDown" Height="30" FontSize="18"/>
+        <TextBox x:Name="txt_ID_Scan" HorizontalAlignment="Left" Margin="304,351,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="192" Cursor="AppStarting" KeyDown="TXT_ID_Scan_KeyDown" Height="30" FontSize="18"/>
         <TextBlock x:Name="lbl_scanID" Margin="304,320,0,0" TextWrapping="Wrap" Text="Scan your ID" FontFamily="Avenir" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Width="192" Height="26" FontSize="18"/>
-        <Image x:Name="image" Margin="212,10,0,0" Source="1080pRammmmo.png" Cursor="None" HorizontalAlignment="Left" VerticalAlignment="Top" Height="210"/>
-        <Image x:Name="image2" Margin="212,225,192,0" VerticalAlignment="Top" Source="words_BLUE.png" RenderTransformOrigin="0.414,0.489" Height="30"/>
-        <Image x:Name="image1" Margin="145,260,130,0" VerticalAlignment="Top" Source="Logo Vector.png" Height="50" Width="515"/>
+        <Image x:Name="image" Margin="212,10,0,0" Source="img\1080pRammmmo.png" Cursor="None" HorizontalAlignment="Left" VerticalAlignment="Top" Height="210"/>
+        <Image x:Name="image2" Margin="212,225,192,0" VerticalAlignment="Top" Source="img\words_BLUE.png" RenderTransformOrigin="0.414,0.489" Height="30"/>
+        <Image x:Name="image1" Margin="145,260,130,0" VerticalAlignment="Top" Source="img\Logo Vector.png" Height="50" Width="515"/>
         <Button x:Name="BTN_Reconnect" Content="Reconnect" HorizontalAlignment="Left" Margin="668,369,0,0" VerticalAlignment="Top" Width="112" Click="BTN_Reconnect_Click" FontSize="14"/>
         <Button x:Name="BTN_Login" Content="Login" Click="BTN_Login_Click" FontSize="14" Margin="713,408,10,10" Width="67"/>
         <TextBox x:Name="txt_Status" HorizontalAlignment="Left" Height="23" Margin="188,391,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="424" BorderThickness="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold"/>
@@ -24,9 +24,10 @@
         <Label x:Name="label" Content="ID" HorizontalAlignment="Left" Margin="635,106,0,0" VerticalAlignment="Top" Height="23" Width="49" HorizontalContentAlignment="Right"/>
         <Label x:Name="label_Copy" Content="Name" HorizontalAlignment="Left" Margin="635,134,0,0" VerticalAlignment="Top" Height="23" Width="49" HorizontalContentAlignment="Right"/>
         <TextBox x:Name="TXT_Name" HorizontalAlignment="Left" Height="23" Margin="705,134,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="75"/>
-        <Button x:Name="BTN_Who_CheckedIn" Content="Who's Checked In" HorizontalAlignment="Left" Margin="677,200,0,0" VerticalAlignment="Top" Width="103" Height="39" Click="BTN_Who_CheckedIn_Click"/>
-        <Button x:Name="BTN_Refresh" Content="Refresh Data" HorizontalAlignment="Left" Margin="705,245,0,0" VerticalAlignment="Top" Width="75" Click="BTN_Refresh_Click"/>
-        <DataGrid x:Name="UserDataGrid" HorizontalAlignment="Left" Height="431" Margin="10,10,0,0" VerticalAlignment="Top" Width="236"/>
+        <Button x:Name="BTN_Who_CheckedIn" Content="Who's Checked In" HorizontalAlignment="Left" Margin="651,212,0,0" VerticalAlignment="Top" Width="129" Height="39" Click="BTN_Who_CheckedIn_Click"/>
+        <Button x:Name="BTN_Refresh" Content="Refresh Data" HorizontalAlignment="Left" Margin="705,187,0,0" VerticalAlignment="Top" Width="75" Click="BTN_Refresh_Click"/>
+        <DataGrid x:Name="UserDataGrid" HorizontalAlignment="Left" Height="245" Margin="10,10,0,0" VerticalAlignment="Top" Width="602" LostFocus="UserDataGrid_LostFocus" FocusableChanged="UserDataGrid_FocusableChanged" Visibility="Hidden"/>
+        <Button x:Name="BTN_Recently_Checked_Out" Content="Recently Checked Out" HorizontalAlignment="Left" Margin="651,256,0,0" VerticalAlignment="Top" Width="129" Height="39" Click="BTN_Recently_Checked_Out_Click"/>
 
     </Grid>
 </Window>
