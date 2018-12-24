@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Windows;
 
 namespace _1732_Attendance
@@ -11,7 +12,7 @@ namespace _1732_Attendance
    /// <summary>
    /// Interaction logic for MainWindow.xaml
    /// </summary>
-   public partial class MainWindow : Window
+   public partial class MainWindow : Window 
    {
       #region *** VARIABLES ***
       const string _LOGIN = "Login";
@@ -20,8 +21,8 @@ namespace _1732_Attendance
       const string _REGULAR_MODE_SCAN = "Scan your ID";
       const string _MENTOR_MODE_SCAN = "Scan/Enter your Mentor ID";
 
-      internal ulong ID_Scan;
       private GSheetsAPI gAPI;
+      private Timer timer;
       private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
       #endregion
 
@@ -70,37 +71,121 @@ namespace _1732_Attendance
       {
          try
          {
-            if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_Name.Text))
+            if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_First_Name.Text) && !string.IsNullOrEmpty(TXT_Last_Name.Text))
             {
 
                if (TXT_ID.Text.Length > 10)
                {
                   string shortID = TXT_ID.Text.Substring(TXT_ID_Scan.Text.Length / 2, (TXT_ID.Text.Length - (TXT_ID.Text.Length / 2) - 1));
                   TXT_ID.Text = shortID;
+                  DisplayAdminText(string.Format("ID too long. Shortened ID to {0} characters", shortID.Length));
                }
 
                ulong.TryParse(TXT_ID.Text, out ulong ID);
-               if (gAPI.Add_User(ID, TXT_Name.Text, (bool)CHK_Is_Mentor.IsChecked))
+               string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
+               if (gAPI.Add_User(ID, fullName, (bool)CHK_Is_Mentor.IsChecked))
                {
-                  DisplayAdminText(string.Format("Successfully added ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
-                  Log(string.Format("Added ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+                  DisplayAdminText(string.Format("Successfully added ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                  Log(string.Format("Added ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
                }
                else
                {
-                  DisplayAdminText(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
-                  Log(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, TXT_Name.Text));
+                  DisplayAdminText(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                  Log(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
                   Log(gAPI.LastException);
                }
                TXT_ID.Clear();
-               TXT_Name.Clear();
+               TXT_First_Name.Clear();
+               TXT_Last_Name.Clear();
                CHK_Is_Mentor.IsChecked = false;
             }
             else
-               DisplayAdminText("Please scan an ID and enter a name into the fields to the right to add a user");
+            {
+               DisplayAdminText("Please scan an ID and enter a name into the fields to add a user");
+            }
          }
          catch (Exception ex)
          {
             HandleException(ex, MethodBase.GetCurrentMethod().Name);
+         }
+      }
+
+      private void BTN_Update_User_Click(object sender, RoutedEventArgs e)
+      {
+         try
+         {
+            if (!string.IsNullOrEmpty(TXT_ID.Text))
+            {
+               if (TXT_ID.Text.Length > 10)
+               {
+                  string shortID = TXT_ID.Text.Substring(TXT_ID_Scan.Text.Length / 2, (TXT_ID.Text.Length - (TXT_ID.Text.Length / 2) - 1));
+                  TXT_ID.Text = shortID;
+                  DisplayAdminText(string.Format("ID too long. Shortened ID to {0} characters", shortID.Length));
+               }
+
+               ulong.TryParse(TXT_ID.Text, out ulong ID);
+               if (Lookup_ID(ID))
+               {
+                  string[] name = gAPI.Get_ID_Name(ID).Split(',');
+                  TXT_Last_Name.Text = name[0].Trim();
+                  TXT_First_Name.Text = name[1].Trim();
+                  CHK_Is_Mentor.IsChecked = gAPI.Check_Is_Mentor(ID);
+                  UI_Display_Update_Options(true);
+                  DisplayAdminText("User data imported. Please make any changes to the user by updating the fields and press Save to finish");
+               }
+               else
+               {
+                  DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
+               }
+
+            }
+            else
+            {
+               DisplayAdminText("Please scan/enter an ID of the user to update");
+            }
+         }
+         catch (Exception ex)
+         {
+            HandleException(ex, MethodBase.GetCurrentMethod().Name);
+         }
+      }
+
+      private void BTN_Save_Updated_User_Click(object sender, RoutedEventArgs e)
+      {
+         try
+         {
+            ulong.TryParse(TXT_ID.Text, out ulong ID);
+            if (!string.IsNullOrEmpty(TXT_First_Name.Text) && !string.IsNullOrEmpty(TXT_Last_Name.Text))
+            {
+
+               string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
+               if (gAPI.Update_User(ID, fullName, (bool)CHK_Is_Mentor.IsChecked))
+               {
+                  DisplayAdminText(string.Format("Successfully update ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                  Log(string.Format("Updated ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+               }
+               else
+               {
+                  DisplayAdminText(string.Format("Failed to update ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                  Log(string.Format("Failed to update ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                  Log(gAPI.LastException);
+               }
+
+               TXT_ID.Clear();
+               TXT_First_Name.Clear();
+               TXT_Last_Name.Clear();
+               CHK_Is_Mentor.IsChecked = false;
+               UI_Display_Update_Options(false);
+            }
+            else
+            {
+               DisplayAdminText("Please enter the first and last name of the user to update");
+            }
+         }
+         catch (Exception)
+         {
+
+            throw;
          }
       }
 
@@ -114,24 +199,34 @@ namespace _1732_Attendance
                {
                   string shortID = TXT_ID.Text.Substring(TXT_ID_Scan.Text.Length / 2, (TXT_ID.Text.Length - (TXT_ID.Text.Length / 2) - 1));
                   TXT_ID.Text = shortID;
+                  DisplayAdminText(string.Format("ID too long. Shortened ID to {0} characters", shortID.Length));
                }
 
                ulong.TryParse(TXT_ID.Text, out ulong ID);
-               if (gAPI.Delete_User(ID))
+               if (Lookup_ID(ID))
                {
-                  DisplayAdminText(string.Format("Successfully deleted ID: {0}", TXT_ID.Text));
-                  Log(string.Format("Deleted ID: {0}", TXT_ID.Text));
+                  if (gAPI.Delete_User(ID))
+                  {
+                     DisplayAdminText(string.Format("Successfully deleted ID: {0}", TXT_ID.Text));
+                     Log(string.Format("Deleted ID: {0}", TXT_ID.Text));
+                  }
+                  else
+                  {
+                     DisplayAdminText(string.Format("Failed to delete ID: {0}", TXT_ID.Text));
+                     Log(string.Format("Did not find ID: {0}", TXT_ID.Text));
+                     Log(gAPI.LastException);
+                  }
+                  TXT_ID.Clear();
                }
                else
                {
-                  DisplayAdminText(string.Format("Failed to delete ID: {0}", TXT_ID.Text));
-                  Log(string.Format("Did not find ID: {0}", TXT_ID.Text));
-                  Log(gAPI.LastException);
+                  DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
                }
-               TXT_ID.Clear();
             }
             else
-               DisplayAdminText("Please scan an ID to delete into the ID fields on the right");
+            {
+               DisplayAdminText("Please scan/enter an ID to delete into the ID field");
+            }
          }
          catch (Exception ex)
          {
@@ -222,8 +317,6 @@ namespace _1732_Attendance
          }
       }
 
-
-
       private void BTN_Refresh_Click(object sender, RoutedEventArgs e)
       {
          try
@@ -259,37 +352,41 @@ namespace _1732_Attendance
                   TXT_ID_Scan.Text = shortID;
                }
 
-               if (ulong.TryParse(TXT_ID_Scan.Text, out ID_Scan))
+               if (ulong.TryParse(TXT_ID_Scan.Text, out ulong ID_Scan))
                {
-                  if (Lookup_ID())
+                  if (Lookup_ID(ID_Scan))
                   {
                      //Mentor Admin mode
                      if (Mentor_Mode)
                      {
-                        if (Verify_Mentor_ID())
+                        if (Verify_Mentor_ID(ID_Scan))
                         {
                            TXT_ID_Scan.Clear();
                            DisplayAdminText(string.Format("Mentor Authorized - ID: {0} | NAME: {1}", ID_Scan, gAPI.Get_ID_Name(ID_Scan)));
-                           Log("Enabling Mentor Admin screen");
+                           Log("Enabling Mentor admin screen");
+                           GRD_Admin.IsEnabled = true;
                            GRD_Admin.Visibility = Visibility.Visible;
 
                         }
                         else
                         {
-                           DisplayText(string.Format("{0} not authorized", ID_Scan.ToString()));
+                           DisplayText(string.Format("ID - {0} is not authorized as a Mentor", ID_Scan.ToString()));
+                           Log(string.Format("ID - {0} is not authorized as a Mentor", ID_Scan.ToString()));
                            TXT_ID_Scan.Clear();
                         }
                      }
                      else
                      {
                         //Regular scanning mode
-                        Update_Record();
+                        Log(string.Format("Updating ID: {0}", ID_Scan.ToString()));
+                        Thread t = new Thread(() => Update_Record(ID_Scan));
+                        t.Start();
                         TXT_ID_Scan.Clear();
                      }
                   }
                   else
                   {
-                     DisplayText(string.Format("{0} not registered. Please find a mentor to register your ID", ID_Scan.ToString()));
+                     DisplayText(string.Format("ID - {0} is not registered. Please find a Mentor to register your ID", ID_Scan.ToString()));
                      TXT_ID_Scan.Clear();
                   }
                }
@@ -326,6 +423,17 @@ namespace _1732_Attendance
          ///
       }
 
+      private void Setup_Midnight_Timer()
+      {
+         TimeSpan timeToGo = new TimeSpan(1, 0, 0, 0) - DateTime.Now.TimeOfDay; //new DateTime(2018, 12, 25, 0, 0, 0);
+         Log(string.Format("Time until next auto-check out of users: {0}", timeToGo.ToString()));
+
+         timer = new Timer(x =>
+         {
+            Check_Out_Users();
+         }, null, timeToGo, Timeout.InfiniteTimeSpan);
+      }
+
       #endregion
 
       #region *** ACCESS METHODS ***
@@ -341,6 +449,7 @@ namespace _1732_Attendance
             {
                Log("Successfully refreshed local data");
                UI_Control(true);
+               Setup_Midnight_Timer();
                TXT_ID_Scan.Focus();
             }
             else
@@ -375,6 +484,10 @@ namespace _1732_Attendance
             TXT_ID_Scan.IsEnabled = true;
             TXT_ID_Scan.Visibility = Visibility.Visible;
             Log("Disabling reconnect button");
+            GRD_Admin.IsEnabled = false;
+            GRD_Admin.Visibility = Visibility.Hidden;
+            BTN_Save_Updated_User.IsEnabled = false;
+            BTN_Save_Updated_User.Visibility = Visibility.Hidden;
             BTN_Reconnect.Visibility = Visibility.Hidden;
             BTN_Reconnect.IsEnabled = false;
 
@@ -385,27 +498,43 @@ namespace _1732_Attendance
             TXT_ID_Scan.IsEnabled = false;
             TXT_ID_Scan.Visibility = Visibility.Hidden;
             Log("Enabling reconnect button");
+            GRD_Admin.IsEnabled = false;
+            GRD_Admin.Visibility = Visibility.Hidden;
             BTN_Reconnect.Visibility = Visibility.Visible;
             BTN_Reconnect.IsEnabled = true;
          }
       }
 
-      private bool Lookup_ID()
+      private void UI_Display_Update_Options(bool state)
+      {
+         if (state)
+         {
+            BTN_Save_Updated_User.IsEnabled = true;
+            BTN_Save_Updated_User.Visibility = Visibility.Visible;
+         }
+         else
+         {
+            BTN_Save_Updated_User.IsEnabled = false;
+            BTN_Save_Updated_User.Visibility = Visibility.Hidden;
+         }
+      }
+
+      private bool Lookup_ID(ulong ID)
       {
          bool
              success = false;
 
          try
          {
-            Log(string.Format("Verifying ID: {0}", ID_Scan.ToString()));
-            if (gAPI.Check_Valid_ID(ID_Scan))
+            Log(string.Format("Verifying ID: {0}", ID.ToString()));
+            if (gAPI.Check_Valid_ID(ID))
             {
-               Log(string.Format("ID: {0} - Verified", ID_Scan.ToString()));
+               Log(string.Format("ID: {0} - Verified", ID.ToString()));
                success = true;
             }
             else
             {
-               Log(string.Format("ID: {0} - Not registered", ID_Scan.ToString()));
+               Log(string.Format("ID: {0} - Not registered", ID.ToString()));
             }
          }
          catch (Exception ex)
@@ -415,22 +544,22 @@ namespace _1732_Attendance
          return success;
       }
 
-      private bool Verify_Mentor_ID()
+      private bool Verify_Mentor_ID(ulong ID)
       {
          bool
              success = false;
 
          try
          {
-            Log(string.Format("Verifying ID is authorized: {0}", ID_Scan.ToString()));
-            if (gAPI.Check_Is_Mentor(ID_Scan))
+            Log(string.Format("Verifying ID is authorized: {0}", ID.ToString()));
+            if (gAPI.Check_Is_Mentor(ID))
             {
-               Log(string.Format("ID: {0} - Authorized", ID_Scan.ToString()));
+               Log(string.Format("ID: {0} - Authorized", ID.ToString()));
                success = true;
             }
             else
             {
-               Log(string.Format("ID: {0} - Unauthorized", ID_Scan.ToString()));
+               Log(string.Format("ID: {0} - Unauthorized", ID.ToString()));
             }
          }
          catch (Exception ex)
@@ -440,18 +569,14 @@ namespace _1732_Attendance
          return success;
       }
 
-      private bool Update_Record()
+      private void Update_Record(ulong ID)
       {
-         bool
-             success = false;
          try
          {
-            Log(string.Format("Updating ID: {0}", ID_Scan.ToString()));
-            if (gAPI.Update_User_Status(ID_Scan))
+            if (gAPI.Update_User_Status(ID))
             {
-               DisplayText(string.Format("{0} - {1} - CHECKED {2}", ID_Scan.ToString(), gAPI.Get_ID_Name(ID_Scan), gAPI.Check_ID_Status(ID_Scan)));
-               Log(string.Format("ID: {0} | NAME: {1} | STATUS: {2}", ID_Scan.ToString(), gAPI.Get_ID_Name(ID_Scan), gAPI.Check_ID_Status(ID_Scan)));
-               success = true;
+               DisplayText(string.Format("{0} - {1} - CHECKED {2}", ID.ToString(), gAPI.Get_ID_Name(ID), gAPI.Check_ID_Status(ID)));
+               Log(string.Format("ID: {0} | NAME: {1} | STATUS: {2}", ID.ToString(), gAPI.Get_ID_Name(ID), gAPI.Check_ID_Status(ID)));
             }
             else
             {
@@ -462,7 +587,35 @@ namespace _1732_Attendance
          {
             HandleException(ex, MethodBase.GetCurrentMethod().Name);
          }
-         return success;
+      }
+
+      private void Check_Out_Users()
+      {
+         try
+         {
+            //get list of users still checked in
+            List<User> stillCheckedInUsers = gAPI.Get_CheckedIn_Users();
+            foreach (User item in stillCheckedInUsers)
+            {
+               Log(string.Format("User forgot to check out - ID: {0} | NAME: {1}", item.ID.ToString(), item.Name.ToString()));
+               if (gAPI.Force_Logoff_User(item.ID))
+               {
+                  Log(string.Format("User force checked out - ID: {0} | NAME: {1}", item.ID.ToString(), item.Name.ToString()));
+               }
+               else
+               {
+                  Log(gAPI.LastException);
+               }
+            }
+         }
+         catch (Exception ex)
+         {
+            HandleException(ex, MethodBase.GetCurrentMethod().Name);
+         }
+         finally
+         {
+            Setup_Midnight_Timer();
+         }
       }
 
       internal void Log(string text)
@@ -473,14 +626,20 @@ namespace _1732_Attendance
       #endregion
 
       #region *** DISPLAY/EXCEPTION HANDLING ***
+      public delegate void Delegate_DisplayText(string text);
+
       internal async void DisplayText(string text)
       {
-         //TextRange tr = new TextRange(rtb_Output.Document.ContentEnd, rtb_Output.Document.ContentEnd);
-         //tr.Text = string.Format("{0}\r", text);
-         //tr.ApplyPropertyValue(TextElement.ForegroundProperty, new BrushConverter().ConvertFromString(_BLACK));
-         txt_Status.Text = text;
-         await System.Threading.Tasks.Task.Delay(2500);
-         txt_Status.Text = string.Empty;
+         if (!txt_Status.Dispatcher.CheckAccess())
+         {
+            await Dispatcher.BeginInvoke(new Delegate_DisplayText(DisplayText), text);
+         }
+         else
+         {
+            txt_Status.Text = text;
+            await System.Threading.Tasks.Task.Delay(1500);
+            txt_Status.Text = string.Empty;
+         }
       }
 
       internal void DisplayAdminText(string text)
