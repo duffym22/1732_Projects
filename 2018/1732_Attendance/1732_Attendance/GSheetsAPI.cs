@@ -54,6 +54,7 @@ namespace _1732_Attendance
       const string _DATE_RANGE = "1";
       const string _ID_NAME_RANGE = "A:B";
 
+      const int _RECENT_CHECKOUT_TIME = 15;
       const int _GID_ATTENDANCE_STATUS = 741019777;
       const int _GID_ACCUMULATED_HOURS = 1137211462;
       const int _GID_ATTENDANCE_LOG = 1617370344;
@@ -102,6 +103,11 @@ namespace _1732_Attendance
       public bool Check_Valid_ID(ulong ID)
       {
          return dict_Attendance.ContainsKey(ID);
+      }
+
+      public bool Check_Is_Mentor(ulong ID)
+      {
+         return dict_Attendance[ID].Is_Mentor;
       }
 
       public string Check_ID_Status(ulong ID)
@@ -284,7 +290,28 @@ namespace _1732_Attendance
             List<ulong> keys = new List<ulong>(dict_Attendance.Keys);
             foreach (ulong ID in keys)
             {
-               if ((DateTime.Now - dict_Attendance[ID].Check_Out_Time).TotalMinutes < 60)
+               if ((DateTime.Now - dict_Attendance[ID].Check_Out_Time).TotalMinutes < _RECENT_CHECKOUT_TIME)
+               {
+                  users.Add(dict_Attendance[ID]);
+               }
+            }
+         }
+         catch (Exception ex)
+         {
+            HandleException(ex, MethodBase.GetCurrentMethod().Name);
+         }
+         return users;
+      }
+
+      public List<User> Get_Recently_CheckedIn_Users()
+      {
+         List<User> users = new List<User>();
+         try
+         {
+            List<ulong> keys = new List<ulong>(dict_Attendance.Keys);
+            foreach (ulong ID in keys)
+            {
+               if ((DateTime.Now - dict_Attendance[ID].Check_In_Time).TotalMinutes < _RECENT_CHECKOUT_TIME)
                {
                   users.Add(dict_Attendance[ID]);
                }
