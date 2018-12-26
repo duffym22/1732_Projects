@@ -1,0 +1,13 @@
+﻿<Application x:Class="_1732_Attendance.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:_1732_Attendance">
+    <Application.Resources>
+
+        <Color x:Key="Accent_Blue">#FF3F79FB</Color>
+        <Color x:Key="General_Blue">#FF093CAE</Color>
+        <Color x:Key="General_Yellow">#FFFAC800</Color>
+        <Color x:Key="Accent_1">#FFFB7358</Color>
+
+    </Application.Resources>
+</Application>
