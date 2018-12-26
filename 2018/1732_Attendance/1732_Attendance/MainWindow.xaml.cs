@@ -648,7 +648,6 @@ namespace _1732_Attendance
          RTB_AdminOutput.ScrollToEnd();
       }
 
-
       internal void HandleException(Exception ex, string callingMethod)
       {
          StringBuilder _exMsg = new StringBuilder();

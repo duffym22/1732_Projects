@@ -10,12 +10,19 @@
         <Color x:Key="Accent_2">#FF8BC81E</Color>
     </Window.Resources>
     <Grid x:Name="GRD_Main" Background="White" Margin="0,0,4,0">
-        <TextBox x:Name="TXT_ID_Scan" HorizontalAlignment="Left" Margin="288,351,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="232" Cursor="AppStarting" KeyDown="TXT_ID_Scan_KeyDown" Height="30" FontSize="18"/>
-        <TextBlock x:Name="LBL_ScanID" Margin="288,320,0,0" TextWrapping="Wrap" Text="Scan your ID" FontFamily="Avenir" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Width="232" Height="26" FontSize="18"/>
-        <Button x:Name="BTN_Reconnect" Content="Reconnect" HorizontalAlignment="Left" Margin="304,351,0,0" VerticalAlignment="Top" Width="192" Click="BTN_Reconnect_Click" FontSize="14" Height="30" Visibility="Hidden"/>
-        <Button x:Name="BTN_Login" Content="Login" Click="BTN_Login_Click" FontSize="14" Margin="705,406,10,10"/>
-        <TextBox x:Name="txt_Status" HorizontalAlignment="Left" Height="23" Margin="188,391,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="424" BorderThickness="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold"/>
-        <Grid x:Name="GRD_Admin" Height="371" Margin="10,10,10,0" VerticalAlignment="Top" Background="White" d:IsHidden="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="164*"/>
+            <ColumnDefinition Width="537*"/>
+            <ColumnDefinition Width="89*"/>
+        </Grid.ColumnDefinitions>
+        <Image x:Name="image" HorizontalAlignment="Left" Height="310" Margin="54,10,0,0" VerticalAlignment="Top" Width="365" Source="img/Full.png" Grid.Column="1"/>
+
+        <TextBox x:Name="TXT_ID_Scan" HorizontalAlignment="Left" Margin="124,351,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="232" Cursor="AppStarting" KeyDown="TXT_ID_Scan_KeyDown" Height="30" FontSize="18" Grid.Column="1"/>
+        <TextBlock x:Name="LBL_ScanID" Margin="124,320,0,0" TextWrapping="Wrap" Text="Scan your ID" FontFamily="Avenir" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Width="232" Height="26" FontSize="18" Grid.Column="1"/>
+        <Button x:Name="BTN_Reconnect" Content="Reconnect" HorizontalAlignment="Left" Margin="140,351,0,0" VerticalAlignment="Top" Width="192" Click="BTN_Reconnect_Click" FontSize="14" Height="30" Visibility="Hidden" Grid.Column="1"/>
+        <Button x:Name="BTN_Login" Content="Login" Click="BTN_Login_Click" FontSize="14" Margin="4.271,406,10,10" Grid.Column="2"/>
+        <TextBox x:Name="txt_Status" HorizontalAlignment="Left" Height="23" Margin="24,391,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="424" BorderThickness="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" Grid.Column="1"/>
+        <Grid x:Name="GRD_Admin" Height="371" Margin="10,10,10,0" VerticalAlignment="Top" Background="White" Grid.ColumnSpan="3">
             <Button x:Name="BTN_Recently_Checked_Out" Content="Recently Checked Out" HorizontalAlignment="Left" Margin="20,100,0,0" VerticalAlignment="Top" Width="135" Height="35" Click="BTN_Recently_Checked_Out_Click"/>
             <Button x:Name="BTN_Add_User" Content="Add User" HorizontalAlignment="Left" Margin="175,20,0,0" VerticalAlignment="Top" Width="135" Click="BTN_Add_User_Click" Height="35"/>
             <Button x:Name="BTN_Delete_User" Content="Delete User" HorizontalAlignment="Left" Margin="175,100,0,0" VerticalAlignment="Top" Width="135" Click="BTN_Delete_User_Click" Height="35"/>
@@ -40,7 +47,6 @@
                 </FlowDocument>
             </RichTextBox>
         </Grid>
-        <Image x:Name="image" HorizontalAlignment="Left" Height="310" Margin="218,10,0,0" VerticalAlignment="Top" Width="365" Source="img/Full.png"/>
 
     </Grid>
 </Window>
