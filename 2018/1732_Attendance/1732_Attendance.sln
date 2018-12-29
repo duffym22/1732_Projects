@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1732_Attendance", "1732_Attendance\1732_Attendance.csproj", "{7C9FB859-2D8C-4C65-A1C3-98CA93BB6F46}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1732_Attendance", "NET_1732_Attendance\NET_1732_Attendance.csproj", "{7C9FB859-2D8C-4C65-A1C3-98CA93BB6F46}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_GoogleSheetsAPI", "Test_GoogleSheetsAPI\Test_GoogleSheetsAPI.csproj", "{C1304EC8-AC10-4EC6-9C28-FFCC008F4CBE}"
 EndProject
