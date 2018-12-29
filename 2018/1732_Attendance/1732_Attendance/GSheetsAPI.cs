@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using static Google.Apis.Sheets.v4.SpreadsheetsResource.ValuesResource;
 
-namespace _1732_Attendance
+namespace _NET_1732_Attendance
 {
    /// ***** PSC: Normal Use *****
    /// 1. Scan ID over sensor

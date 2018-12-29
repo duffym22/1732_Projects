@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace _1732_Attendance
+namespace _NET_1732_Attendance
 {
     /// <summary>
     /// Interaction logic for App.xaml

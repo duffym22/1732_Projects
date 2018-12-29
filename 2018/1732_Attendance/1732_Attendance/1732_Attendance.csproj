@@ -7,8 +7,8 @@
     <ProjectGuid>{7C9FB859-2D8C-4C65-A1C3-98CA93BB6F46}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>_1732_Attendance</RootNamespace>
-    <AssemblyName>1732_Attendance</AssemblyName>
+    <RootNamespace>_NET_1732_Attendance</RootNamespace>
+    <AssemblyName>_NET_1732_Attendance</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -50,7 +50,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>_1732_Attendance.App</StartupObject>
+    <StartupObject>_NET_1732_Attendance.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Google.Apis, Version=1.36.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 
-namespace _1732_Attendance
+namespace _NET_1732_Attendance
 {
    /// <summary>
    /// Interaction logic for MainWindow.xaml

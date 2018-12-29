@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace _1732_Attendance
+namespace _NET_1732_Attendance
 {
    class User
    {
