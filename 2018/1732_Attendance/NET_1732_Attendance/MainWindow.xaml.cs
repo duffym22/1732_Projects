@@ -12,7 +12,7 @@ namespace _NET_1732_Attendance
    /// <summary>
    /// Interaction logic for MainWindow.xaml
    /// </summary>
-   public partial class MainWindow : Window 
+   public partial class MainWindow : Window
    {
       #region *** VARIABLES ***
       const string _LOGIN = "Login";
@@ -82,17 +82,26 @@ namespace _NET_1732_Attendance
                }
 
                ulong.TryParse(TXT_ID.Text, out ulong ID);
-               string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
-               if (gAPI.Add_User(ID, fullName, (bool)CHK_Is_Mentor.IsChecked))
+
+               if (Lookup_ID(ID))
                {
-                  DisplayAdminText(string.Format("Successfully added ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
-                  Log(string.Format("Added ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                  DisplayAdminText(string.Format("ID: {0} is already registered", ID.ToString()));
+                  Log(string.Format("ID: {0} is already registered", ID.ToString()));
                }
                else
                {
-                  DisplayAdminText(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
-                  Log(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
-                  Log(gAPI.LastException);
+                  string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
+                  if (gAPI.Add_User(ID, fullName, (bool)CHK_Is_Mentor.IsChecked))
+                  {
+                     DisplayAdminText(string.Format("Successfully added ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                     Log(string.Format("Added ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                  }
+                  else
+                  {
+                     DisplayAdminText(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                     Log(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                     Log(gAPI.LastException);
+                  }
                }
                TXT_ID.Clear();
                TXT_First_Name.Clear();
@@ -348,7 +357,8 @@ namespace _NET_1732_Attendance
             {
                if (TXT_ID_Scan.Text.Length > 10)
                {
-                  string shortID = TXT_ID_Scan.Text.Substring(TXT_ID_Scan.Text.Length / 2, (TXT_ID_Scan.Text.Length - (TXT_ID_Scan.Text.Length / 2) - 1));
+                  //string shortID = TXT_ID_Scan.Text.Substring(TXT_ID_Scan.Text.Length / 2, (TXT_ID_Scan.Text.Length - (TXT_ID_Scan.Text.Length / 2) - 1));
+                  string shortID = TXT_ID_Scan.Text.Substring(0, 10);
                   TXT_ID_Scan.Text = shortID;
                }
 
@@ -637,7 +647,7 @@ namespace _NET_1732_Attendance
          else
          {
             txt_Status.Text = text;
-            await System.Threading.Tasks.Task.Delay(1500);
+            await System.Threading.Tasks.Task.Delay(2000);
             txt_Status.Text = string.Empty;
          }
       }
