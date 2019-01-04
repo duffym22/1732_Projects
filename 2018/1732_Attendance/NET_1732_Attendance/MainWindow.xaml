@@ -31,13 +31,13 @@
             <Button x:Name="BTN_Recently_Checked_In" Content="Recently Checked In" HorizontalAlignment="Left" Margin="20,60,0,0" VerticalAlignment="Top" Width="135" Height="35" Click="BTN_Recently_Checked_In_Click"/>
             <Button x:Name="BTN_Update_User" Content="Update User" HorizontalAlignment="Left" Margin="175,60,0,0" VerticalAlignment="Top" Width="135" Click="BTN_Update_User_Click" Height="35"/>
             <Grid x:Name="GRD_Data_Input" HorizontalAlignment="Left" Height="155" Margin="315,20,0,0" VerticalAlignment="Top" Width="243">
-                <Label x:Name="LBL_ID" Content="ID" HorizontalAlignment="Left" Margin="34,10,0,0" VerticalAlignment="Top" Height="23" Width="49" IsTabStop="True" HorizontalContentAlignment="Right"/>
-                <Label x:Name="LBL_Name" Content="First Name" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Height="23" Width="73" IsTabStop="True" HorizontalContentAlignment="Right"/>
+                <Label x:Name="LBL_ID" Content="ID" HorizontalAlignment="Left" Margin="34,10,0,0" VerticalAlignment="Top" Height="23" Width="49" HorizontalContentAlignment="Right"/>
+                <Label x:Name="LBL_Name" Content="First Name" HorizontalAlignment="Left" Margin="10,38,0,0" VerticalAlignment="Top" Height="23" Width="73" HorizontalContentAlignment="Right"/>
                 <TextBox x:Name="TXT_ID" HorizontalAlignment="Left" Height="23" Margin="103,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="130"/>
                 <TextBox x:Name="TXT_First_Name" HorizontalAlignment="Left" Height="23" Margin="103,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="130"/>
-                <CheckBox x:Name="CHK_Is_Mentor" Content="Is Mentor?" HorizontalAlignment="Left" Margin="103,94,0,0" VerticalAlignment="Top" Width="130"/>
                 <TextBox x:Name="TXT_Last_Name" HorizontalAlignment="Left" Height="23" Margin="103,66,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="130"/>
-                <Label x:Name="LBL_Last_Name" Content="Last Name" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Height="23" Width="73" IsTabStop="True" HorizontalContentAlignment="Right"/>
+                <CheckBox x:Name="CHK_Is_Mentor" Content="Is Mentor?" HorizontalAlignment="Left" Margin="103,94,0,0" VerticalAlignment="Top" Width="130"/>
+                <Label x:Name="LBL_Last_Name" Content="Last Name" HorizontalAlignment="Left" Margin="10,66,0,0" VerticalAlignment="Top" Height="23" Width="73" HorizontalContentAlignment="Right"/>
                 <Button x:Name="BTN_Save_Updated_User" Content="Save" HorizontalAlignment="Left" Margin="103,114,0,0" VerticalAlignment="Top" Width="130" Height="31" Click="BTN_Save_Updated_User_Click"/>
             </Grid>
             <DataGrid x:Name="UserDataGrid" HorizontalAlignment="Left" Height="351" Margin="10,10,0,0" VerticalAlignment="Top" Width="750" LostFocus="UserDataGrid_LostFocus" FocusableChanged="UserDataGrid_FocusableChanged" Visibility="Hidden"/>
