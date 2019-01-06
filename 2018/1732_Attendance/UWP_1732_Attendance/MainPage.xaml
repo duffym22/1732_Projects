@@ -5,26 +5,31 @@
     xmlns:local="using:UWP_1732_Attendance"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"    
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <TextBlock x:Name="TXT_Status" HorizontalAlignment="Left" Margin="274,561,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14" Width="420" Height="25"/>
+    <Grid Background="White">
+        <controls:DataGrid x:Name="UserDataGrid" Visibility="Collapsed">
 
-        <Button x:Name="BTN_Reconnect" Content="Reconnect" HorizontalAlignment="Left" Margin="414,523,0,0" VerticalAlignment="Top" Width="232" d:IsHidden="True"/>
+        </controls:DataGrid>
 
-        <TextBox x:Name="TXT_ID_Scan" HorizontalAlignment="Left" Margin="414,523,0,0" Text="" VerticalAlignment="Top" Width="232" KeyDown="TXT_ID_Scan_KeyDown"/>
-        <Button x:Name="BTN_Login" Content="Login" HorizontalAlignment="Left" Margin="912,576,0,0" VerticalAlignment="Top" Click="BTN_Login_Click" Height="40" Width="76"/>
-        <TextBlock x:Name="TBK_Label" HorizontalAlignment="Left" Margin="480,494,0,0" Text="Scan your ID" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="18"/>
+        <TextBlock x:Name="TXT_Status" HorizontalAlignment="Left" Margin="315,578,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14" Width="420" Height="25" RequestedTheme="Default"/>
+
+        <Button x:Name="BTN_Reconnect" Content="Reconnect" HorizontalAlignment="Left" Margin="414,523,0,0" VerticalAlignment="Top" Width="232" d:IsHidden="True" Click="BTN_Reconnect_Click"/>
+
+        <TextBox x:Name="TXT_ID_Scan" HorizontalAlignment="Center" Margin="0,523,0,0" Text="" VerticalAlignment="Top" Width="232" KeyDown="TXT_ID_Scan_KeyDown"/>
+        <Button x:Name="BTN_Login" Content="Login" HorizontalAlignment="Left" Margin="938,587,0,0" VerticalAlignment="Top" Click="BTN_Login_Click" Height="40" Width="76" Foreground="Black" Background="#33403F3F"/>
+        <TextBlock x:Name="TBK_Label" HorizontalAlignment="Center" Margin="0,489,0,0" Text="Scan your ID" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="18" FocusVisualPrimaryBrush="Black" Foreground="Black" Width="232"/>
         <Image x:Name="IMG_Logo" Source="/Assets/Full.png" Margin="206,-78,205,78" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <Grid x:Name="GRD_Admin" HorizontalAlignment="Center" Height="541" Margin="0,14,0,0" VerticalAlignment="Top" Width="1004" Background="White">
-            <Button x:Name="BTN_Who_CheckedIn" Content="Who's Checked In" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="156" Click="BTN_Who_CheckedIn_Click"/>
-            <Button x:Name="BTN_Recently_Checked_In" Content="Recently Checked In" HorizontalAlignment="Left" Margin="10,56,0,0" VerticalAlignment="Top" Width="156" Click="BTN_Recently_Checked_In_Click"/>
-            <Button x:Name="BTN_Recently_Checked_Out" Content="Recently Checked Out" HorizontalAlignment="Left" Margin="10,104,0,0" VerticalAlignment="Top" Click="BTN_Recently_Checked_Out_Click"/>
-            <Button x:Name="BTN_Refresh" Content="Refresh Data" HorizontalAlignment="Left" Margin="10,155,0,0" VerticalAlignment="Top" Width="156" Click="BTN_Refresh_Click"/>
-            <Button x:Name="BTN_Add_User" Content="Add User" HorizontalAlignment="Left" Margin="177,10,0,0" VerticalAlignment="Top" Width="156" Click="BTN_Add_User_Click"/>
-            <Button x:Name="BTN_Update_User" Content="Update User" HorizontalAlignment="Left" Margin="177,56,0,0" VerticalAlignment="Top" Width="156" Click="BTN_Update_User_Click"/>
-            <Button x:Name="BTN_Delete_User" Content="Delete User" HorizontalAlignment="Left" Margin="177,104,0,0" VerticalAlignment="Top" Width="156" Click="BTN_Delete_User_Click"/>
+            <Button x:Name="BTN_Who_CheckedIn" Content="Who's Checked In" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="167" Click="BTN_Who_CheckedIn_Click" Foreground="Black" Background="#33282828"/>
+            <Button x:Name="BTN_Recently_Checked_In" Content="Recently Checked In" HorizontalAlignment="Left" Margin="10,56,0,0" VerticalAlignment="Top" Width="167" Click="BTN_Recently_Checked_In_Click" Foreground="#FF060606" Background="#33282828"/>
+            <Button x:Name="BTN_Recently_Checked_Out" Content="Recently Checked Out" HorizontalAlignment="Left" Margin="10,104,0,0" VerticalAlignment="Top" Click="BTN_Recently_Checked_Out_Click" Foreground="#FF060606" Background="#33282828" Width="167"/>
+            <Button x:Name="BTN_Refresh" Content="Refresh Data" HorizontalAlignment="Left" Margin="10,155,0,0" VerticalAlignment="Top" Width="167" Click="BTN_Refresh_Click" Foreground="#FF060606" Background="#33282828"/>
+            <Button x:Name="BTN_Add_User" Content="Add User" HorizontalAlignment="Left" Margin="199,10,0,0" VerticalAlignment="Top" Width="156" Click="BTN_Add_User_Click" Foreground="#FF060606" Background="#33282828"/>
+            <Button x:Name="BTN_Update_User" Content="Update User" HorizontalAlignment="Left" Margin="199,56,0,0" VerticalAlignment="Top" Width="156" Click="BTN_Update_User_Click" Foreground="#FF060606" Background="#33282828"/>
+            <Button x:Name="BTN_Delete_User" Content="Delete User" HorizontalAlignment="Left" Margin="199,104,0,0" VerticalAlignment="Top" Width="156" Click="BTN_Delete_User_Click" Foreground="#FF060606" Background="#33282828"/>
             <RichTextBlock x:Name="RTB_AdminOutput" HorizontalAlignment="Center" Height="247" Margin="0,282,0,0" VerticalAlignment="Top" Width="986">
                 <Paragraph>
                     <Run Text="RichTextBlock"/>
@@ -34,13 +39,14 @@
                 <TextBox x:Name="TXT_ID" HorizontalAlignment="Left" Margin="101,10,0,0" Text="" VerticalAlignment="Top" Width="121"/>
                 <TextBox x:Name="TXT_First_Name" HorizontalAlignment="Left" Margin="101,47,0,0" Text="" VerticalAlignment="Top" Width="121"/>
                 <TextBox x:Name="TXT_Last_Name" HorizontalAlignment="Left" Margin="101,84,0,0" Text="" VerticalAlignment="Top" Width="121"/>
-                <TextBlock x:Name="TBK_ID" HorizontalAlignment="Left" Margin="82,17,0,0" Text="ID" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                <TextBlock x:Name="TXB_First_Name" HorizontalAlignment="Left" Margin="29,54,0,0" Text="First Name" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                <TextBlock x:Name="TXB_Last_Name" HorizontalAlignment="Left" Margin="31,91,0,0" Text="Last Name" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                <CheckBox x:Name="CHK_Is_Mentor" Content="Is Mentor?" HorizontalAlignment="Left" Margin="101,121,0,0" VerticalAlignment="Top" Width="121"/>
-                <Button x:Name="BTN_Save_Updated_User" Content="Save" HorizontalAlignment="Left" Margin="101,158,0,0" VerticalAlignment="Top" Width="121" Click="BTN_Save_Updated_User_Click"/>
+                <TextBlock x:Name="TBK_ID" HorizontalAlignment="Left" Margin="82,17,0,0" Text="ID" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black"/>
+                <TextBlock x:Name="TXB_First_Name" HorizontalAlignment="Left" Margin="29,54,0,0" Text="First Name" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black"/>
+                <TextBlock x:Name="TXB_Last_Name" HorizontalAlignment="Left" Margin="31,91,0,0" Text="Last Name" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="Black"/>
+                <CheckBox x:Name="CHK_Is_Mentor" Content="Is Mentor?" HorizontalAlignment="Left" Margin="101,121,0,0" VerticalAlignment="Top" Width="121" Foreground="#FF040404" FocusVisualSecondaryBrush="#99000000" Background="#FF575757" FocusVisualPrimaryBrush="Black" BorderBrush="#FF2BB025"/>
+                <Button x:Name="BTN_Save_Updated_User" Content="Save" HorizontalAlignment="Left" Margin="101,158,0,0" VerticalAlignment="Top" Width="121" Click="BTN_Save_Updated_User_Click" Foreground="#FF0C0C0C" Background="#33282828"/>
             </Grid>
         </Grid>
+        <GridView x:Name="gridView" HorizontalAlignment="Left" Margin="73,149,0,0" VerticalAlignment="Top" Width="100"/>
 
     </Grid>
 </Page>
