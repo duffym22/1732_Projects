@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace _NET_1732_Attendance
 {
@@ -22,8 +23,18 @@ namespace _NET_1732_Attendance
       const string _MENTOR_MODE_SCAN = "Scan/Enter your Mentor ID";
 
       private GSheetsAPI gAPI;
-      private Timer timer;
-      private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+      private Timer
+         timer;
+
+      private DispatcherTimer
+         displayTimer;
+
+      private DateTime
+         lastDisplayUpdate;
+
+      private static readonly ILog
+         _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
       #endregion
 
       #region *** PROPERTIES ***
@@ -35,11 +46,24 @@ namespace _NET_1732_Attendance
       {
          InitializeComponent();
          XmlConfigurator.Configure();
+
+         displayTimer = new DispatcherTimer();
+         displayTimer.Tick += DisplayTimer_Tick;
+         displayTimer.Interval = new TimeSpan(0, 0, 5);
+         displayTimer.Start();
       }
 
       private void Window_Loaded(object sender, RoutedEventArgs e)
       {
          Initialize();
+      }
+
+      private void DisplayTimer_Tick(object sender, EventArgs e)
+      {
+         if ((DateTime.Now - lastDisplayUpdate).TotalSeconds > 5)
+         {
+            txt_Status.Text = string.Empty;
+         }
       }
 
       private void BTN_Login_Click(object sender, RoutedEventArgs e)
@@ -49,6 +73,7 @@ namespace _NET_1732_Attendance
             Mentor_Mode = true;
             LBL_ScanID.Text = _MENTOR_MODE_SCAN;
             BTN_Login.Content = _EXIT;
+            TXT_ID_Scan.Clear();
             TXT_ID_Scan.Focus();
          }
          else if (BTN_Login.Content.Equals(_EXIT))
@@ -58,6 +83,7 @@ namespace _NET_1732_Attendance
             GRD_Admin.Visibility = Visibility.Hidden;
             LBL_ScanID.Text = _REGULAR_MODE_SCAN;
             BTN_Login.Content = _LOGIN;
+            TXT_ID_Scan.Clear();
             TXT_ID_Scan.Focus();
          }
       }
@@ -67,13 +93,47 @@ namespace _NET_1732_Attendance
          Initialize();
       }
 
+      private void BTN_Force_Checkout_Click(object sender, RoutedEventArgs e)
+      {
+         try
+         {
+            if (!string.IsNullOrEmpty(TXT_ID.Text))
+            {
+               ulong.TryParse(TXT_ID.Text, out ulong ID);
+               if (Lookup_ID(ID))
+               {
+                  if (gAPI.Force_Logoff_User(ID))
+                  {
+                     DisplayAdminText(string.Format("User force checked out - ID: {0}", ID));
+                     Log(string.Format("User force checked out - ID: {0}", ID));
+                  }
+                  else
+                  {
+                     Log(gAPI.LastException);
+                  }
+               }
+               else
+               {
+                  DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
+               }
+            }
+            else
+            {
+               DisplayAdminText("Please scan/enter an ID of the user to force check-out");
+            }
+         }
+         catch (Exception ex)
+         {
+            HandleException(ex, MethodBase.GetCurrentMethod().Name);
+         }
+      }
+
       private void BTN_Add_User_Click(object sender, RoutedEventArgs e)
       {
          try
          {
             if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_First_Name.Text) && !string.IsNullOrEmpty(TXT_Last_Name.Text))
             {
-
                if (TXT_ID.Text.Length > 10)
                {
                   string shortID = TXT_ID.Text.Substring(TXT_ID_Scan.Text.Length / 2, (TXT_ID.Text.Length - (TXT_ID.Text.Length / 2) - 1));
@@ -107,6 +167,7 @@ namespace _NET_1732_Attendance
                TXT_First_Name.Clear();
                TXT_Last_Name.Clear();
                CHK_Is_Mentor.IsChecked = false;
+               TXT_ID.Focus();
             }
             else
             {
@@ -144,9 +205,9 @@ namespace _NET_1732_Attendance
                }
                else
                {
+                  TXT_ID.Clear();
                   DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
                }
-
             }
             else
             {
@@ -184,6 +245,8 @@ namespace _NET_1732_Attendance
                TXT_First_Name.Clear();
                TXT_Last_Name.Clear();
                CHK_Is_Mentor.IsChecked = false;
+               TXT_ID.Focus();
+
                UI_Display_Update_Options(false);
             }
             else
@@ -225,7 +288,12 @@ namespace _NET_1732_Attendance
                      Log(string.Format("Did not find ID: {0}", TXT_ID.Text));
                      Log(gAPI.LastException);
                   }
+
                   TXT_ID.Clear();
+                  TXT_First_Name.Clear();
+                  TXT_Last_Name.Clear();
+                  CHK_Is_Mentor.IsChecked = false;
+                  TXT_ID.Focus();
                }
                else
                {
@@ -351,18 +419,21 @@ namespace _NET_1732_Attendance
 
       private void TXT_ID_Scan_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
       {
+         string idText = string.Empty;
          try
          {
             if (e.Key == System.Windows.Input.Key.Enter || e.Key == System.Windows.Input.Key.Return)
             {
-               if (TXT_ID_Scan.Text.Length > 10)
+               idText = TXT_ID_Scan.Text;
+               TXT_ID_Scan.Clear();
+               if (idText.Length > 10)
                {
                   //string shortID = TXT_ID_Scan.Text.Substring(TXT_ID_Scan.Text.Length / 2, (TXT_ID_Scan.Text.Length - (TXT_ID_Scan.Text.Length / 2) - 1));
-                  string shortID = TXT_ID_Scan.Text.Substring(0, 10);
-                  TXT_ID_Scan.Text = shortID;
+                  string shortID = idText.Substring(0, 10);
+                  idText = shortID;
                }
 
-               if (ulong.TryParse(TXT_ID_Scan.Text, out ulong ID_Scan))
+               if (ulong.TryParse(idText, out ulong ID_Scan))
                {
                   if (Lookup_ID(ID_Scan))
                   {
@@ -376,35 +447,33 @@ namespace _NET_1732_Attendance
                            Log("Enabling Mentor admin screen");
                            GRD_Admin.IsEnabled = true;
                            GRD_Admin.Visibility = Visibility.Visible;
+                           UserDataGrid.Visibility = Visibility.Hidden;
 
                         }
                         else
                         {
                            DisplayText(string.Format("ID - {0} is not authorized as a Mentor", ID_Scan.ToString()));
                            Log(string.Format("ID - {0} is not authorized as a Mentor", ID_Scan.ToString()));
-                           TXT_ID_Scan.Clear();
                         }
                      }
                      else
                      {
                         //Regular scanning mode
                         Log(string.Format("Updating ID: {0}", ID_Scan.ToString()));
-                        Thread t = new Thread(() => Update_Record(ID_Scan));
-                        t.Start();
-                        TXT_ID_Scan.Clear();
+                        Update_Record(ID_Scan);
+                        //Thread t = new Thread(() => Update_Record(ID_Scan));
+                        //t.Start();
                      }
                   }
                   else
                   {
                      DisplayText(string.Format("ID - {0} is not registered. Please find a Mentor to register your ID", ID_Scan.ToString()));
-                     TXT_ID_Scan.Clear();
                   }
                }
                else
                {
                   Log(string.Format("Invalid ID Entry: {0}", ID_Scan.ToString()));
                   DisplayText("Invalid ID entered");
-                  TXT_ID_Scan.Clear();
                }
             }
          }
@@ -418,6 +487,8 @@ namespace _NET_1732_Attendance
             if (TXT_ID_Scan.IsVisible)
             {
                TXT_ID_Scan.Focus();
+               TXT_ID_Scan.InvalidateVisual();
+
             }
          }
       }
@@ -638,17 +709,16 @@ namespace _NET_1732_Attendance
       #region *** DISPLAY/EXCEPTION HANDLING ***
       public delegate void Delegate_DisplayText(string text);
 
-      internal async void DisplayText(string text)
+      internal void DisplayText(string text)
       {
          if (!txt_Status.Dispatcher.CheckAccess())
          {
-            await Dispatcher.BeginInvoke(new Delegate_DisplayText(DisplayText), text);
+            Dispatcher.BeginInvoke(new Delegate_DisplayText(DisplayText), text);
          }
          else
          {
             txt_Status.Text = text;
-            await System.Threading.Tasks.Task.Delay(2000);
-            txt_Status.Text = string.Empty;
+            lastDisplayUpdate = DateTime.Now;
          }
       }
 

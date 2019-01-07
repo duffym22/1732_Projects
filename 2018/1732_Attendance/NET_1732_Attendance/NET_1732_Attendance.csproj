@@ -52,6 +52,9 @@
   <PropertyGroup>
     <StartupObject>_NET_1732_Attendance.App</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>ram.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Google.Apis, Version=1.36.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.1.36.1\lib\net45\Google.Apis.dll</HintPath>
@@ -174,6 +177,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="img\Full.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ram.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
