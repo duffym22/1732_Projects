@@ -394,27 +394,14 @@ namespace _NET_1732_Attendance
          }
       }
 
+      private void BTN_Refresh_Main_Click(object sender, RoutedEventArgs e)
+      {
+         Refresh_Data();
+      }
+
       private void BTN_Refresh_Click(object sender, RoutedEventArgs e)
       {
-         try
-         {
-            if (gAPI.Refresh_Local_Data())
-            {
-               Log("Local data refreshed");
-               DisplayAdminText("Local data refreshed");
-            }
-            else
-            {
-               Log("Failed to refresh local data");
-               Log(gAPI.LastException);
-               DisplayAdminText("Failed to refresh local data");
-               DisplayAdminText(gAPI.LastException);
-            }
-         }
-         catch (Exception ex)
-         {
-            HandleException(ex, MethodBase.GetCurrentMethod().Name);
-         }
+         Refresh_Data();
       }
 
       private void TXT_ID_Scan_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -712,6 +699,28 @@ namespace _NET_1732_Attendance
       internal void Log(string text)
       {
          _log.Info(text);
+      }
+
+      private void Refresh_Data()
+      {
+         try
+         {
+            if (gAPI.Refresh_Local_Data())
+            {
+               Log("Local data refreshed");
+               DisplayText("Local data refreshed");
+            }
+            else
+            {
+               Log("Failed to refresh local data");
+               Log(gAPI.LastException);
+               DisplayText("Failed to refresh local data");
+            }
+         }
+         catch (Exception ex)
+         {
+            HandleException(ex, MethodBase.GetCurrentMethod().Name);
+         }
       }
 
       #endregion
