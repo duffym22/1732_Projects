@@ -467,7 +467,9 @@ namespace _NET_1732_Attendance
                   }
                   else
                   {
+                     Log(string.Format("ID - {0} is not registered", ID_Scan.ToString()));
                      DisplayText(string.Format("ID - {0} is not registered. Please find a Mentor to register your ID", ID_Scan.ToString()));
+                     Log_Unregistered_User(ID_Scan);
                   }
                }
                else
@@ -490,6 +492,14 @@ namespace _NET_1732_Attendance
                TXT_ID_Scan.InvalidateVisual();
 
             }
+         }
+      }
+
+      private void Log_Unregistered_User(ulong ID)
+      {
+         if (!gAPI.Log_Unregistered_User(ID))
+         {
+            Log(gAPI.LastException);
          }
       }
 
