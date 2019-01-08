@@ -29,6 +29,7 @@ namespace _NET_1732_Attendance
       const string _ROWS = "ROWS";
       const string _ADDED_STATUS = "ADDED";
       const string _UPDATED_STATUS = "UPDATED";
+      const string _UNREGISTERED_STATUS = "UNREGISTERED";
       const string _DELETED_STATUS = "DELETED";
       const string _OUT_STATUS = "OUT";
       const string _IN_STATUS = "IN";
@@ -164,6 +165,22 @@ namespace _NET_1732_Attendance
          return success;
       }
 
+      public bool Log_Unregistered_User(ulong ID)
+      {
+         bool
+            success = false;
+
+         try
+         {
+            InsertRows(Create_Log_Row(ID, _UNREGISTERED_STATUS), Get_Next_Log_Row());
+            success = true;
+         }
+         catch (Exception ex)
+         {
+            HandleException(ex, MethodBase.GetCurrentMethod().Name);
+         }
+         return success;
+      }
 
       public bool Update_User_Status(ulong ID)
       {
@@ -690,6 +707,9 @@ namespace _NET_1732_Attendance
                break;
             case _ADDED_STATUS:
                log = "User ADDED";
+               break;
+            case _UNREGISTERED_STATUS:
+               log = "User NOT REGISTERED";
                break;
             case _UPDATED_STATUS:
                log = "User UPDATED";
