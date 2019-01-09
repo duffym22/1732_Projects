@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_NET_1732_Attendance"
         mc:Ignorable="d"
-        Title="Team 1732 Attendance Station" Height="767.9" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Topmost="True" WindowStartupLocation="CenterScreen" WindowState="Maximized" Loaded="Window_Loaded" Cursor="IBeam" Width="1366">
+        Title="Team 1732 Attendance Station" Height="767.9" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight" Topmost="True" WindowStartupLocation="CenterScreen" WindowState="Maximized" Loaded="Window_Loaded" Cursor="IBeam" Width="1366">
     <Window.Resources>
         <Color x:Key="Accent_2">#FF8BC81E</Color>
     </Window.Resources>
@@ -14,11 +14,11 @@
         <Image x:Name="IMG_Logo" Margin="322,0,307,0" VerticalAlignment="Top" Source="img/Full.png" Height="522"/>
         <TextBox x:Name="TXT_ID_Scan" Margin="322,557,307,0" TextWrapping="Wrap" VerticalAlignment="Top" Cursor="AppStarting" KeyDown="TXT_ID_Scan_KeyDown" Height="60" FontSize="36" HorizontalAlignment="Center" Width="717"/>
         <TextBlock x:Name="LBL_ScanID" Margin="449,522,0,0" TextWrapping="Wrap" Text="Scan your ID" FontFamily="Avenir" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Width="434" Height="35" FontSize="24" TextAlignment="Center"/>
-        <Button x:Name="BTN_Reconnect" Content="Reconnect" HorizontalAlignment="Left" Margin="140,351,0,0" VerticalAlignment="Top" Width="192" Click="BTN_Reconnect_Click" FontSize="14" Height="30" Visibility="Hidden" Grid.Column="1"/>
+        <Button x:Name="BTN_Reconnect" Content="Reconnect" HorizontalAlignment="Left" Margin="322,557,0,0" VerticalAlignment="Top" Width="717" Click="BTN_Reconnect_Click" FontSize="14" Height="60" d:IsHidden="True"/>
         <Button x:Name="BTN_Login" Content="Login" Click="BTN_Login_Click" FontSize="14" Margin="0,0,10,10" Height="48" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="114"/>
         <TextBox x:Name="txt_Status" Margin="10,622,0,58" TextWrapping="Wrap" Text="" BorderThickness="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="20" HorizontalAlignment="Left" Width="1326"/>
         <Grid x:Name="GRD_Admin" Height="633" Margin="10,10,0,0" VerticalAlignment="Top" Background="White" Grid.ColumnSpan="3" HorizontalAlignment="Left" Width="1336" d:IsHidden="True">
-            <RichTextBox x:Name="RTB_AdminOutput" Height="231" Margin="10,392,10,0" VerticalAlignment="Top" FontSize="18">
+            <RichTextBox x:Name="RTB_AdminOutput" Height="231" Margin="10,392,10,0" VerticalAlignment="Top" FontSize="18" VerticalScrollBarVisibility="Auto">
                 <FlowDocument>
                     <Paragraph/>
                 </FlowDocument>
@@ -42,6 +42,7 @@
                 <Button x:Name="BTN_Save_Updated_User" Content="Save" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="265" Height="100" Click="BTN_Save_Updated_User_Click" FontSize="18"/>
             </Grid>
             <DataGrid x:Name="UserDataGrid" HorizontalAlignment="Left" Height="377" Margin="10,10,0,0" VerticalAlignment="Top" Width="1316" LostFocus="UserDataGrid_LostFocus" FocusableChanged="UserDataGrid_FocusableChanged" d:IsHidden="True"/>
+            <Button x:Name="BTN_View_Log" Content="View Log" HorizontalAlignment="Left" Margin="650,261,0,0" VerticalAlignment="Top" Width="265" Click="BTN_View_Log_Click" Height="100" FontSize="18"/>
         </Grid>
         <Button x:Name="BTN_Refresh_Main" Content="" HorizontalAlignment="Left" Margin="10,659,0,0" VerticalAlignment="Top" Width="48" Height="48" Click="BTN_Refresh_Main_Click">
             <Button.Background>
