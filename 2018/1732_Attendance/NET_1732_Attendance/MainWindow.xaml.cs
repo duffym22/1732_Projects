@@ -415,7 +415,7 @@ namespace _NET_1732_Attendance
         {
             try
             {
-                string[] lines = File.ReadAllLines(@LOG_FILE_PATH, Encoding.UTF8);
+                string[] lines = File.ReadAllLines(Log_File_Path, Encoding.UTF8);
                 foreach (string item in lines)
                 {
                     DisplayAdminText(item);
