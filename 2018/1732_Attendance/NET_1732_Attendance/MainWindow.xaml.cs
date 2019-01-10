@@ -6,6 +6,8 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Configuration;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -41,6 +43,7 @@ namespace _NET_1732_Attendance
 
         #region *** PROPERTIES ***
         private bool Mentor_Mode { get; set; }
+        private string Log_File_Path { get; set; }
         #endregion
 
         #region *** MAIN FORM ***
@@ -412,7 +415,7 @@ namespace _NET_1732_Attendance
         {
             try
             {
-                string[] lines = File.ReadAllLines(@_LOG_FILE_PATH, Encoding.UTF8);
+                string[] lines = File.ReadAllLines(@LOG_FILE_PATH, Encoding.UTF8);
                 foreach (string item in lines)
                 {
                     DisplayAdminText(item);
@@ -539,6 +542,8 @@ namespace _NET_1732_Attendance
 
         private void Initialize()
         {
+            NameValueCollection appAll = ConfigurationManager.AppSettings;
+
             gAPI = new GSheetsAPI();
             if (gAPI.AuthorizeGoogleApp())
             {
