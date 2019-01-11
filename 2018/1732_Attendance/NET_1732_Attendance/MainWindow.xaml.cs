@@ -2,12 +2,11 @@
 using log4net.Config;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Configuration;
-using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -43,6 +42,7 @@ namespace _NET_1732_Attendance
 
         #region *** PROPERTIES ***
         private bool Mentor_Mode { get; set; }
+        private ulong Logged_In_Mentor_ID { get; set; }
         private string Log_File_Path { get; set; }
         #endregion
 
@@ -84,6 +84,7 @@ namespace _NET_1732_Attendance
             else if (BTN_Login.Content.Equals(_EXIT))
             {
                 Mentor_Mode = false;
+                Logged_In_Mentor_ID = 0;
                 RTB_AdminOutput.Document.Blocks.Clear();
                 GRD_Admin.Visibility = Visibility.Hidden;
                 BTN_Refresh_Main.Visibility = Visibility.Visible;
@@ -113,6 +114,7 @@ namespace _NET_1732_Attendance
                         {
                             DisplayAdminText(string.Format("User force checked out - ID: {0}", ID));
                             Log(string.Format("User force checked out - ID: {0}", ID));
+                            TXT_ID.Clear();
                         }
                         else
                         {
@@ -158,15 +160,15 @@ namespace _NET_1732_Attendance
                     else
                     {
                         string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
-                        if (gAPI.Add_User(ID, fullName, (bool)CHK_Is_Mentor.IsChecked))
+                        if (gAPI.Add_User(ID, fullName, Logged_In_Mentor_ID, (bool)CHK_Is_Mentor.IsChecked))
                         {
                             DisplayAdminText(string.Format("Successfully added ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
-                            Log(string.Format("Added ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                            Log(string.Format("Mentor: {0} added ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), TXT_ID.Text, fullName));
                         }
                         else
                         {
                             DisplayAdminText(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
-                            Log(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                            Log(string.Format("Mentor: {0} failed to add ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), TXT_ID.Text, fullName));
                             Log(gAPI.LastException);
                         }
                     }
@@ -236,15 +238,15 @@ namespace _NET_1732_Attendance
                 {
 
                     string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
-                    if (gAPI.Update_User(ID, fullName, (bool)CHK_Is_Mentor.IsChecked))
+                    if (gAPI.Update_User(ID, fullName, Logged_In_Mentor_ID, (bool)CHK_Is_Mentor.IsChecked))
                     {
                         DisplayAdminText(string.Format("Successfully update ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
-                        Log(string.Format("Updated ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                        Log(string.Format("Mentor: {0} updated ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), TXT_ID.Text, fullName));
                     }
                     else
                     {
                         DisplayAdminText(string.Format("Failed to update ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
-                        Log(string.Format("Failed to update ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
+                        Log(string.Format("Mentor: {0} failed to update ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), TXT_ID.Text, fullName));
                         Log(gAPI.LastException);
                     }
 
@@ -284,15 +286,15 @@ namespace _NET_1732_Attendance
                     ulong.TryParse(TXT_ID.Text, out ulong ID);
                     if (Lookup_ID(ID))
                     {
-                        if (gAPI.Delete_User(ID))
+                        if (gAPI.Delete_User(ID, Logged_In_Mentor_ID))
                         {
                             DisplayAdminText(string.Format("Successfully deleted ID: {0}", TXT_ID.Text));
-                            Log(string.Format("Deleted ID: {0}", TXT_ID.Text));
+                            Log(string.Format("Mentor: {0} deleted ID: {1}", Logged_In_Mentor_ID.ToString(), TXT_ID.Text));
                         }
                         else
                         {
                             DisplayAdminText(string.Format("Failed to delete ID: {0}", TXT_ID.Text));
-                            Log(string.Format("Did not find ID: {0}", TXT_ID.Text));
+                            Log(string.Format("Mentor: {0} failed to delete ID: {1}", Logged_In_Mentor_ID.ToString(), TXT_ID.Text));
                             Log(gAPI.LastException);
                         }
 
@@ -525,9 +527,11 @@ namespace _NET_1732_Attendance
             ///
         }
 
-        private void Setup_Midnight_Timer()
+        private void Setup_Checkout_Timer()
         {
-            TimeSpan timeToGo = new TimeSpan(1, 0, 0, 0) - DateTime.Now.TimeOfDay; //new DateTime(2018, 12, 25, 0, 0, 0);
+            TimeSpan timeToGo = new TimeSpan(gAPI.Auto_Checkout_Time.Days, gAPI.Auto_Checkout_Time.Hours, gAPI.Auto_Checkout_Time.Minutes, gAPI.Auto_Checkout_Time.Seconds) - DateTime.Now.TimeOfDay;
+            //gAPI.Auto_Checkout_Times
+            //TODO - if auto checkout is super fast - then time to go will be negative - add one day
             Log(string.Format("Time until next auto-check out of users: {0}", timeToGo.ToString()));
 
             timer = new Timer(x =>
@@ -542,9 +546,27 @@ namespace _NET_1732_Attendance
 
         private void Initialize()
         {
-            NameValueCollection appAll = ConfigurationManager.AppSettings;
+            gAPI = new GSheetsAPI
+            {
+                Sheet_ID = ConfigurationManager.AppSettings["SHEET_ID"],
+                GID_Attendance_Status = Convert.ToInt32(ConfigurationManager.AppSettings["GID_ATTENDANCE_STATUS"]),
+                GID_Accumulated_Hours = Convert.ToInt32(ConfigurationManager.AppSettings["GID_ACCUMULATED_HOURS"]),
+                GID_Attendance_Log = Convert.ToInt32(ConfigurationManager.AppSettings["GID_ATTENDANCE_LOG"]),
+                Recent_Time_Check = Convert.ToInt32(ConfigurationManager.AppSettings["RECENT_CHECKOUT_TIME"]),
+                Team_Checkout_Time = Parse_Checkout_Time(ConfigurationManager.AppSettings["TEAM_CHECKOUT_TIME"]),
+                Auto_Checkout_Enabled = Convert.ToBoolean(ConfigurationManager.AppSettings["AUTO_CHECKOUT_ENABLED"])
+            };
 
-            gAPI = new GSheetsAPI();
+            if (gAPI.Auto_Checkout_Enabled)
+            {
+                gAPI.Auto_Checkout_Time = Parse_Checkout_Time(ConfigurationManager.AppSettings["AUTO_CHECKOUT_TIME"]);
+            }
+            else
+            {
+                Log("Auto checkout disabled. Skipping parsing auto checkout time");
+            }
+
+
             if (gAPI.AuthorizeGoogleApp())
             {
                 Log("Application authorized");
@@ -553,7 +575,11 @@ namespace _NET_1732_Attendance
                 {
                     Log("Successfully refreshed local data");
                     UI_Control(true);
-                    Setup_Midnight_Timer();
+                    if (gAPI.Auto_Checkout_Enabled)
+                    {
+                        Setup_Checkout_Timer();
+                    }
+
                     TXT_ID_Scan.Focus();
                 }
                 else
@@ -572,6 +598,21 @@ namespace _NET_1732_Attendance
                 Log(gAPI.LastException);
                 UI_Control(false);
             }
+        }
+
+        private TimeSpan Parse_Checkout_Time(string time)
+        {
+            TimeSpan value = new TimeSpan();
+            try
+            {
+                Log("Auto checkout enabled. Attempting to parse auto checkout time");
+                TimeSpan.TryParse(time, out value);
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return value;
         }
 
         private void UI_Control(bool state)
@@ -664,6 +705,7 @@ namespace _NET_1732_Attendance
                 if (gAPI.Check_Is_Mentor(ID))
                 {
                     Log(string.Format("ID: {0} - Authorized", ID.ToString()));
+                    Logged_In_Mentor_ID = ID;
                     success = true;
                 }
                 else
@@ -703,18 +745,27 @@ namespace _NET_1732_Attendance
             try
             {
                 //get list of users still checked in
+
                 List<User> stillCheckedInUsers = gAPI.Get_CheckedIn_Users();
-                foreach (User item in stillCheckedInUsers)
+                if (gAPI.Auto_Checkout_Enabled)
                 {
-                    Log(string.Format("User forgot to check out - ID: {0} | NAME: {1}", item.ID.ToString(), item.Name.ToString()));
-                    if (gAPI.Force_Logoff_User(item.ID))
+                    foreach (User item in stillCheckedInUsers)
                     {
-                        Log(string.Format("User force checked out - ID: {0} | NAME: {1}", item.ID.ToString(), item.Name.ToString()));
+                        Log(string.Format("User forgot to check out - ID: {0} | NAME: {1}", item.ID.ToString(), item.Name.ToString()));
+                        if (gAPI.Force_Logoff_User(item.ID))
+                        {
+                            Log(string.Format("User force checked out - ID: {0} | NAME: {1}", item.ID.ToString(), item.Name.ToString()));
+                        }
+                        else
+                        {
+                            Log(gAPI.LastException);
+                        }
                     }
-                    else
-                    {
-                        Log(gAPI.LastException);
-                    }
+                }
+                else
+                {
+                    Log("Auto check-out disabled.");
+                    Log(string.Format("{0} users remain checked in.", stillCheckedInUsers.Count));
                 }
             }
             catch (Exception ex)
@@ -723,7 +774,10 @@ namespace _NET_1732_Attendance
             }
             finally
             {
-                Setup_Midnight_Timer();
+                if (gAPI.Auto_Checkout_Enabled)
+                {
+                    Setup_Checkout_Timer();
+                }
             }
         }
 
