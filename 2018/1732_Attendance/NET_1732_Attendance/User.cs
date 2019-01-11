@@ -27,7 +27,12 @@ namespace _NET_1732_Attendance
         public void Calculate_Missed_Hours(DateTime teamCheckoutTime)
         {
             TimeSpan timeSpan = teamCheckoutTime - Check_In_Time;
-            User_TotalMissedHours += timeSpan;
+            //if timespan is negative then user accidentally checked back in after check out period
+            //dont update User_TotalMissedHours (column value will be rewritten with same value)
+            if (timeSpan.Ticks > 0)
+            {
+                User_TotalMissedHours += timeSpan;
+            }
         }
         #endregion
     }

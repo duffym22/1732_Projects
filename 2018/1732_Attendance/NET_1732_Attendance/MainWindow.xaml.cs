@@ -530,8 +530,10 @@ namespace _NET_1732_Attendance
         private void Setup_Checkout_Timer()
         {
             TimeSpan timeToGo = new TimeSpan(gAPI.Auto_Checkout_Time.Days, gAPI.Auto_Checkout_Time.Hours, gAPI.Auto_Checkout_Time.Minutes, gAPI.Auto_Checkout_Time.Seconds) - DateTime.Now.TimeOfDay;
-            //gAPI.Auto_Checkout_Times
-            //TODO - if auto checkout is super fast - then time to go will be negative - add one day
+            if (timeToGo.Ticks < 0)
+            {
+                timeToGo = new TimeSpan(1, 0, 0, 0) - timeToGo.Negate();
+            }
             Log(string.Format("Time until next auto-check out of users: {0}", timeToGo.ToString()));
 
             timer = new Timer(x =>
