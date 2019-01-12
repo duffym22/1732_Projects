@@ -547,6 +547,16 @@ namespace _NET_1732_Attendance
         private void Setup_Checkout_Timer()
         {
             TimeSpan timeToGo = new TimeSpan(gAPI.Auto_Checkout_Time.Days, gAPI.Auto_Checkout_Time.Hours, gAPI.Auto_Checkout_Time.Minutes, gAPI.Auto_Checkout_Time.Seconds) - DateTime.Now.TimeOfDay;
+
+            if (DateTime.Today.DayOfWeek.Equals(DayOfWeek.Saturday) || DateTime.Today.DayOfWeek.Equals(DayOfWeek.Sunday))
+            {
+                gAPI.Team_Checkout_Time = Parse_Checkout_Time(ConfigurationManager.AppSettings["WEEKEND_TEAM_CHECKOUT_TIME"]);
+            }
+            else
+            {
+                gAPI.Team_Checkout_Time = Parse_Checkout_Time(ConfigurationManager.AppSettings["WEEKDAY_TEAM_CHECKOUT_TIME"]);
+            }
+
             if (timeToGo.Ticks < 0)
             {
                 timeToGo = new TimeSpan(1, 0, 0, 0) - timeToGo.Negate();
@@ -565,7 +575,9 @@ namespace _NET_1732_Attendance
 
         private void Initialize()
         {
-            int sheetSelection = -1;
+            int
+                sheetSelection = -1;
+
             string
                 prodSheet,
                 testSheet;
@@ -576,7 +588,6 @@ namespace _NET_1732_Attendance
                 GID_Accumulated_Hours = Convert.ToInt32(ConfigurationManager.AppSettings["GID_ACCUMULATED_HOURS"]),
                 GID_Attendance_Log = Convert.ToInt32(ConfigurationManager.AppSettings["GID_ATTENDANCE_LOG"]),
                 Recent_Time_Check = Convert.ToInt32(ConfigurationManager.AppSettings["RECENT_CHECKOUT_TIME"]),
-                Team_Checkout_Time = Parse_Checkout_Time(ConfigurationManager.AppSettings["TEAM_CHECKOUT_TIME"]),
                 Auto_Checkout_Enabled = Convert.ToBoolean(ConfigurationManager.AppSettings["AUTO_CHECKOUT_ENABLED"])
             };
 
@@ -588,6 +599,15 @@ namespace _NET_1732_Attendance
             testSheet = ConfigurationManager.AppSettings["TEST_SHEET_ID"];
             gAPI.Sheet_ID = sheetSelection.Equals(0) ? prodSheet : testSheet;
             Log(string.Format("{0} sheet selected.", sheetSelection.Equals(0) ? "PROD" : "TEST"));
+
+            if (DateTime.Today.DayOfWeek.Equals(DayOfWeek.Saturday) || DateTime.Today.DayOfWeek.Equals(DayOfWeek.Sunday))
+            {
+                gAPI.Team_Checkout_Time = Parse_Checkout_Time(ConfigurationManager.AppSettings["WEEKEND_TEAM_CHECKOUT_TIME"]);
+            }
+            else
+            {
+                gAPI.Team_Checkout_Time = Parse_Checkout_Time(ConfigurationManager.AppSettings["WEEKDAY_TEAM_CHECKOUT_TIME"]);
+            }
 
             if (gAPI.Auto_Checkout_Enabled)
             {
@@ -944,6 +964,8 @@ namespace _NET_1732_Attendance
                 //get list of users still checked in
 
                 List<User> stillCheckedInUsers = gAPI.Get_CheckedIn_Users();
+                Log(string.Format("{0} users remain checked in.", stillCheckedInUsers.Count));
+
                 if (gAPI.Auto_Checkout_Enabled)
                 {
                     foreach (User item in stillCheckedInUsers)
@@ -958,6 +980,7 @@ namespace _NET_1732_Attendance
                             Log(gAPI.LastException);
                         }
                     }
+                    Log(string.Format("Force checked out {0} users", stillCheckedInUsers.Count));
                 }
                 else
                 {
