@@ -6,6 +6,7 @@ using System.Configuration;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
@@ -107,23 +108,29 @@ namespace _NET_1732_Attendance
             {
                 if (!string.IsNullOrEmpty(TXT_ID.Text))
                 {
-                    ulong.TryParse(TXT_ID.Text, out ulong ID);
-                    if (Lookup_ID(ID))
+                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
                     {
-                        if (gAPI.Force_Logoff_User(ID))
+                        if (Lookup_ID(ID))
                         {
-                            DisplayAdminText(string.Format("User force checked out - ID: {0}", ID));
-                            Log(string.Format("User force checked out - ID: {0}", ID));
-                            TXT_ID.Clear();
+                            if (gAPI.Force_Logoff_User(ID))
+                            {
+                                DisplayAdminText(string.Format("User force checked out - ID: {0}", ID));
+                                Log(string.Format("User force checked out - ID: {0}", ID));
+                            }
+                            else
+                            {
+                                Log(gAPI.LastException);
+                            }
                         }
                         else
                         {
-                            Log(gAPI.LastException);
+                            DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
                         }
                     }
                     else
                     {
-                        DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to force checkout user", TXT_ID.Text));
+                        Log(string.Format("Invalid ID scanned to force checkout user", TXT_ID.Text));
                     }
                 }
                 else
@@ -135,6 +142,11 @@ namespace _NET_1732_Attendance
             {
                 HandleException(ex, MethodBase.GetCurrentMethod().Name);
             }
+            finally
+            {
+                TXT_ID.Clear();
+                TXT_ID.Focus();
+            }
         }
 
         private void BTN_Add_User_Click(object sender, RoutedEventArgs e)
@@ -143,40 +155,40 @@ namespace _NET_1732_Attendance
             {
                 if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_First_Name.Text) && !string.IsNullOrEmpty(TXT_Last_Name.Text))
                 {
-                    if (TXT_ID.Text.Length > 10)
+                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
                     {
-                        string shortID = TXT_ID.Text.Substring(TXT_ID_Scan.Text.Length / 2, (TXT_ID.Text.Length - (TXT_ID.Text.Length / 2) - 1));
-                        TXT_ID.Text = shortID;
-                        DisplayAdminText(string.Format("ID too long. Shortened ID to {0} characters", shortID.Length));
-                    }
-
-                    ulong.TryParse(TXT_ID.Text, out ulong ID);
-
-                    if (Lookup_ID(ID))
-                    {
-                        DisplayAdminText(string.Format("ID: {0} is already registered", ID.ToString()));
-                        Log(string.Format("ID: {0} is already registered", ID.ToString()));
-                    }
-                    else
-                    {
-                        string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
-                        if (gAPI.Add_User(ID, fullName, Logged_In_Mentor_ID, (bool)CHK_Is_Mentor.IsChecked))
+                        if (Lookup_ID(ID))
                         {
-                            DisplayAdminText(string.Format("Successfully added ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
-                            Log(string.Format("Mentor: {0} added ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), TXT_ID.Text, fullName));
+                            DisplayAdminText(string.Format("ID: {0} is already registered", ID.ToString()));
+                            Log(string.Format("ID: {0} is already registered", ID.ToString()));
                         }
                         else
                         {
-                            DisplayAdminText(string.Format("Failed to add ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
-                            Log(string.Format("Mentor: {0} failed to add ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), TXT_ID.Text, fullName));
-                            Log(gAPI.LastException);
+                            string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
+                            if (gAPI.Add_User(ID, fullName, Logged_In_Mentor_ID, (bool)CHK_Is_Mentor.IsChecked))
+                            {
+                                DisplayAdminText(string.Format("Successfully added ID: {0} | NAME: {1}", ID.ToString(), fullName));
+                                Log(string.Format("Mentor: {0} added ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), ID.ToString(), fullName));
+                            }
+                            else
+                            {
+                                DisplayAdminText(string.Format("Failed to add ID: {0} | NAME: {1}", ID.ToString(), fullName));
+                                Log(string.Format("Mentor: {0} failed to add ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), ID.ToString(), fullName));
+                                Log(gAPI.LastException);
+                            }
                         }
                     }
+                    else
+                    {
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to register the user", TXT_ID.Text));
+                        Log(string.Format("Invalid ID scanned to add user", TXT_ID.Text));
+                    }
+
                     TXT_ID.Clear();
+                    TXT_ID.Focus();
                     TXT_First_Name.Clear();
                     TXT_Last_Name.Clear();
                     CHK_Is_Mentor.IsChecked = false;
-                    TXT_ID.Focus();
                 }
                 else
                 {
@@ -195,28 +207,29 @@ namespace _NET_1732_Attendance
             {
                 if (!string.IsNullOrEmpty(TXT_ID.Text))
                 {
-                    if (TXT_ID.Text.Length > 10)
+                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
                     {
-                        string shortID = TXT_ID.Text.Substring(TXT_ID_Scan.Text.Length / 2, (TXT_ID.Text.Length - (TXT_ID.Text.Length / 2) - 1));
-                        TXT_ID.Text = shortID;
-                        DisplayAdminText(string.Format("ID too long. Shortened ID to {0} characters", shortID.Length));
-                    }
-
-                    ulong.TryParse(TXT_ID.Text, out ulong ID);
-                    if (Lookup_ID(ID))
-                    {
-                        string[] name = gAPI.Get_ID_Name(ID).Split(',');
-                        TXT_Last_Name.Text = name[0].Trim();
-                        TXT_First_Name.Text = name[1].Trim();
-                        CHK_Is_Mentor.IsChecked = gAPI.Check_Is_Mentor(ID);
-                        UI_Display_Update_Options(true);
-                        DisplayAdminText("User data imported. Please make any changes to the user by updating the fields and press Save to finish");
+                        if (Lookup_ID(ID))
+                        {
+                            string[] name = gAPI.Get_ID_Name(ID).Split(',');
+                            TXT_Last_Name.Text = name[0].Trim();
+                            TXT_First_Name.Text = name[1].Trim();
+                            CHK_Is_Mentor.IsChecked = gAPI.Check_Is_Mentor(ID);
+                            UI_Display_Update_Options(true);
+                            DisplayAdminText("User data imported. Please make any changes to the user by updating the fields and press Save to finish");
+                        }
+                        else
+                        {
+                            TXT_ID.Clear();
+                            DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
+                        }
                     }
                     else
                     {
-                        TXT_ID.Clear();
-                        DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to update the user", TXT_ID.Text));
+                        Log(string.Format("Invalid ID scanned to update user", TXT_ID.Text));
                     }
+
                 }
                 else
                 {
@@ -233,23 +246,23 @@ namespace _NET_1732_Attendance
         {
             try
             {
-                ulong.TryParse(TXT_ID.Text, out ulong ID);
                 if (!string.IsNullOrEmpty(TXT_First_Name.Text) && !string.IsNullOrEmpty(TXT_Last_Name.Text))
                 {
-
-                    string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
-                    if (gAPI.Update_User(ID, fullName, Logged_In_Mentor_ID, (bool)CHK_Is_Mentor.IsChecked))
+                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
                     {
-                        DisplayAdminText(string.Format("Successfully update ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
-                        Log(string.Format("Mentor: {0} updated ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), TXT_ID.Text, fullName));
+                        string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
+                        if (gAPI.Update_User(ID, fullName, Logged_In_Mentor_ID, (bool)CHK_Is_Mentor.IsChecked))
+                        {
+                            DisplayAdminText(string.Format("Successfully update ID: {0} | NAME: {1}", ID.ToString(), fullName));
+                            Log(string.Format("Mentor: {0} updated ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), ID.ToString(), fullName));
+                        }
+                        else
+                        {
+                            DisplayAdminText(string.Format("Failed to update ID: {0} | NAME: {1}", ID.ToString(), fullName));
+                            Log(string.Format("Mentor: {0} failed to update ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), ID.ToString(), fullName));
+                            Log(gAPI.LastException);
+                        }
                     }
-                    else
-                    {
-                        DisplayAdminText(string.Format("Failed to update ID: {0} | NAME: {1}", TXT_ID.Text, fullName));
-                        Log(string.Format("Mentor: {0} failed to update ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), TXT_ID.Text, fullName));
-                        Log(gAPI.LastException);
-                    }
-
                     TXT_ID.Clear();
                     TXT_First_Name.Clear();
                     TXT_Last_Name.Clear();
@@ -263,10 +276,9 @@ namespace _NET_1732_Attendance
                     DisplayAdminText("Please enter the first and last name of the user to update");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
             }
         }
 
@@ -276,37 +288,31 @@ namespace _NET_1732_Attendance
             {
                 if (!string.IsNullOrEmpty(TXT_ID.Text))
                 {
-                    if (TXT_ID.Text.Length > 10)
+                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
                     {
-                        string shortID = TXT_ID.Text.Substring(TXT_ID_Scan.Text.Length / 2, (TXT_ID.Text.Length - (TXT_ID.Text.Length / 2) - 1));
-                        TXT_ID.Text = shortID;
-                        DisplayAdminText(string.Format("ID too long. Shortened ID to {0} characters", shortID.Length));
-                    }
-
-                    ulong.TryParse(TXT_ID.Text, out ulong ID);
-                    if (Lookup_ID(ID))
-                    {
-                        if (gAPI.Delete_User(ID, Logged_In_Mentor_ID))
+                        if (Lookup_ID(ID))
                         {
-                            DisplayAdminText(string.Format("Successfully deleted ID: {0}", TXT_ID.Text));
-                            Log(string.Format("Mentor: {0} deleted ID: {1}", Logged_In_Mentor_ID.ToString(), TXT_ID.Text));
+                            if (gAPI.Delete_User(ID, Logged_In_Mentor_ID))
+                            {
+                                DisplayAdminText(string.Format("Successfully deleted ID: {0}", ID.ToString()));
+                                Log(string.Format("Mentor: {0} deleted ID: {1}", Logged_In_Mentor_ID.ToString(), ID.ToString()));
+                            }
+                            else
+                            {
+                                DisplayAdminText(string.Format("Failed to delete ID: {0}", ID.ToString()));
+                                Log(string.Format("Mentor: {0} failed to delete ID: {1}", Logged_In_Mentor_ID.ToString(), ID.ToString()));
+                                Log(gAPI.LastException);
+                            }
                         }
                         else
                         {
-                            DisplayAdminText(string.Format("Failed to delete ID: {0}", TXT_ID.Text));
-                            Log(string.Format("Mentor: {0} failed to delete ID: {1}", Logged_In_Mentor_ID.ToString(), TXT_ID.Text));
-                            Log(gAPI.LastException);
+                            DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
                         }
-
-                        TXT_ID.Clear();
-                        TXT_First_Name.Clear();
-                        TXT_Last_Name.Clear();
-                        CHK_Is_Mentor.IsChecked = false;
-                        TXT_ID.Focus();
                     }
                     else
                     {
-                        DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to delete the user", TXT_ID.Text));
+                        Log(string.Format("Invalid ID scanned to delete user", TXT_ID.Text));
                     }
                 }
                 else
@@ -317,6 +323,11 @@ namespace _NET_1732_Attendance
             catch (Exception ex)
             {
                 HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            finally
+            {
+                TXT_ID.Clear();
+                TXT_ID.Focus();
             }
         }
 
@@ -415,9 +426,20 @@ namespace _NET_1732_Attendance
 
         private void BTN_View_Log_Click(object sender, RoutedEventArgs e)
         {
+            string[] lines;
             try
             {
-                string[] lines = File.ReadAllLines(Log_File_Path, Encoding.UTF8);
+                if(Log_File_Path.StartsWith("\\"))
+                {
+                    string file = Log_File_Path.Replace("\\","");
+                    string path = Directory.GetCurrentDirectory();
+                    lines = File.ReadAllLines(path + Log_File_Path, Encoding.UTF8);
+                }
+                else
+                {
+                    lines = File.ReadAllLines(Log_File_Path, Encoding.UTF8);
+                }
+
                 foreach (string item in lines)
                 {
                     DisplayAdminText(item);
@@ -431,21 +453,16 @@ namespace _NET_1732_Attendance
 
         private void TXT_ID_Scan_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            string idText = string.Empty;
+            string
+                idText = string.Empty;
+
             try
             {
                 if (e.Key == System.Windows.Input.Key.Enter || e.Key == System.Windows.Input.Key.Return)
                 {
                     idText = TXT_ID_Scan.Text;
                     TXT_ID_Scan.Clear();
-                    if (idText.Length > 10)
-                    {
-                        //string shortID = TXT_ID_Scan.Text.Substring(TXT_ID_Scan.Text.Length / 2, (TXT_ID_Scan.Text.Length - (TXT_ID_Scan.Text.Length / 2) - 1));
-                        string shortID = idText.Substring(0, 10);
-                        idText = shortID;
-                    }
-
-                    if (ulong.TryParse(idText, out ulong ID_Scan))
+                    if (Parse_Scanned_ID(idText, out ulong ID_Scan))
                     {
                         if (Lookup_ID(ID_Scan))
                         {
@@ -481,14 +498,14 @@ namespace _NET_1732_Attendance
                         else
                         {
                             Log(string.Format("ID - {0} is not registered", ID_Scan.ToString()));
-                            DisplayText(string.Format("ID - {0} is not registered. Please find a Mentor to register your ID", ID_Scan.ToString()));
+                            DisplayText(string.Format("ID ({0}) is not registered. Please find a Mentor to register your ID", ID_Scan.ToString()));
                             Log_Unregistered_User(ID_Scan);
                         }
                     }
                     else
                     {
-                        Log(string.Format("Invalid ID Entry: {0}", ID_Scan.ToString()));
                         DisplayText("Invalid ID entered");
+                        Log(string.Format("Invalid ID Entry: {0}", idText));
                     }
                 }
             }
@@ -550,7 +567,8 @@ namespace _NET_1732_Attendance
         {
             gAPI = new GSheetsAPI
             {
-                Sheet_ID = ConfigurationManager.AppSettings["SHEET_ID"],
+                //Sheet_ID = ConfigurationManager.AppSettings["PROD_SHEET_ID"],
+                Sheet_ID = ConfigurationManager.AppSettings["TEST_SHEET_ID"],
                 GID_Attendance_Status = Convert.ToInt32(ConfigurationManager.AppSettings["GID_ATTENDANCE_STATUS"]),
                 GID_Accumulated_Hours = Convert.ToInt32(ConfigurationManager.AppSettings["GID_ACCUMULATED_HOURS"]),
                 GID_Attendance_Log = Convert.ToInt32(ConfigurationManager.AppSettings["GID_ATTENDANCE_LOG"]),
@@ -568,6 +586,7 @@ namespace _NET_1732_Attendance
                 Log("Auto checkout disabled. Skipping parsing auto checkout time");
             }
 
+            Log_File_Path = ConfigurationManager.AppSettings["LOG_FILE_PATH"];
 
             if (gAPI.AuthorizeGoogleApp())
             {
@@ -669,6 +688,170 @@ namespace _NET_1732_Attendance
                 BTN_Save_Updated_User.IsEnabled = false;
                 BTN_Save_Updated_User.Visibility = Visibility.Hidden;
             }
+        }
+
+        private bool Parse_Scanned_ID(string scan, out ulong ID)
+        {
+            bool
+                success = false;
+
+            Regex
+                alphanumeric = new Regex(@"^\w+$"),
+                magStripeGeneric = new Regex(@"^%.*?$"),
+                magStripeThreeTrack = new Regex(@"^%(B)?[\d]+\^[\w, \/]+\^[\d]+\?;[\d]+=[\d]+\?$"),
+                numeric = new Regex(@"^\d+$");
+
+            string
+                temp,
+                temp2;
+
+            ID = 0;
+            try
+            {
+
+                /// Otherwise, check to see if the input length is greater than 10
+                /// - if not, then just check to see if it is numeric only and parse it
+                ///  
+                /// If the input length is greater than 10, check to see if it matches 
+                /// any of the regex formats in this order
+                /// 1. Numeric only - accept & truncate to first 10 digits
+                /// 2. Generic mag stripe
+                ///     2a. Check to see if it matches a full mag stripe (3 track) card swipe.
+                ///         If so, take track one and check that it is only numbers. 
+                ///         If so, truncate to first 10 digits
+                ///     2b. If not a full stripe - check to see if it is a numeric single track, 
+                ///         if so, truncate to first 10 digits
+                /// 3. Check to see if the input is alphanumeric
+                ///    If so, the input is rejected due to requirement that IDs are numeric only
+
+                if (scan.Length > 10)
+                {
+                    //ID length is GREATER THAN 10
+                    if (numeric.IsMatch(scan))
+                    {
+                        //ID is NUMERIC
+                        temp = scan.Substring(0, 10);
+                        DisplayAdminText(string.Format("Numeric ID is too long. Shortening to {0} characters", temp.Length));
+                        ID = Parse_ID_Numeric(temp);
+                        if (!ID.Equals(0))
+                        {
+                            success = true;
+                        }
+                    }
+                    else if (magStripeGeneric.IsMatch(scan))
+                    {
+                        //ID matches a generic mag stripe
+                        if (magStripeThreeTrack.IsMatch(scan))
+                        {
+                            DisplayAdminText(string.Format("3 track mag stripe detected. Parsing..."));
+                            //ID matches a 3 track mag stripe
+                            temp = scan.Substring(1, scan.Length - 1);              //remove Start (SS) and End (ES) Sentinels 
+                            string[] contents = temp.Split('^');                    //split string on karet
+                            temp2 = contents[0].ToUpper();                          //take first track and make all characters uppercase
+                            temp2 = Regex.Replace(temp2, "[A-Za-z]", "");           //remove any instances of a letter
+                            if (numeric.IsMatch(temp2))
+                            {
+                                temp2 = temp2.Substring(0, 10);
+                                DisplayAdminText(string.Format("Numeric ID is too long. Shortening to {0} characters", temp2.Length));
+                                ID = Parse_ID_Numeric(temp2);
+                                if (!ID.Equals(0))
+                                {
+                                    success = true;
+                                }
+                            }
+                            else
+                            {
+                                DisplayAdminText(string.Format("Cannot parse 3 track mag stripe: {0}", temp2));
+                                Log(string.Format("Cannot parse 3 track mag stripe: {0}", temp2));
+                            }
+                        }
+                        else
+                        {
+                            DisplayAdminText(string.Format("Generic mag stripe detected. Parsing..."));
+                            temp = scan.Substring(1, scan.Length - 1);              //remove Start (SS) and End (ES) Sentinels 
+                            temp = Regex.Replace(temp, @"[^\d]", string.Empty);     //remove any instances of a letter
+                            DisplayAdminText(string.Format("Successfully parsed mag stripe to {0}.", temp));
+
+                            //check to see if input is numeric 
+                            //if not then check to see if it is alphanumeric for logging purposes 
+                            if (numeric.IsMatch(temp))
+                            {
+                                //ID is NUMERIC
+                                //in case the length remaining is GREATER THAN 10 - take a substring
+                                if (temp.Length > 10)
+                                {
+                                    DisplayAdminText(string.Format("Numeric ID is too long. Shortening to {0} characters", temp.Length));
+                                    temp = temp.Substring(0, 10);
+                                }
+
+                                ID = Parse_ID_Numeric(temp);
+                                if (!ID.Equals(0))
+                                {
+                                    success = true;
+                                }
+                            }
+                            else if (alphanumeric.IsMatch(temp))
+                            {
+                                //ID is ALPHANUMERIC
+                                DisplayAdminText(string.Format("Cannot parse mag stripe alphanumeric ID: {0}", scan));
+                                Log(string.Format("Cannot parse mag stripe alphanumeric ID: {0}", scan));
+                            }
+                            else
+                            {
+                                DisplayAdminText(string.Format("Unknown mag stripe input. Unable to parse input: {0}", scan));
+                                Log(string.Format("Unknown mag stripe input. Unable to parse input: {0}", scan));
+                            }
+                        }
+                    }
+                    else if (alphanumeric.IsMatch(scan))
+                    {
+                        DisplayAdminText(string.Format("Cannot parse alphanumeric input: {0}", scan));
+                        Log(string.Format("Cannot parse alphanumeric input: {0}", scan));
+                    }
+                }
+                else
+                {
+                    //ID length is LESS THAN 10
+                    if (numeric.IsMatch(scan))
+                    {
+                        //ID is NUMERIC
+                        ID = Parse_ID_Numeric(scan);
+                        if (!ID.Equals(0))
+                        {
+                            success = true;
+                        }
+                    }
+                    else if (alphanumeric.IsMatch(scan))
+                    {
+                        //ID is ALPHANUMERIC
+                        DisplayAdminText(string.Format("Cannot parse alphanumeric input: {0}", scan));
+                        Log(string.Format("Cannot parse alphanumeric input: {0}", scan));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return success;
+        }
+
+        private ulong Parse_ID_Numeric(string scan)
+        {
+            ulong ID = 0;
+            try
+            {
+                if (ulong.TryParse(scan, out ID))
+                {
+                    DisplayAdminText(string.Format("Successfully parsed ID: {0}", scan));
+                    Log(string.Format("Successfully parsed ID: {0}", scan));
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return ID;
         }
 
         private bool Lookup_ID(ulong ID)
@@ -795,13 +978,27 @@ namespace _NET_1732_Attendance
                 if (gAPI.Refresh_Local_Data())
                 {
                     Log("Local data refreshed");
-                    DisplayText("Local data refreshed");
+                    if (Mentor_Mode)
+                    {
+                        DisplayAdminText("Local data refreshed");
+                    }
+                    else
+                    {
+                        DisplayText("Local data refreshed");
+                    }
                 }
                 else
                 {
                     Log("Failed to refresh local data");
                     Log(gAPI.LastException);
-                    DisplayText("Failed to refresh local data");
+                    if (Mentor_Mode)
+                    {
+                        DisplayAdminText("Failed to refresh local data");
+                    }
+                    else
+                    {
+                        DisplayText("Failed to refresh local data");
+                    }
                 }
             }
             catch (Exception ex)
@@ -830,8 +1027,11 @@ namespace _NET_1732_Attendance
 
         internal void DisplayAdminText(string text)
         {
-            RTB_AdminOutput.AppendText(text + Environment.NewLine);
-            RTB_AdminOutput.ScrollToEnd();
+            if (Mentor_Mode)
+            {
+                RTB_AdminOutput.AppendText(text + Environment.NewLine);
+                RTB_AdminOutput.ScrollToEnd();
+            }
         }
 
         internal void HandleException(Exception ex, string callingMethod)

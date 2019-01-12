@@ -40,7 +40,7 @@
                 <TextBox x:Name="TXT_First_Name" HorizontalAlignment="Right" Height="65" Margin="0,0,10,233" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="48"/>
                 <TextBox x:Name="TXT_Last_Name" HorizontalAlignment="Right" Height="65" Margin="0,0,10,163" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="48"/>
                 <CheckBox x:Name="CHK_Is_Mentor" Content="Is Mentor?" HorizontalAlignment="Right" Margin="0,0,10,126" VerticalAlignment="Bottom" Width="265" FontSize="24"/>
-                <Button x:Name="BTN_Save_Updated_User" Content="Save" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="265" Height="100" Click="BTN_Save_Updated_User_Click" FontSize="18"/>
+                <Button x:Name="BTN_Save_Updated_User" Content="Save" HorizontalAlignment="Right" Margin="0,0,10,26" VerticalAlignment="Bottom" Width="265" Height="100" Click="BTN_Save_Updated_User_Click" FontSize="18"/>
             </Grid>
             <DataGrid x:Name="UserDataGrid" HorizontalAlignment="Left" Height="377" Margin="10,10,0,0" VerticalAlignment="Top" Width="1316" LostFocus="UserDataGrid_LostFocus" FocusableChanged="UserDataGrid_FocusableChanged" d:IsHidden="True"/>
         </Grid>
