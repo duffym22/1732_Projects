@@ -87,7 +87,7 @@ namespace _NET_1732_Attendance
 
         #endregion
 
-        #region *** PROPERTIES ***
+        #region *** PROPERTIES ***        
         public string Sheet_ID { get; set; }
         public int GID_Attendance_Status { get; set; }
         public int GID_Accumulated_Hours { get; set; }

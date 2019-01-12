@@ -429,9 +429,9 @@ namespace _NET_1732_Attendance
             string[] lines;
             try
             {
-                if(Log_File_Path.StartsWith("\\"))
+                if (Log_File_Path.StartsWith("\\"))
                 {
-                    string file = Log_File_Path.Replace("\\","");
+                    string file = Log_File_Path.Replace("\\", "");
                     string path = Directory.GetCurrentDirectory();
                     lines = File.ReadAllLines(path + Log_File_Path, Encoding.UTF8);
                 }
@@ -565,10 +565,13 @@ namespace _NET_1732_Attendance
 
         private void Initialize()
         {
+            int sheetSelection = -1;
+            string
+                prodSheet,
+                testSheet;
+
             gAPI = new GSheetsAPI
             {
-                //Sheet_ID = ConfigurationManager.AppSettings["PROD_SHEET_ID"],
-                Sheet_ID = ConfigurationManager.AppSettings["TEST_SHEET_ID"],
                 GID_Attendance_Status = Convert.ToInt32(ConfigurationManager.AppSettings["GID_ATTENDANCE_STATUS"]),
                 GID_Accumulated_Hours = Convert.ToInt32(ConfigurationManager.AppSettings["GID_ACCUMULATED_HOURS"]),
                 GID_Attendance_Log = Convert.ToInt32(ConfigurationManager.AppSettings["GID_ATTENDANCE_LOG"]),
@@ -576,6 +579,15 @@ namespace _NET_1732_Attendance
                 Team_Checkout_Time = Parse_Checkout_Time(ConfigurationManager.AppSettings["TEAM_CHECKOUT_TIME"]),
                 Auto_Checkout_Enabled = Convert.ToBoolean(ConfigurationManager.AppSettings["AUTO_CHECKOUT_ENABLED"])
             };
+
+            ///Quick switcher in config to switch between prod and test sheets. 
+            /// Value = 0 --> Use Prod sheet
+            /// Value = 1 --> Use Test sheet
+            sheetSelection = Convert.ToInt32(ConfigurationManager.AppSettings["SHEET_SELECTION"]);
+            prodSheet = ConfigurationManager.AppSettings["PROD_SHEET_ID"];
+            testSheet = ConfigurationManager.AppSettings["TEST_SHEET_ID"];
+            gAPI.Sheet_ID = sheetSelection.Equals(0) ? prodSheet : testSheet;
+            Log(string.Format("{0} sheet selected.", sheetSelection.Equals(0) ? "PROD" : "TEST"));
 
             if (gAPI.Auto_Checkout_Enabled)
             {
