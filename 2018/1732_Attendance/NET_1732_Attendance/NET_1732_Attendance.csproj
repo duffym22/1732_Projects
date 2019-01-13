@@ -53,7 +53,7 @@
     <StartupObject>_NET_1732_Attendance.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>ram.ico</ApplicationIcon>
+    <ApplicationIcon>ram2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Google.Apis, Version=1.36.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
@@ -182,10 +182,18 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="ram.ico" />
+    <Resource Include="refresh.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="refresh.png" />
+    <Resource Include="img\ram2.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="ram2.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="img\error.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
