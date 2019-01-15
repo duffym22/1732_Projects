@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace _NET_1732_Attendance
@@ -120,6 +119,7 @@ namespace _NET_1732_Attendance
                             }
                             else
                             {
+                                DisplayAdminText(gAPI.LastException);
                                 Log(gAPI.LastException);
                             }
                         }
@@ -175,6 +175,7 @@ namespace _NET_1732_Attendance
                             {
                                 DisplayAdminText(string.Format("Failed to add ID: {0} | NAME: {1}", ID.ToString(), fullName));
                                 Log(string.Format("Mentor: {0} failed to add ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), ID.ToString(), fullName));
+                                DisplayAdminText(gAPI.LastException);
                                 Log(gAPI.LastException);
                             }
                         }
@@ -261,6 +262,7 @@ namespace _NET_1732_Attendance
                         {
                             DisplayAdminText(string.Format("Failed to update ID: {0} | NAME: {1}", ID.ToString(), fullName));
                             Log(string.Format("Mentor: {0} failed to update ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), ID.ToString(), fullName));
+                            DisplayAdminText(gAPI.LastException);
                             Log(gAPI.LastException);
                         }
                     }
@@ -302,6 +304,7 @@ namespace _NET_1732_Attendance
                             {
                                 DisplayAdminText(string.Format("Failed to delete ID: {0}", ID.ToString()));
                                 Log(string.Format("Mentor: {0} failed to delete ID: {1}", Logged_In_Mentor_ID.ToString(), ID.ToString()));
+                                DisplayAdminText(gAPI.LastException);
                                 Log(gAPI.LastException);
                             }
                         }
@@ -332,7 +335,7 @@ namespace _NET_1732_Attendance
             }
         }
 
-        private void BTN_Who_CheckedIn_Click(object sender, RoutedEventArgs e)
+        private void BTN_Who_Checked_In_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -444,6 +447,133 @@ namespace _NET_1732_Attendance
                 foreach (string item in lines)
                 {
                     DisplayAdminText(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+        }
+
+        private void BTN_Show_All_Users_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //clear datagrid
+                List<User> users = new List<User>();
+                UserDataGrid.ItemsSource = users;
+
+                users = gAPI.Get_All_Users();
+                if (users.Count > 0)
+                {
+                    UserDataGrid.Visibility = Visibility.Visible;
+                    Log(string.Format("Displayed list of all users. Count = {0}", users.Count));
+                    DisplayAdminText(string.Format("Displayed list of all users. Count = {0}", users.Count));
+                    UserDataGrid.ItemsSource = users;
+                }
+                else
+                {
+                    Log("No users registered");
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+        }
+
+        private void BTN_Credit_Hours_Present_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_Hours.Text))
+                {
+                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
+                    {
+                        if (Lookup_ID(ID))
+                        {
+                            if (gAPI.Credit_User_Hours(ID, TXT_Hours.Text, Logged_In_Mentor_ID))
+                            {
+                                DisplayAdminText(string.Format("Successfully credited {0} to ID: {1}", TXT_Hours.Text, ID.ToString()));
+                                Log(string.Format("Successfully credited {0} to ID: {1}", TXT_Hours.Text, ID.ToString()));
+                            }
+                            else
+                            {
+                                DisplayAdminText(string.Format("Failed to credit {0} to ID: {1}", TXT_Hours.Text, ID.ToString()));
+                                Log(string.Format("Mentor: {0} failed to credit ID: {1} with {2}", Logged_In_Mentor_ID.ToString(), ID.ToString(), TXT_Hours.Text));
+                                DisplayAdminText(gAPI.LastException);
+                                Log(gAPI.LastException);
+                            }
+                        }
+                        else
+                        {
+                            TXT_ID.Clear();
+                            DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
+                        }
+
+                        TXT_ID.Clear();
+                        TXT_Hours.Clear();
+
+                    }
+                    else
+                    {
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to update the user", TXT_ID.Text));
+                        Log(string.Format("Invalid ID scanned to update user", TXT_ID.Text));
+                    }
+
+                }
+                else
+                {
+                    DisplayAdminText("Please scan/enter an ID of the user and enter the number of time present (hours, minutes and seconds) in the format 00:00:00");
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+        }
+
+        private void BTN_Add_Hours_Missed_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_Hours.Text))
+                {
+                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
+                    {
+                        if (Lookup_ID(ID))
+                        {
+                            if (gAPI.Add_Missed_Hours(ID, TXT_Hours.Text, Logged_In_Mentor_ID))
+                            {
+                                DisplayAdminText(string.Format("Successfully added missed hours ({0}) to ID: {1}", TXT_Hours.Text, ID.ToString()));
+                                Log(string.Format("Successfully added missed hours ({0}) to ID: {1}", TXT_Hours.Text, ID.ToString()));
+                            }
+                            else
+                            {
+                                DisplayAdminText(string.Format("Failed to add missed hours ({0}) to ID: {1}", TXT_Hours.Text, ID.ToString()));
+                                Log(string.Format("Mentor: {0} failed to add missed hours ({1}) to ID: {2}", Logged_In_Mentor_ID.ToString(), TXT_Hours.Text, ID.ToString()));
+                                Log(gAPI.LastException);
+                            }
+                        }
+                        else
+                        {
+                            TXT_ID.Clear();
+                            DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
+                        }
+
+                        TXT_ID.Clear();
+                        TXT_Hours.Clear();
+
+                    }
+                    else
+                    {
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to update the ID: {0}", TXT_ID.Text));
+                        Log(string.Format("Invalid ID scanned to add missed hours to ID: {0}", TXT_ID.Text));
+                    }
+                }
+                else
+                {
+                    DisplayAdminText("Please scan/enter an ID of the user and enter the number of missed time (hours, minutes and seconds) in the format 00:00:00");
                 }
             }
             catch (Exception ex)
@@ -623,20 +753,20 @@ namespace _NET_1732_Attendance
 
             defaultLogo = ConfigurationManager.AppSettings["DEFAULT_LOGO"];
             customLogo = ConfigurationManager.AppSettings["CUSTOM_LOGO"];
-            if (!string.IsNullOrEmpty(customLogo))
-            {
-                var path = Path.Combine(Environment.CurrentDirectory, "img", customLogo);
-                var uri = new Uri(path);
-                var bitmap = new BitmapImage(uri);
-                IMG_Logo.Source = bitmap;
-            }
-            else
-            {
-                var path = Path.Combine(Environment.CurrentDirectory, "img", defaultLogo);
-                var uri = new Uri(path);
-                var bitmap = new BitmapImage(uri);
-                IMG_Logo.Source = bitmap;
-            }
+            //if (!string.IsNullOrEmpty(customLogo))
+            //{
+            //    var path = Path.Combine(Environment.CurrentDirectory, "img", customLogo);
+            //    var uri = new Uri(path);
+            //    var bitmap = new BitmapImage(uri);
+            //    IMG_Logo.Source = bitmap;
+            //}
+            //else
+            //{
+            //    var path = Path.Combine(Environment.CurrentDirectory, "img", defaultLogo);
+            //    var uri = new Uri(path);
+            //    var bitmap = new BitmapImage(uri);
+            //    IMG_Logo.Source = bitmap;
+            //}
 
             Log_File_Path = ConfigurationManager.AppSettings["LOG_FILE_PATH"];
 

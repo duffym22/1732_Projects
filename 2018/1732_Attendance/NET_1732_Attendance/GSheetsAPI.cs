@@ -30,6 +30,8 @@ namespace _NET_1732_Attendance
         const string _ADDED_STATUS = "ADDED";
         const string _UPDATED_STATUS = "UPDATED";
         const string _UNREGISTERED_STATUS = "UNREGISTERED";
+        const string _HOURS_CREDITED = "CREDITED";
+        const string _HOURS_MISSING = "MISSING";
         const string _DELETED_STATUS = "DELETED";
         const string _OUT_STATUS = "OUT";
         const string _IN_STATUS = "IN";
@@ -167,6 +169,102 @@ namespace _NET_1732_Attendance
                 UpdateRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}{2}:{3}", _ACCUM_HOURS, _ID_COL, Get_Accumulated_Hours_User_Row(ID) + 1, _NAME_COL));
                 Read_Attendance_Status();
                 InsertRows(Create_Log_Row(ID, _UPDATED_STATUS, mentorID), Get_Next_Log_Row());
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return success;
+        }
+
+        public bool Credit_User_Hours(ulong ID, string creditedHours, ulong mentorID)
+        {
+            bool
+                success = false;
+
+            int
+                rowToUpdate;
+
+            string
+                dateColumn = string.Empty,
+                rowRange = string.Empty;
+
+            try
+            {
+                // 1. Parse the hours from the form 
+                TimeSpan.TryParse(creditedHours, out TimeSpan extraHours);
+                if (extraHours.Equals(TimeSpan.Zero))
+                {
+                    throw new Exception("Invalid credited hours value passed");
+                }
+
+                // 2. Add the parsed hours to the current total hours value for the user
+                TimeSpan sessionHours = extraHours + dict_Attendance[ID].User_TotalHours;
+
+                // 3. Define the range (single cell) to update (ATTENDANCE_STATUS!H#)
+                rowToUpdate = Get_User_Attendance_Status_Row(ID);
+                rowRange = string.Format("{0}{1}{2}", _ATTENDANCE_STATUS, _TOTAL_HRS_COL, rowToUpdate + 1);
+
+                // 4. Write the updated value
+                UpdateRows(Update_Hours(sessionHours), rowRange);
+
+                // 5. Even though the hours are credited - update the accumulated hours sheet
+                dateColumn = Get_Accumulated_Hours_Date_Column();                                           //get the current date column
+                rowToUpdate = Get_Accumulated_Hours_User_Row(ID);                                           //get the row of the user on that sheet
+                string userCell = string.Format("{0}{1}", dateColumn, rowToUpdate + 1);                     //define the range of the cell to update
+
+                //in case the user has split hours (left and came back)
+                //read what is in the cell and add to it
+                TimeSpan accumHours = Read_User_Accumulated_Hours(userCell) + extraHours;                   //tally the accumulated hours for today (if any) and add the extra hours calculated above
+                UpdateRows(Update_Hours(accumHours), string.Format("{0}{1}", _ACCUM_HOURS, userCell));      //Write the updated value to the accumulated hours sheet
+
+                // 5. Update the dictionary
+                Read_Attendance_Status();
+
+                // 6. Update the log
+                InsertRows(Create_Log_Row(ID, _HOURS_CREDITED, mentorID), Get_Next_Log_Row());
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return success;
+        }
+
+        public bool Add_Missed_Hours(ulong ID, string missedHours, ulong mentorID)
+        {
+            bool
+                success = false;
+
+            int
+                rowToUpdate;
+
+            string
+                dateColumn = string.Empty,
+                rowRange = string.Empty;
+
+            try
+            {
+                // 1. Parse the hours from the form 
+                TimeSpan.TryParse(missedHours, out TimeSpan extraHours);
+
+                // 2. Add the parsed hours to the current total hours value for the user
+                TimeSpan missed = extraHours + dict_Attendance[ID].User_TotalMissedHours;
+
+                // 3. Define the range (single cell) to update (ATTENDANCE_STATUS!H#)
+                rowToUpdate = Get_User_Attendance_Status_Row(ID);
+                rowRange = string.Format("{0}{1}{2}", _ATTENDANCE_STATUS, _TOTAL_MISSED_HRS_COL, rowToUpdate + 1);
+
+                // 4. Write the updated value
+                UpdateRows(Update_Hours(missed), rowRange);
+
+                // 5. Update the dictionary
+                Read_Attendance_Status();
+
+                // 6. Update the log
+                InsertRows(Create_Log_Row(ID, _HOURS_MISSING, mentorID), Get_Next_Log_Row());
                 success = true;
             }
             catch (Exception ex)
@@ -357,6 +455,24 @@ namespace _NET_1732_Attendance
                 HandleException(ex, MethodBase.GetCurrentMethod().Name);
             }
             return success;
+        }
+
+        public List<User> Get_All_Users()
+        {
+            List<User> users = new List<User>();
+            try
+            {
+                List<ulong> keys = new List<ulong>(dict_Attendance.Keys);
+                foreach (ulong ID in keys)
+                {
+                    users.Add(dict_Attendance[ID]);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return users;
         }
 
         public List<User> Get_CheckedIn_Users()
@@ -728,6 +844,12 @@ namespace _NET_1732_Attendance
                     break;
                 case _UNREGISTERED_STATUS:
                     log = "User NOT REGISTERED";
+                    break;
+                case _HOURS_CREDITED:
+                    log = string.Format("User hours CREDITED by mentor {0}", mentorID.ToString());
+                    break;
+                case _HOURS_MISSING:
+                    log = string.Format("User hours MISSED added by mentor {0}", mentorID.ToString());
                     break;
                 case _UPDATED_STATUS:
                     log = string.Format("User UPDATED by mentor {0}", mentorID.ToString());
