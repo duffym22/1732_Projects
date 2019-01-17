@@ -17,11 +17,11 @@ namespace _NET_1732_Attendance
     /// 1. Scan ID over sensor
     /// 2. Text populates on field - automatic carriage return will invoke keypress
     /// 3. Check for carriage return in keypress event and if present, continue check
-    /// 4. Parse ID from field as ulongeger and check against existing dictionary read on startup of app (or from periodic invoke)
+    /// 4. Parse ID from field as ulong and check against existing dictionary read on startup of app (or from periodic invoke)
     /// 5. If ID is in dictionary, create new entry to record to LOG tab the ID and timestamp. 
-    /// 5a. If ID is NOT in the directory, display to screen "ID: [IDVAL] is not in the list of valid IDs. Please contact a mentor to be added"
+    /// 5a. If ID is NOT in the directory, display a message to the screen.
     /// 6. Read the current status' of all IDs from the ATTENDANCE_STATUS tab
-    /// 7. Enumerate current status of all IDs ulongo dict_ID_Status
+    /// 7. Enumerate current status of all IDs ulong dict_ID_Status
     /// 8. Verify current status of the ID and invert it to write to the ATTENDANCE_STATUS tab
     internal class GSheetsAPI : IDisposable
     {
