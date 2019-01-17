@@ -12,37 +12,44 @@
     <Grid x:Name="GRD_Main" Background="White" Margin="10,10,4,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="717" Width="1346">
 
         <Image x:Name="IMG_Logo" Margin="322,0,307,0" VerticalAlignment="Top" Source="img/logo.png" Height="522"/>
-        <TextBox x:Name="TXT_ID_Scan" Margin="322,557,307,0" TextWrapping="Wrap" VerticalAlignment="Top" Cursor="AppStarting" KeyDown="TXT_ID_Scan_KeyDown" Height="60" FontSize="36" HorizontalAlignment="Center" Width="717"/>
+        <TextBox x:Name="TXT_Scan" Margin="322,557,307,0" TextWrapping="Wrap" VerticalAlignment="Top" Cursor="AppStarting" KeyDown="TXT_ID_Scan_KeyDown" Height="60" FontSize="36" HorizontalAlignment="Center" Width="717"/>
         <TextBlock x:Name="LBL_ScanID" Margin="449,522,0,0" TextWrapping="Wrap" Text="Scan your ID" FontFamily="Avenir" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Width="434" Height="35" FontSize="24" TextAlignment="Center"/>
         <Button x:Name="BTN_Reconnect" Content="Reconnect" HorizontalAlignment="Left" Margin="322,557,0,0" VerticalAlignment="Top" Width="717" Click="BTN_Reconnect_Click" FontSize="14" Height="60" d:IsHidden="True"/>
         <Button x:Name="BTN_Login" Content="Login" Click="BTN_Login_Click" FontSize="14" Margin="0,0,10,10" Height="48" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="114"/>
         <TextBox x:Name="txt_Status" Margin="10,622,0,58" TextWrapping="Wrap" Text="" BorderThickness="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="20" HorizontalAlignment="Left" Width="1326"/>
-        <Grid x:Name="GRD_Admin" Height="633" Margin="10,10,0,0" VerticalAlignment="Top" Background="White" Grid.ColumnSpan="3" HorizontalAlignment="Left" Width="1336" d:IsHidden="True">
-            <Button x:Name="BTN_View_Log" Content="View Log" HorizontalAlignment="Left" Margin="650,261,0,0" VerticalAlignment="Top" Width="265" Click="BTN_View_Log_Click" Height="100" FontSize="18"/>
-            <RichTextBox x:Name="RTB_AdminOutput" Height="231" Margin="10,392,10,0" VerticalAlignment="Top" FontSize="18" VerticalScrollBarVisibility="Auto">
+        <Grid x:Name="GRD_Admin" Height="633" Margin="10,10,0,0" VerticalAlignment="Top" Background="White" Grid.ColumnSpan="3" HorizontalAlignment="Left" Width="1336">
+            <Button x:Name="BTN_View_Log" Content="View Log" HorizontalAlignment="Left" Margin="482,320,0,0" VerticalAlignment="Top" Width="199" Click="BTN_View_Log_Click" Height="75" FontSize="18"/>
+            <RichTextBox x:Name="RTB_AdminOutput" Height="223" Margin="10,400,10,0" VerticalAlignment="Top" FontSize="18" VerticalScrollBarVisibility="Auto">
                 <FlowDocument>
                     <Paragraph/>
                 </FlowDocument>
             </RichTextBox>
-            <Button x:Name="BTN_Who_CheckedIn" Content="Who's Checked In" HorizontalAlignment="Left" Margin="20,20,0,0" VerticalAlignment="Top" Width="265" Height="100" Click="BTN_Who_CheckedIn_Click" FontSize="18"/>
-            <Button x:Name="BTN_Recently_Checked_In" Content="Recently Checked In" HorizontalAlignment="Left" Margin="20,140,0,0" VerticalAlignment="Top" Width="265" Height="100" Click="BTN_Recently_Checked_In_Click" FontSize="18"/>
-            <Button x:Name="BTN_Recently_Checked_Out" Content="Recently Checked Out" HorizontalAlignment="Left" Margin="20,261,0,0" VerticalAlignment="Top" Width="265" Height="100" Click="BTN_Recently_Checked_Out_Click" FontSize="18"/>
-            <Button x:Name="BTN_Refresh" Content="Refresh Data" HorizontalAlignment="Left" Margin="650,20,0,0" VerticalAlignment="Top" Width="265" Click="BTN_Refresh_Click" Height="100" FontSize="18"/>
-            <Button x:Name="BTN_Add_User" Content="Add User" HorizontalAlignment="Left" Margin="341,20,0,0" VerticalAlignment="Top" Width="265" Click="BTN_Add_User_Click" Height="100" FontSize="18"/>
-            <Button x:Name="BTN_Update_User" Content="Update User" HorizontalAlignment="Left" Margin="341,140,0,0" VerticalAlignment="Top" Width="265" Click="BTN_Update_User_Click" Height="100" FontSize="18"/>
-            <Button x:Name="BTN_Delete_User" Content="Delete User" HorizontalAlignment="Left" Margin="341,261,0,0" VerticalAlignment="Top" Width="265" Click="BTN_Delete_User_Click" Height="100" FontSize="18"/>
-            <Button x:Name="BTN_Force_Checkout" Content="Force User Check-Out" HorizontalAlignment="Left" Margin="650,140,0,0" VerticalAlignment="Top" Width="265" Click="BTN_Force_Checkout_Click" Height="100" FontSize="18"/>
+            <Button x:Name="BTN_Who_Checked_In" Content="Who's Checked In" HorizontalAlignment="Left" Margin="20,120,0,0" VerticalAlignment="Top" Width="199" Height="75" Click="BTN_Who_Checked_In_Click" FontSize="18"/>
+            <Button x:Name="BTN_Recently_Checked_In" Content="Recently Checked In" HorizontalAlignment="Left" Margin="20,220,0,0" VerticalAlignment="Top" Width="199" Height="75" Click="BTN_Recently_Checked_In_Click" FontSize="18"/>
+            <Button x:Name="BTN_Recently_Checked_Out" Content="Recently Checked Out" HorizontalAlignment="Left" Margin="20,320,0,0" VerticalAlignment="Top" Width="199" Height="75" Click="BTN_Recently_Checked_Out_Click" FontSize="18"/>
+            <Button x:Name="BTN_Refresh" Content="Refresh Data" HorizontalAlignment="Left" Margin="482,20,0,0" VerticalAlignment="Top" Width="199" Click="BTN_Refresh_Click" Height="75" FontSize="18"/>
+            <Button x:Name="BTN_Add_User" Content="Add User" HorizontalAlignment="Left" Margin="250,20,0,0" VerticalAlignment="Top" Width="199" Click="BTN_Add_User_Click" Height="75" FontSize="18"/>
+            <Button x:Name="BTN_Update_User" Content="Update User" HorizontalAlignment="Left" Margin="250,120,0,0" VerticalAlignment="Top" Width="199" Click="BTN_Update_User_Click" Height="75" FontSize="18"/>
+            <Button x:Name="BTN_Delete_User" Content="Delete User" HorizontalAlignment="Left" Margin="250,220,0,0" VerticalAlignment="Top" Width="199" Click="BTN_Delete_User_Click" Height="75" FontSize="18"/>
+            <Button x:Name="BTN_Force_Checkout" Content="Force User Check-Out" HorizontalAlignment="Left" Margin="250,320,0,0" VerticalAlignment="Top" Width="199" Click="BTN_Force_Checkout_Click" Height="75" FontSize="18"/>
+            <Button x:Name="BTN_Show_All_Users" Content="Show All Users" HorizontalAlignment="Left" Margin="20,20,0,0" VerticalAlignment="Top" Width="199" Height="75" FontSize="18" Click="BTN_Show_All_Users_Click"/>
+            <Button x:Name="BTN_Credit_Hours_Present" Content="Credit Hours Present" HorizontalAlignment="Left" Margin="482,120,0,0" VerticalAlignment="Top" Width="199" Height="75" FontSize="18" Click="BTN_Credit_Hours_Present_Click"/>
+            <Button x:Name="BTN_Add_Hours_Missed" Content="Add Hours Missed" HorizontalAlignment="Left" Margin="482,220,0,0" VerticalAlignment="Top" Width="199" Height="75" FontSize="18" Click="BTN_Add_Hours_Missed_Click"/>
             <Grid x:Name="GRD_Data_Input" HorizontalAlignment="Left" Height="377" Margin="915,10,0,0" VerticalAlignment="Top" Width="411">
-                <Label x:Name="LBL_ID" Content="ID" HorizontalAlignment="Right" Margin="0,10,280,0" VerticalAlignment="Top" Height="52" Width="96" HorizontalContentAlignment="Right" Padding="6,5,5,5" FontSize="24"/>
-                <Label x:Name="LBL_Name" Content="First Name" HorizontalAlignment="Right" Margin="0,79,280,0" VerticalAlignment="Top" Height="78" Width="133" HorizontalContentAlignment="Right" FontSize="24"/>
-                <Label x:Name="LBL_Last_Name" Content="Last Name" HorizontalAlignment="Right" Margin="0,149,275,0" VerticalAlignment="Top" Height="65" Width="133" HorizontalContentAlignment="Right" FontSize="24"/>
-                <TextBox x:Name="TXT_ID" HorizontalAlignment="Right" Height="65" Margin="0,0,10,303" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="48"/>
-                <TextBox x:Name="TXT_First_Name" HorizontalAlignment="Right" Height="65" Margin="0,0,10,233" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="48"/>
-                <TextBox x:Name="TXT_Last_Name" HorizontalAlignment="Right" Height="65" Margin="0,0,10,163" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="48"/>
-                <CheckBox x:Name="CHK_Is_Mentor" Content="Is Mentor?" HorizontalAlignment="Right" Margin="0,0,10,126" VerticalAlignment="Bottom" Width="265" FontSize="24"/>
-                <Button x:Name="BTN_Save_Updated_User" Content="Save" HorizontalAlignment="Right" Margin="0,0,10,26" VerticalAlignment="Bottom" Width="265" Height="100" Click="BTN_Save_Updated_User_Click" FontSize="18"/>
+                <Label x:Name="LBL_ID" Content="Card ID" HorizontalAlignment="Right" Margin="0,10,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" Padding="6,5,5,5" FontSize="24"/>
+                <Label x:Name="LBL_Name" Content="First Name" HorizontalAlignment="Right" Margin="0,120,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" FontSize="24"/>
+                <Label x:Name="LBL_Last_Name" Content="Last Name" HorizontalAlignment="Right" Margin="0,175,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" FontSize="24"/>
+                <TextBox x:Name="TXT_Card_ID" HorizontalAlignment="Right" Height="50" Margin="0,0,10,317" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="36"/>
+                <TextBox x:Name="TXT_First_Name" HorizontalAlignment="Right" Height="50" Margin="0,0,10,207" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="36"/>
+                <TextBox x:Name="TXT_Last_Name" HorizontalAlignment="Right" Height="50" Margin="0,0,10,152" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="36"/>
+                <CheckBox x:Name="CHK_Is_Mentor" Content="Is Mentor?" HorizontalAlignment="Right" Margin="0,0,214,33" VerticalAlignment="Bottom" Width="187" FontSize="24"/>
+                <Button x:Name="BTN_Save_Updated_User" Content="Save" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="199" Height="75" Click="BTN_Save_Updated_User_Click" FontSize="18"/>
+                <TextBox x:Name="TXT_Hours" HorizontalAlignment="Right" Height="50" Margin="0,0,10,97" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="36"/>
+                <Label x:Name="LBL_Hours" Content="Hours" HorizontalAlignment="Right" Margin="0,230,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" FontSize="24"/>
+                <TextBox x:Name="TXT_Printed_ID" HorizontalAlignment="Right" Height="50" Margin="0,0,10,262" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="36"/>
+                <Label x:Name="LBL_Printed_ID" Content="Printed ID" HorizontalAlignment="Right" Margin="0,65,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" Padding="6,5,5,5" FontSize="24"/>
             </Grid>
-            <DataGrid x:Name="UserDataGrid" HorizontalAlignment="Left" Height="377" Margin="10,10,0,0" VerticalAlignment="Top" Width="1316" LostFocus="UserDataGrid_LostFocus" FocusableChanged="UserDataGrid_FocusableChanged" d:IsHidden="True"/>
+            <DataGrid x:Name="UserDataGrid" HorizontalAlignment="Left" Height="390" Margin="10,10,0,0" VerticalAlignment="Top" Width="1316" LostFocus="UserDataGrid_LostFocus" FocusableChanged="UserDataGrid_FocusableChanged" d:IsHidden="True"/>
         </Grid>
         <Button x:Name="BTN_Refresh_Main" Content="" HorizontalAlignment="Left" Margin="10,659,0,0" VerticalAlignment="Top" Width="48" Height="48" Click="BTN_Refresh_Main_Click">
             <Button.Background>

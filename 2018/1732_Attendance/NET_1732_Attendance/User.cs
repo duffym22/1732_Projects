@@ -6,6 +6,7 @@ namespace _NET_1732_Attendance
     {
         #region *** PROPERTIES ***
         public ulong ID { get; set; }
+        public ulong Secondary_ID { get; set; }
         public string Name { get; set; }
         public bool Is_Mentor { get; set; }
         public string Status { get; set; }

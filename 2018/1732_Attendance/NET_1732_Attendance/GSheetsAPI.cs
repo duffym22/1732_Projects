@@ -30,6 +30,8 @@ namespace _NET_1732_Attendance
         const string _ADDED_STATUS = "ADDED";
         const string _UPDATED_STATUS = "UPDATED";
         const string _UNREGISTERED_STATUS = "UNREGISTERED";
+        const string _HOURS_CREDITED = "CREDITED";
+        const string _HOURS_MISSING = "MISSING";
         const string _DELETED_STATUS = "DELETED";
         const string _OUT_STATUS = "OUT";
         const string _IN_STATUS = "IN";
@@ -37,14 +39,15 @@ namespace _NET_1732_Attendance
         const string _ATTENDANCE_STATUS = "ATTENDANCE_STATUS!";
 
         const string _ID_COL = "A";
-        const string _NAME_COL = "B";
-        const string _IS_MENTOR_COL = "C";
-        const string _CURRENT_STATUS_COL = "D";
-        const string _CHECKIN_COL = "E";
-        const string _HOURS_COL = "F";
-        const string _CHECKOUT_COL = "G";
-        const string _TOTAL_HRS_COL = "H";
-        const string _TOTAL_MISSED_HRS_COL = "I";
+        const string _SECONDARY_ID_COL = "B";
+        const string _NAME_COL = "C";
+        const string _IS_MENTOR_COL = "D";
+        const string _CURRENT_STATUS_COL = "E";
+        const string _CHECKIN_COL = "F";
+        const string _HOURS_COL = "G";
+        const string _CHECKOUT_COL = "H";
+        const string _TOTAL_HRS_COL = "I";
+        const string _TOTAL_MISSED_HRS_COL = "J";
 
         const string _RESET_HOURS = "00:00:00";
         const string _RESET_TOTAL_HOURS = "0.00:00:00";
@@ -71,18 +74,20 @@ namespace _NET_1732_Attendance
         readonly string[] _scopes = { SheetsService.Scope.Spreadsheets };
         string _applicationName = "1732 Attendance Check-In Station";
         Dictionary<ulong, User> dict_Attendance;
+        Dictionary<ulong, ulong> dict_IDs;
 
         enum COLUMNS
         {
             ID = 0,
-            NAME = 1,
-            IS_MENTOR = 2,
-            STATUS = 3,
-            LAST_CHECKIN = 4,
-            HOURS = 5,
-            LAST_CHECKOUT = 6,
-            TOTAL_HOURS = 7,
-            TOTAL_MISSED_HOURS = 8,
+            SECONDARY_ID = 1,
+            NAME = 2,
+            IS_MENTOR = 3,
+            STATUS = 4,
+            LAST_CHECKIN = 5,
+            HOURS = 6,
+            LAST_CHECKOUT = 7,
+            TOTAL_HOURS = 8,
+            TOTAL_MISSED_HOURS = 9,
         }
 
         #endregion
@@ -106,6 +111,7 @@ namespace _NET_1732_Attendance
             _service = new SheetsService();
             _credential = null;
             dict_Attendance = new Dictionary<ulong, User>();
+            dict_IDs = new Dictionary<ulong, ulong>();
         }
 
         public void Dispose()
@@ -116,9 +122,24 @@ namespace _NET_1732_Attendance
 
         #region *** FEATURE FUNCTIONALITY METHODS ***
 
-        public bool Check_Valid_ID(ulong ID)
+        public bool Check_Valid_ID(ulong ID, out ulong primaryID)
         {
-            return dict_Attendance.ContainsKey(ID);
+            bool
+                idFound = false;
+
+            primaryID = 0;
+            if (dict_Attendance.ContainsKey(ID))
+            {
+                primaryID = ID;
+                idFound = true;
+            }
+            else if (dict_IDs.ContainsKey(ID))
+            {
+                primaryID = dict_IDs[ID];
+                idFound = true;
+            }
+
+            return idFound;
         }
 
         public bool Check_Is_Mentor(ulong ID)
@@ -136,17 +157,17 @@ namespace _NET_1732_Attendance
             return dict_Attendance[ID].Name;
         }
 
-        public bool Add_User(ulong ID, string name, ulong mentorID, bool isMentor)
+        public bool Add_User(ulong ID, ulong secondaryID, string name, ulong mentorID, bool isMentor)
         {
             bool
                 success = false;
 
             try
             {
-                InsertRows(Create_Attendance_Status_Row(ID, name, isMentor ? "X" : "", "OUT", "0", _RESET_HOURS, "0", _RESET_TOTAL_HOURS, _RESET_TOTAL_HOURS), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_Next_Attendance_Row(), _TOTAL_MISSED_HRS_COL));
+                InsertRows(Create_Attendance_Status_Row(ID, secondaryID, name, isMentor ? "X" : "", "OUT", "0", _RESET_HOURS, "0", _RESET_TOTAL_HOURS, _RESET_TOTAL_HOURS), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_Next_Attendance_Row(), _TOTAL_MISSED_HRS_COL));
                 InsertRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}{2}:{3}", _ACCUM_HOURS, _ID_COL, Get_Next_Accumulated_Hours_Row(), _NAME_COL));
                 Read_Attendance_Status();
-                InsertRows(Create_Log_Row(ID, _ADDED_STATUS, mentorID), Get_Next_Log_Row());
+                InsertRows(Create_Log_Row(mentorID, _ADDED_STATUS, ID), Get_Next_Log_Row());
                 success = true;
             }
             catch (Exception ex)
@@ -166,7 +187,103 @@ namespace _NET_1732_Attendance
                 UpdateRows(Create_Updated_Attendance_Status_Row(ID, name, isMentor ? "X" : ""), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_User_Attendance_Status_Row(ID) + 1, _IS_MENTOR_COL));
                 UpdateRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}{2}:{3}", _ACCUM_HOURS, _ID_COL, Get_Accumulated_Hours_User_Row(ID) + 1, _NAME_COL));
                 Read_Attendance_Status();
-                InsertRows(Create_Log_Row(ID, _UPDATED_STATUS, mentorID), Get_Next_Log_Row());
+                InsertRows(Create_Log_Row(mentorID, _UPDATED_STATUS, ID), Get_Next_Log_Row());
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return success;
+        }
+
+        public bool Credit_User_Hours(ulong ID, string creditedHours, ulong mentorID)
+        {
+            bool
+                success = false;
+
+            int
+                rowToUpdate;
+
+            string
+                dateColumn = string.Empty,
+                rowRange = string.Empty;
+
+            try
+            {
+                // 1. Parse the hours from the form 
+                TimeSpan.TryParse(creditedHours, out TimeSpan extraHours);
+                if (extraHours.Equals(TimeSpan.Zero))
+                {
+                    throw new Exception("Invalid credited hours value passed");
+                }
+
+                // 2. Add the parsed hours to the current total hours value for the user
+                TimeSpan sessionHours = extraHours + dict_Attendance[ID].User_TotalHours;
+
+                // 3. Define the range (single cell) to update (ATTENDANCE_STATUS!H#)
+                rowToUpdate = Get_User_Attendance_Status_Row(ID);
+                rowRange = string.Format("{0}{1}{2}", _ATTENDANCE_STATUS, _TOTAL_HRS_COL, rowToUpdate + 1);
+
+                // 4. Write the updated value
+                UpdateRows(Update_Hours(sessionHours), rowRange);
+
+                // 5. Even though the hours are credited - update the accumulated hours sheet
+                dateColumn = Get_Accumulated_Hours_Date_Column();                                           //get the current date column
+                rowToUpdate = Get_Accumulated_Hours_User_Row(ID);                                           //get the row of the user on that sheet
+                string userCell = string.Format("{0}{1}", dateColumn, rowToUpdate + 1);                     //define the range of the cell to update
+
+                //in case the user has split hours (left and came back)
+                //read what is in the cell and add to it
+                TimeSpan accumHours = Read_User_Accumulated_Hours(userCell) + extraHours;                   //tally the accumulated hours for today (if any) and add the extra hours calculated above
+                UpdateRows(Update_Hours(accumHours), string.Format("{0}{1}", _ACCUM_HOURS, userCell));      //Write the updated value to the accumulated hours sheet
+
+                // 5. Update the dictionary
+                Read_Attendance_Status();
+
+                // 6. Update the log
+                InsertRows(Create_Log_Row(mentorID, _HOURS_CREDITED, ID), Get_Next_Log_Row());
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return success;
+        }
+
+        public bool Add_Missed_Hours(ulong ID, string missedHours, ulong mentorID)
+        {
+            bool
+                success = false;
+
+            int
+                rowToUpdate;
+
+            string
+                dateColumn = string.Empty,
+                rowRange = string.Empty;
+
+            try
+            {
+                // 1. Parse the hours from the form 
+                TimeSpan.TryParse(missedHours, out TimeSpan extraHours);
+
+                // 2. Add the parsed hours to the current total hours value for the user
+                TimeSpan missed = extraHours + dict_Attendance[ID].User_TotalMissedHours;
+
+                // 3. Define the range (single cell) to update (ATTENDANCE_STATUS!H#)
+                rowToUpdate = Get_User_Attendance_Status_Row(ID);
+                rowRange = string.Format("{0}{1}{2}", _ATTENDANCE_STATUS, _TOTAL_MISSED_HRS_COL, rowToUpdate + 1);
+
+                // 4. Write the updated value
+                UpdateRows(Update_Hours(missed), rowRange);
+
+                // 5. Update the dictionary
+                Read_Attendance_Status();
+
+                // 6. Update the log
+                InsertRows(Create_Log_Row(mentorID, _HOURS_MISSING, ID), Get_Next_Log_Row());
                 success = true;
             }
             catch (Exception ex)
@@ -286,7 +403,7 @@ namespace _NET_1732_Attendance
                     rowToRemove = Get_Accumulated_Hours_User_Row(ID);
                     DeleteRows(rowToRemove, _GID_ACCUMULATED_HOURS);
 
-                    InsertRows(Create_Log_Row(ID, _DELETED_STATUS, mentorID), Get_Next_Log_Row());
+                    InsertRows(Create_Log_Row(mentorID, _DELETED_STATUS, ID), Get_Next_Log_Row());
                     success = true;
                 }
             }
@@ -357,6 +474,24 @@ namespace _NET_1732_Attendance
                 HandleException(ex, MethodBase.GetCurrentMethod().Name);
             }
             return success;
+        }
+
+        public List<User> Get_All_Users()
+        {
+            List<User> users = new List<User>();
+            try
+            {
+                List<ulong> keys = new List<ulong>(dict_Attendance.Keys);
+                foreach (ulong ID in keys)
+                {
+                    users.Add(dict_Attendance[ID]);
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return users;
         }
 
         public List<User> Get_CheckedIn_Users()
@@ -653,18 +788,29 @@ namespace _NET_1732_Attendance
         #region *** PARSE METHODS ***
         private void Parse_Attendance_Status_Rows(IList<IList<object>> idStatusList)
         {
+            ulong
+                ID,
+                sec_ID = 0;
+
             try
             {
                 //Wipe any previous dictionary values to start fresh with every request
                 //Treats the Google Sheet as the golden copy
                 dict_Attendance = new Dictionary<ulong, User>();
+                dict_IDs = new Dictionary<ulong, ulong>();
 
                 //Start at 1 because first row is the header row (ID | Name)
                 for (int i = 1; i < idStatusList.Count; i++)
                 {
                     //Get the current row (ID | Current_Status)
                     IList<object> row = idStatusList[i];
-                    ulong.TryParse((string)row[(int)COLUMNS.ID], out ulong ID);
+                    ulong.TryParse((string)row[(int)COLUMNS.ID], out ID);
+
+                    if (!string.IsNullOrEmpty((string)row[(int)COLUMNS.SECONDARY_ID]))
+                    {
+                        ulong.TryParse((string)row[(int)COLUMNS.SECONDARY_ID], out sec_ID);
+                    }
+
                     string name = row[(int)COLUMNS.NAME].ToString();
                     bool mentor = row[(int)COLUMNS.IS_MENTOR].ToString().Equals("X") ? true : false;
                     string stat = row[(int)COLUMNS.STATUS].ToString();
@@ -675,6 +821,12 @@ namespace _NET_1732_Attendance
                     TimeSpan.TryParse(row[(int)COLUMNS.TOTAL_MISSED_HOURS].ToString(), out TimeSpan totalMissedHours);
 
                     dict_Attendance.Add(ID, new User() { ID = ID, Name = name, Is_Mentor = mentor, Status = stat, Check_In_Time = lastCheckIn, User_Hours = hours, Check_Out_Time = lastCheckOut, User_TotalHours = totalHours, User_TotalMissedHours = totalMissedHours });
+
+                    if (!string.IsNullOrEmpty((string)row[(int)COLUMNS.SECONDARY_ID]))
+                    {
+                        dict_IDs.Add(sec_ID, ID);
+                        dict_Attendance[ID].Secondary_ID = sec_ID;
+                    }
                 }
             }
             catch (Exception ex)
@@ -715,41 +867,53 @@ namespace _NET_1732_Attendance
         private IList<IList<object>> Create_Log_Row(ulong ID, string status, ulong mentorID = 0, bool forceLogOff = false)
         {
             string log = string.Empty;
+            IList<IList<object>> newRow = new List<IList<object>>();
+
             switch (status)
             {
                 case _IN_STATUS:
                     log = "User checked IN";
+                    newRow.Add(new List<object>() { ID, DateTime.Now.ToString(), log });
                     break;
                 case _OUT_STATUS:
                     log = forceLogOff ? "Forced user check OUT" : "User checked OUT";
+                    newRow.Add(new List<object>() { ID, DateTime.Now.ToString(), log });
                     break;
                 case _ADDED_STATUS:
-                    log = string.Format("User ADDED by mentor {0}", mentorID.ToString());
+                    log = string.Format("Added ID {0}", ID.ToString());
+                    newRow.Add(new List<object>() { mentorID, DateTime.Now.ToString(), log });
                     break;
                 case _UNREGISTERED_STATUS:
                     log = "User NOT REGISTERED";
+                    newRow.Add(new List<object>() { ID, DateTime.Now.ToString(), log });
+                    break;
+                case _HOURS_CREDITED:
+                    log = string.Format("Credited hours to ID {0}", ID.ToString());
+                    newRow.Add(new List<object>() { mentorID, DateTime.Now.ToString(), log });
+                    break;
+                case _HOURS_MISSING:
+                    log = string.Format("Added missed hours to ID {0}", ID.ToString());
+                    newRow.Add(new List<object>() { mentorID, DateTime.Now.ToString(), log });
                     break;
                 case _UPDATED_STATUS:
-                    log = string.Format("User UPDATED by mentor {0}", mentorID.ToString());
+                    log = string.Format("Updated ID {0}", ID.ToString());
+                    newRow.Add(new List<object>() { mentorID, DateTime.Now.ToString(), log });
                     break;
                 case _DELETED_STATUS:
-                    log = string.Format("User DELETED by mentor {0}", mentorID.ToString());
+                    log = string.Format("Deleted ID {0}", ID.ToString());
+                    newRow.Add(new List<object>() { mentorID, DateTime.Now.ToString(), log });
                     break;
                 default:
                     throw new Exception("Unable to parse status to create row for Log sheet");
             }
-            IList<IList<object>> newRow = new List<IList<object>>
-            {
-                new List<object>() { ID, DateTime.Now.ToString(), log }
-            };
             return newRow;
         }
 
-        private IList<IList<object>> Create_Attendance_Status_Row(ulong ID, string name, string isMentor, string status, string lastCheckIn, string hours, string lastCheckout, string totalHours, string totalMissedHours)
+        private IList<IList<object>> Create_Attendance_Status_Row(ulong ID, ulong secondaryID, string name, string isMentor, string status, string lastCheckIn, string hours, string lastCheckout, string totalHours, string totalMissedHours)
         {
             IList<IList<object>> newRow = new List<IList<object>>
             {
-                new List<object>() { ID, name, isMentor, status, lastCheckIn, hours, lastCheckout, totalHours, totalMissedHours }
+                new List<object>() { ID, secondaryID, name, isMentor, status, lastCheckIn, hours, lastCheckout, totalHours, totalMissedHours }
             };
             return newRow;
         }
