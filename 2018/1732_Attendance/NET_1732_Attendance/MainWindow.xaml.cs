@@ -174,7 +174,7 @@ namespace _NET_1732_Attendance
                             //if a secondary ID is specified, try to parse it and add it for the user
                             if (!string.IsNullOrEmpty(TXT_Printed_ID.Text))
                             {
-                                if (Parse_Scanned_ID(TXT_Card_ID.Text, out secondaryID))
+                                if (Parse_Scanned_ID(TXT_Printed_ID.Text, out secondaryID))
                                 {
                                     Log(string.Format("Successfully parsed secondary ID: {0}", secondaryID.ToString()));
                                 }
@@ -201,6 +201,7 @@ namespace _NET_1732_Attendance
                     }
 
                     TXT_Card_ID.Clear();
+                    TXT_Printed_ID.Clear();
                     TXT_Card_ID.Focus();
                     TXT_First_Name.Clear();
                     TXT_Last_Name.Clear();
@@ -260,6 +261,9 @@ namespace _NET_1732_Attendance
 
         private void BTN_Save_Updated_User_Click(object sender, RoutedEventArgs e)
         {
+            ulong 
+                secondaryID = 0;
+
             try
             {
                 if (!string.IsNullOrEmpty(TXT_First_Name.Text) && !string.IsNullOrEmpty(TXT_Last_Name.Text))
@@ -267,7 +271,17 @@ namespace _NET_1732_Attendance
                     if (Parse_Scanned_ID(TXT_Card_ID.Text, out ulong ID))
                     {
                         string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
-                        if (gAPI.Update_User(ID, fullName, Logged_In_Mentor_ID, (bool)CHK_Is_Mentor.IsChecked))
+
+                        //if a secondary ID is specified, try to parse it and add it for the user
+                        if (!string.IsNullOrEmpty(TXT_Printed_ID.Text))
+                        {
+                            if (Parse_Scanned_ID(TXT_Printed_ID.Text, out secondaryID))
+                            {
+                                Log(string.Format("Successfully parsed secondary ID: {0}", secondaryID.ToString()));
+                            }
+                        }
+
+                        if (gAPI.Update_User(ID, secondaryID, fullName, Logged_In_Mentor_ID, (bool)CHK_Is_Mentor.IsChecked))
                         {
                             DisplayAdminText(string.Format("Successfully update ID: {0} | NAME: {1}", ID.ToString(), fullName));
                             Log(string.Format("Mentor: {0} updated ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), ID.ToString(), fullName));
@@ -281,6 +295,7 @@ namespace _NET_1732_Attendance
                         }
                     }
                     TXT_Card_ID.Clear();
+                    TXT_Printed_ID.Clear();
                     TXT_First_Name.Clear();
                     TXT_Last_Name.Clear();
                     CHK_Is_Mentor.IsChecked = false;

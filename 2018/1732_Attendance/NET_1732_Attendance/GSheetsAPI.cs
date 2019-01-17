@@ -167,7 +167,7 @@ namespace _NET_1732_Attendance
                 InsertRows(Create_Attendance_Status_Row(ID, secondaryID, name, isMentor ? "X" : "", "OUT", "0", _RESET_HOURS, "0", _RESET_TOTAL_HOURS, _RESET_TOTAL_HOURS), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_Next_Attendance_Row(), _TOTAL_MISSED_HRS_COL));
                 InsertRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}{2}:{3}", _ACCUM_HOURS, _ID_COL, Get_Next_Accumulated_Hours_Row(), _NAME_COL));
                 Read_Attendance_Status();
-                InsertRows(Create_Log_Row(mentorID, _ADDED_STATUS, ID), Get_Next_Log_Row());
+                InsertRows(Create_Log_Row(ID, _ADDED_STATUS, mentorID), Get_Next_Log_Row());
                 success = true;
             }
             catch (Exception ex)
@@ -177,17 +177,23 @@ namespace _NET_1732_Attendance
             return success;
         }
 
-        public bool Update_User(ulong ID, string name, ulong mentorID, bool isMentor)
+        public bool Update_User(ulong ID, ulong secondaryID, string name, ulong mentorID, bool isMentor)
         {
             bool
                 success = false;
 
+            string
+                secID = string.Empty;
+
             try
             {
-                UpdateRows(Create_Updated_Attendance_Status_Row(ID, name, isMentor ? "X" : ""), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_User_Attendance_Status_Row(ID) + 1, _IS_MENTOR_COL));
+                if (!secondaryID.Equals(0))
+                    secID = secondaryID.ToString();
+
+                UpdateRows(Create_Updated_Attendance_Status_Row(ID, secID, name, isMentor ? "X" : ""), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_User_Attendance_Status_Row(ID) + 1, _IS_MENTOR_COL));
                 UpdateRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}{2}:{3}", _ACCUM_HOURS, _ID_COL, Get_Accumulated_Hours_User_Row(ID) + 1, _NAME_COL));
                 Read_Attendance_Status();
-                InsertRows(Create_Log_Row(mentorID, _UPDATED_STATUS, ID), Get_Next_Log_Row());
+                InsertRows(Create_Log_Row(ID, _UPDATED_STATUS, mentorID), Get_Next_Log_Row());
                 success = true;
             }
             catch (Exception ex)
@@ -242,7 +248,7 @@ namespace _NET_1732_Attendance
                 Read_Attendance_Status();
 
                 // 6. Update the log
-                InsertRows(Create_Log_Row(mentorID, _HOURS_CREDITED, ID), Get_Next_Log_Row());
+                InsertRows(Create_Log_Row(ID, _HOURS_CREDITED, mentorID), Get_Next_Log_Row());
                 success = true;
             }
             catch (Exception ex)
@@ -283,7 +289,7 @@ namespace _NET_1732_Attendance
                 Read_Attendance_Status();
 
                 // 6. Update the log
-                InsertRows(Create_Log_Row(mentorID, _HOURS_MISSING, ID), Get_Next_Log_Row());
+                InsertRows(Create_Log_Row(ID, _HOURS_MISSING, mentorID), Get_Next_Log_Row());
                 success = true;
             }
             catch (Exception ex)
@@ -403,7 +409,7 @@ namespace _NET_1732_Attendance
                     rowToRemove = Get_Accumulated_Hours_User_Row(ID);
                     DeleteRows(rowToRemove, _GID_ACCUMULATED_HOURS);
 
-                    InsertRows(Create_Log_Row(mentorID, _DELETED_STATUS, ID), Get_Next_Log_Row());
+                    InsertRows(Create_Log_Row(ID, _DELETED_STATUS, mentorID), Get_Next_Log_Row());
                     success = true;
                 }
             }
@@ -918,11 +924,11 @@ namespace _NET_1732_Attendance
             return newRow;
         }
 
-        private IList<IList<object>> Create_Updated_Attendance_Status_Row(ulong ID, string name, string isMentor)
+        private IList<IList<object>> Create_Updated_Attendance_Status_Row(ulong ID, string secondaryID, string name, string isMentor)
         {
             IList<IList<object>> newRow = new List<IList<object>>
             {
-                new List<object>() { ID, name, isMentor }
+                new List<object>() { ID, secondaryID, name, isMentor }
             };
             return newRow;
         }
