@@ -79,8 +79,8 @@ namespace _NET_1732_Attendance
                 Mentor_Mode = true;
                 LBL_ScanID.Text = _MENTOR_MODE_SCAN;
                 BTN_Login.Content = _EXIT;
-                TXT_ID_Scan.Clear();
-                TXT_ID_Scan.Focus();
+                TXT_Scan.Clear();
+                TXT_Scan.Focus();
             }
             else if (BTN_Login.Content.Equals(_EXIT))
             {
@@ -92,8 +92,8 @@ namespace _NET_1732_Attendance
                 BTN_Refresh_Main.IsEnabled = true;
                 LBL_ScanID.Text = _REGULAR_MODE_SCAN;
                 BTN_Login.Content = _LOGIN;
-                TXT_ID_Scan.Clear();
-                TXT_ID_Scan.Focus();
+                TXT_Scan.Clear();
+                TXT_Scan.Focus();
             }
         }
 
@@ -106,16 +106,16 @@ namespace _NET_1732_Attendance
         {
             try
             {
-                if (!string.IsNullOrEmpty(TXT_ID.Text))
+                if (!string.IsNullOrEmpty(TXT_Card_ID.Text))
                 {
-                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
+                    if (Parse_Scanned_ID(TXT_Card_ID.Text, out ulong ID))
                     {
-                        if (Lookup_ID(ID))
+                        if (Lookup_ID(ID, out ulong primaryID))
                         {
-                            if (gAPI.Force_Logoff_User(ID))
+                            if (gAPI.Force_Logoff_User(primaryID))
                             {
-                                DisplayAdminText(string.Format("User force checked out - ID: {0}", ID));
-                                Log(string.Format("User force checked out - ID: {0}", ID));
+                                DisplayAdminText(string.Format("User force checked out - ID: {0}", primaryID));
+                                Log(string.Format("User force checked out - ID: {0}", primaryID));
                             }
                             else
                             {
@@ -130,8 +130,8 @@ namespace _NET_1732_Attendance
                     }
                     else
                     {
-                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to force checkout user", TXT_ID.Text));
-                        Log(string.Format("Invalid ID scanned to force checkout user", TXT_ID.Text));
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to force checkout user", TXT_Card_ID.Text));
+                        Log(string.Format("Invalid ID scanned to force checkout user", TXT_Card_ID.Text));
                     }
                 }
                 else
@@ -145,28 +145,42 @@ namespace _NET_1732_Attendance
             }
             finally
             {
-                TXT_ID.Clear();
-                TXT_ID.Focus();
+                TXT_Card_ID.Clear();
+                TXT_Card_ID.Focus();
             }
         }
 
         private void BTN_Add_User_Click(object sender, RoutedEventArgs e)
         {
+
+            ulong
+                secondaryID = 0;
+
             try
             {
-                if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_First_Name.Text) && !string.IsNullOrEmpty(TXT_Last_Name.Text))
+                if (!string.IsNullOrEmpty(TXT_Card_ID.Text) && !string.IsNullOrEmpty(TXT_First_Name.Text) && !string.IsNullOrEmpty(TXT_Last_Name.Text))
                 {
-                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
+                    if (Parse_Scanned_ID(TXT_Card_ID.Text, out ulong ID))
                     {
-                        if (Lookup_ID(ID))
+                        if (Lookup_ID(ID, out ulong primaryID))
                         {
-                            DisplayAdminText(string.Format("ID: {0} is already registered", ID.ToString()));
-                            Log(string.Format("ID: {0} is already registered", ID.ToString()));
+                            DisplayAdminText(string.Format("ID: {0} is already registered", primaryID.ToString()));
+                            Log(string.Format("ID: {0} is already registered", primaryID.ToString()));
                         }
                         else
                         {
                             string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
-                            if (gAPI.Add_User(ID, fullName, Logged_In_Mentor_ID, (bool)CHK_Is_Mentor.IsChecked))
+
+                            //if a secondary ID is specified, try to parse it and add it for the user
+                            if (!string.IsNullOrEmpty(TXT_Printed_ID.Text))
+                            {
+                                if (Parse_Scanned_ID(TXT_Card_ID.Text, out secondaryID))
+                                {
+                                    Log(string.Format("Successfully parsed secondary ID: {0}", secondaryID.ToString()));
+                                }
+                            }
+
+                            if (gAPI.Add_User(ID, secondaryID, fullName, Logged_In_Mentor_ID, (bool)CHK_Is_Mentor.IsChecked))
                             {
                                 DisplayAdminText(string.Format("Successfully added ID: {0} | NAME: {1}", ID.ToString(), fullName));
                                 Log(string.Format("Mentor: {0} added ID: {1} | NAME: {2}", Logged_In_Mentor_ID.ToString(), ID.ToString(), fullName));
@@ -182,12 +196,12 @@ namespace _NET_1732_Attendance
                     }
                     else
                     {
-                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to register the user", TXT_ID.Text));
-                        Log(string.Format("Invalid ID scanned to add user", TXT_ID.Text));
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to register the user", TXT_Card_ID.Text));
+                        Log(string.Format("Invalid ID scanned to add user", TXT_Card_ID.Text));
                     }
 
-                    TXT_ID.Clear();
-                    TXT_ID.Focus();
+                    TXT_Card_ID.Clear();
+                    TXT_Card_ID.Focus();
                     TXT_First_Name.Clear();
                     TXT_Last_Name.Clear();
                     CHK_Is_Mentor.IsChecked = false;
@@ -207,29 +221,29 @@ namespace _NET_1732_Attendance
         {
             try
             {
-                if (!string.IsNullOrEmpty(TXT_ID.Text))
+                if (!string.IsNullOrEmpty(TXT_Card_ID.Text))
                 {
-                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
+                    if (Parse_Scanned_ID(TXT_Card_ID.Text, out ulong ID))
                     {
-                        if (Lookup_ID(ID))
+                        if (Lookup_ID(ID, out ulong primaryID))
                         {
-                            string[] name = gAPI.Get_ID_Name(ID).Split(',');
+                            string[] name = gAPI.Get_ID_Name(primaryID).Split(',');
                             TXT_Last_Name.Text = name[0].Trim();
                             TXT_First_Name.Text = name[1].Trim();
-                            CHK_Is_Mentor.IsChecked = gAPI.Check_Is_Mentor(ID);
+                            CHK_Is_Mentor.IsChecked = gAPI.Check_Is_Mentor(primaryID);
                             UI_Display_Update_Options(true);
                             DisplayAdminText("User data imported. Please make any changes to the user by updating the fields and press Save to finish");
                         }
                         else
                         {
-                            TXT_ID.Clear();
+                            TXT_Card_ID.Clear();
                             DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
                         }
                     }
                     else
                     {
-                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to update the user", TXT_ID.Text));
-                        Log(string.Format("Invalid ID scanned to update user", TXT_ID.Text));
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to update the user", TXT_Card_ID.Text));
+                        Log(string.Format("Invalid ID scanned to update user", TXT_Card_ID.Text));
                     }
 
                 }
@@ -250,7 +264,7 @@ namespace _NET_1732_Attendance
             {
                 if (!string.IsNullOrEmpty(TXT_First_Name.Text) && !string.IsNullOrEmpty(TXT_Last_Name.Text))
                 {
-                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
+                    if (Parse_Scanned_ID(TXT_Card_ID.Text, out ulong ID))
                     {
                         string fullName = string.Format("{0}, {1}", TXT_Last_Name.Text, TXT_First_Name.Text);
                         if (gAPI.Update_User(ID, fullName, Logged_In_Mentor_ID, (bool)CHK_Is_Mentor.IsChecked))
@@ -266,11 +280,11 @@ namespace _NET_1732_Attendance
                             Log(gAPI.LastException);
                         }
                     }
-                    TXT_ID.Clear();
+                    TXT_Card_ID.Clear();
                     TXT_First_Name.Clear();
                     TXT_Last_Name.Clear();
                     CHK_Is_Mentor.IsChecked = false;
-                    TXT_ID.Focus();
+                    TXT_Card_ID.Focus();
 
                     UI_Display_Update_Options(false);
                 }
@@ -289,21 +303,21 @@ namespace _NET_1732_Attendance
         {
             try
             {
-                if (!string.IsNullOrEmpty(TXT_ID.Text))
+                if (!string.IsNullOrEmpty(TXT_Card_ID.Text))
                 {
-                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
+                    if (Parse_Scanned_ID(TXT_Card_ID.Text, out ulong ID))
                     {
-                        if (Lookup_ID(ID))
+                        if (Lookup_ID(ID, out ulong primaryID))
                         {
-                            if (gAPI.Delete_User(ID, Logged_In_Mentor_ID))
+                            if (gAPI.Delete_User(primaryID, Logged_In_Mentor_ID))
                             {
-                                DisplayAdminText(string.Format("Successfully deleted ID: {0}", ID.ToString()));
-                                Log(string.Format("Mentor: {0} deleted ID: {1}", Logged_In_Mentor_ID.ToString(), ID.ToString()));
+                                DisplayAdminText(string.Format("Successfully deleted ID: {0}", primaryID.ToString()));
+                                Log(string.Format("Mentor: {0} deleted ID: {1}", Logged_In_Mentor_ID.ToString(), primaryID.ToString()));
                             }
                             else
                             {
-                                DisplayAdminText(string.Format("Failed to delete ID: {0}", ID.ToString()));
-                                Log(string.Format("Mentor: {0} failed to delete ID: {1}", Logged_In_Mentor_ID.ToString(), ID.ToString()));
+                                DisplayAdminText(string.Format("Failed to delete ID: {0}", primaryID.ToString()));
+                                Log(string.Format("Mentor: {0} failed to delete ID: {1}", Logged_In_Mentor_ID.ToString(), primaryID.ToString()));
                                 DisplayAdminText(gAPI.LastException);
                                 Log(gAPI.LastException);
                             }
@@ -315,8 +329,8 @@ namespace _NET_1732_Attendance
                     }
                     else
                     {
-                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to delete the user", TXT_ID.Text));
-                        Log(string.Format("Invalid ID scanned to delete user", TXT_ID.Text));
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to delete the user", TXT_Card_ID.Text));
+                        Log(string.Format("Invalid ID scanned to delete user", TXT_Card_ID.Text));
                     }
                 }
                 else
@@ -330,8 +344,8 @@ namespace _NET_1732_Attendance
             }
             finally
             {
-                TXT_ID.Clear();
-                TXT_ID.Focus();
+                TXT_Card_ID.Clear();
+                TXT_Card_ID.Focus();
             }
         }
 
@@ -486,39 +500,39 @@ namespace _NET_1732_Attendance
         {
             try
             {
-                if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_Hours.Text))
+                if (!string.IsNullOrEmpty(TXT_Card_ID.Text) && !string.IsNullOrEmpty(TXT_Hours.Text))
                 {
-                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
+                    if (Parse_Scanned_ID(TXT_Card_ID.Text, out ulong ID))
                     {
-                        if (Lookup_ID(ID))
+                        if (Lookup_ID(ID, out ulong primaryID))
                         {
-                            if (gAPI.Credit_User_Hours(ID, TXT_Hours.Text, Logged_In_Mentor_ID))
+                            if (gAPI.Credit_User_Hours(primaryID, TXT_Hours.Text, Logged_In_Mentor_ID))
                             {
-                                DisplayAdminText(string.Format("Successfully credited {0} to ID: {1}", TXT_Hours.Text, ID.ToString()));
-                                Log(string.Format("Successfully credited {0} to ID: {1}", TXT_Hours.Text, ID.ToString()));
+                                DisplayAdminText(string.Format("Successfully credited {0} to ID: {1}", TXT_Hours.Text, primaryID.ToString()));
+                                Log(string.Format("Successfully credited {0} to ID: {1}", TXT_Hours.Text, primaryID.ToString()));
                             }
                             else
                             {
-                                DisplayAdminText(string.Format("Failed to credit {0} to ID: {1}", TXT_Hours.Text, ID.ToString()));
-                                Log(string.Format("Mentor: {0} failed to credit ID: {1} with {2}", Logged_In_Mentor_ID.ToString(), ID.ToString(), TXT_Hours.Text));
+                                DisplayAdminText(string.Format("Failed to credit {0} to ID: {1}", TXT_Hours.Text, primaryID.ToString()));
+                                Log(string.Format("Mentor: {0} failed to credit ID: {1} with {2}", Logged_In_Mentor_ID.ToString(), primaryID.ToString(), TXT_Hours.Text));
                                 DisplayAdminText(gAPI.LastException);
                                 Log(gAPI.LastException);
                             }
                         }
                         else
                         {
-                            TXT_ID.Clear();
+                            TXT_Card_ID.Clear();
                             DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
                         }
 
-                        TXT_ID.Clear();
+                        TXT_Card_ID.Clear();
                         TXT_Hours.Clear();
 
                     }
                     else
                     {
-                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to update the user", TXT_ID.Text));
-                        Log(string.Format("Invalid ID scanned to update user", TXT_ID.Text));
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to update the user", TXT_Card_ID.Text));
+                        Log(string.Format("Invalid ID scanned to update user", TXT_Card_ID.Text));
                     }
 
                 }
@@ -537,38 +551,38 @@ namespace _NET_1732_Attendance
         {
             try
             {
-                if (!string.IsNullOrEmpty(TXT_ID.Text) && !string.IsNullOrEmpty(TXT_Hours.Text))
+                if (!string.IsNullOrEmpty(TXT_Card_ID.Text) && !string.IsNullOrEmpty(TXT_Hours.Text))
                 {
-                    if (Parse_Scanned_ID(TXT_ID.Text, out ulong ID))
+                    if (Parse_Scanned_ID(TXT_Card_ID.Text, out ulong ID))
                     {
-                        if (Lookup_ID(ID))
+                        if (Lookup_ID(ID, out ulong primaryID))
                         {
-                            if (gAPI.Add_Missed_Hours(ID, TXT_Hours.Text, Logged_In_Mentor_ID))
+                            if (gAPI.Add_Missed_Hours(primaryID, TXT_Hours.Text, Logged_In_Mentor_ID))
                             {
-                                DisplayAdminText(string.Format("Successfully added missed hours ({0}) to ID: {1}", TXT_Hours.Text, ID.ToString()));
-                                Log(string.Format("Successfully added missed hours ({0}) to ID: {1}", TXT_Hours.Text, ID.ToString()));
+                                DisplayAdminText(string.Format("Successfully added missed hours ({0}) to ID: {1}", TXT_Hours.Text, primaryID.ToString()));
+                                Log(string.Format("Successfully added missed hours ({0}) to ID: {1}", TXT_Hours.Text, primaryID.ToString()));
                             }
                             else
                             {
-                                DisplayAdminText(string.Format("Failed to add missed hours ({0}) to ID: {1}", TXT_Hours.Text, ID.ToString()));
-                                Log(string.Format("Mentor: {0} failed to add missed hours ({1}) to ID: {2}", Logged_In_Mentor_ID.ToString(), TXT_Hours.Text, ID.ToString()));
+                                DisplayAdminText(string.Format("Failed to add missed hours ({0}) to ID: {1}", TXT_Hours.Text, primaryID.ToString()));
+                                Log(string.Format("Mentor: {0} failed to add missed hours ({1}) to ID: {2}", Logged_In_Mentor_ID.ToString(), TXT_Hours.Text, primaryID.ToString()));
                                 Log(gAPI.LastException);
                             }
                         }
                         else
                         {
-                            TXT_ID.Clear();
+                            TXT_Card_ID.Clear();
                             DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
                         }
 
-                        TXT_ID.Clear();
+                        TXT_Card_ID.Clear();
                         TXT_Hours.Clear();
 
                     }
                     else
                     {
-                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to update the ID: {0}", TXT_ID.Text));
-                        Log(string.Format("Invalid ID scanned to add missed hours to ID: {0}", TXT_ID.Text));
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to update the ID: {0}", TXT_Card_ID.Text));
+                        Log(string.Format("Invalid ID scanned to add missed hours to ID: {0}", TXT_Card_ID.Text));
                     }
                 }
                 else
@@ -591,46 +605,46 @@ namespace _NET_1732_Attendance
             {
                 if (e.Key == System.Windows.Input.Key.Enter || e.Key == System.Windows.Input.Key.Return)
                 {
-                    idText = TXT_ID_Scan.Text;
-                    TXT_ID_Scan.Clear();
-                    if (Parse_Scanned_ID(idText, out ulong ID_Scan))
+                    idText = TXT_Scan.Text;
+                    TXT_Scan.Clear();
+                    if (Parse_Scanned_ID(idText, out ulong ID))
                     {
-                        if (Lookup_ID(ID_Scan))
+                        if (Lookup_ID(ID, out ulong primaryID))
                         {
                             //Mentor Admin mode
                             if (Mentor_Mode)
                             {
-                                if (Verify_Mentor_ID(ID_Scan))
+                                if (Verify_Mentor_ID(primaryID))
                                 {
-                                    TXT_ID_Scan.Clear();
+                                    TXT_Scan.Clear();
                                     Log("Enabling Mentor admin screen");
                                     GRD_Admin.IsEnabled = true;
                                     GRD_Admin.Visibility = Visibility.Visible;
                                     UserDataGrid.Visibility = Visibility.Hidden;
                                     BTN_Refresh_Main.Visibility = Visibility.Hidden;
                                     BTN_Refresh_Main.IsEnabled = false;
-                                    DisplayAdminText(string.Format("Mentor Authorized - ID: {0} | NAME: {1}", ID_Scan, gAPI.Get_ID_Name(ID_Scan)));
+                                    DisplayAdminText(string.Format("Mentor Authorized - ID: {0} | NAME: {1}", primaryID, gAPI.Get_ID_Name(primaryID)));
                                 }
                                 else
                                 {
-                                    DisplayText(string.Format("ID - {0} is not authorized as a Mentor", ID_Scan.ToString()));
-                                    Log(string.Format("ID - {0} is not authorized as a Mentor", ID_Scan.ToString()));
+                                    DisplayText(string.Format("ID - {0} is not authorized as a Mentor", primaryID.ToString()));
+                                    Log(string.Format("ID - {0} is not authorized as a Mentor", primaryID.ToString()));
                                 }
                             }
                             else
                             {
                                 //Regular scanning mode
-                                Log(string.Format("Updating ID: {0}", ID_Scan.ToString()));
-                                Update_Record(ID_Scan);
+                                Log(string.Format("Updating ID: {0}", primaryID.ToString()));
+                                Update_Record(primaryID);
                                 //Thread t = new Thread(() => Update_Record(ID_Scan));
                                 //t.Start();
                             }
                         }
                         else
                         {
-                            Log(string.Format("ID - {0} is not registered", ID_Scan.ToString()));
-                            DisplayText(string.Format("ID ({0}) is not registered. Please find a Mentor to register your ID", ID_Scan.ToString()));
-                            Log_Unregistered_User(ID_Scan);
+                            Log(string.Format("ID - {0} is not registered", ID.ToString()));
+                            DisplayText(string.Format("ID ({0}) is not registered. Please find a Mentor to register your ID", ID.ToString()));
+                            Log_Unregistered_User(ID);
                         }
                     }
                     else
@@ -647,10 +661,10 @@ namespace _NET_1732_Attendance
             }
             finally
             {
-                if (TXT_ID_Scan.IsVisible)
+                if (TXT_Scan.IsVisible)
                 {
-                    TXT_ID_Scan.Focus();
-                    TXT_ID_Scan.InvalidateVisual();
+                    TXT_Scan.Focus();
+                    TXT_Scan.InvalidateVisual();
 
                 }
             }
@@ -783,7 +797,7 @@ namespace _NET_1732_Attendance
                         Setup_Checkout_Timer();
                     }
 
-                    TXT_ID_Scan.Focus();
+                    TXT_Scan.Focus();
                 }
                 else
                 {
@@ -830,8 +844,8 @@ namespace _NET_1732_Attendance
             if (state)
             {
                 Log("Enabling text entry field");
-                TXT_ID_Scan.IsEnabled = true;
-                TXT_ID_Scan.Visibility = Visibility.Visible;
+                TXT_Scan.IsEnabled = true;
+                TXT_Scan.Visibility = Visibility.Visible;
                 Log("Disabling reconnect button");
                 GRD_Admin.IsEnabled = false;
                 GRD_Admin.Visibility = Visibility.Hidden;
@@ -846,8 +860,8 @@ namespace _NET_1732_Attendance
             else
             {
                 Log("Disabling text entry field");
-                TXT_ID_Scan.IsEnabled = false;
-                TXT_ID_Scan.Visibility = Visibility.Hidden;
+                TXT_Scan.IsEnabled = false;
+                TXT_Scan.Visibility = Visibility.Hidden;
                 Log("Enabling reconnect button");
                 GRD_Admin.IsEnabled = false;
                 GRD_Admin.Visibility = Visibility.Hidden;
@@ -1036,17 +1050,26 @@ namespace _NET_1732_Attendance
             return ID;
         }
 
-        private bool Lookup_ID(ulong ID)
+        private bool Lookup_ID(ulong ID, out ulong primaryID)
         {
             bool
                 success = false;
 
+            primaryID = 0;
             try
             {
                 Log(string.Format("Verifying ID: {0}", ID.ToString()));
-                if (gAPI.Check_Valid_ID(ID))
+                if (gAPI.Check_Valid_ID(ID, out primaryID))
                 {
-                    Log(string.Format("ID: {0} - Verified", ID.ToString()));
+                    if (!ID.Equals(primaryID))
+                    {
+                        Log(string.Format("Secondary ID: {0} - Verified", ID.ToString()));
+                    }
+                    else
+                    {
+                        Log(string.Format("ID: {0} - Verified", ID.ToString()));
+                    }
+
                     success = true;
                 }
                 else
