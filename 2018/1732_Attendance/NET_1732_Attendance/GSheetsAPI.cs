@@ -98,8 +98,8 @@ namespace _NET_1732_Attendance
         public int GID_Accumulated_Hours { get; set; }
         public int GID_Attendance_Log { get; set; }
         public bool Auto_Checkout_Enabled { get; set; }
-        public TimeSpan Auto_Checkout_Time { get; set; }
-        public TimeSpan Team_Checkout_Time { get; set; }
+        public DateTime Auto_Checkout_Time { get; set; }
+        public DateTime Team_Checkout_Time { get; set; }
         public int Recent_Time_Check { get; set; }
 
         public string LastException { get { return _exMsg.ToString(); } }
@@ -444,7 +444,7 @@ namespace _NET_1732_Attendance
                 /// --- Leave all other fields alone 
                 dict_Attendance[ID].Status = _OUT_STATUS;
                 //if the user did not check out - calculate the total hours they missed
-                dict_Attendance[ID].Calculate_Missed_Hours(new DateTime(DateTime.Now.Year, DateTime.Now.Month, dict_Attendance[ID].Check_In_Time.Day, Team_Checkout_Time.Hours, Team_Checkout_Time.Minutes, Team_Checkout_Time.Seconds));
+                dict_Attendance[ID].Calculate_Missed_Hours(new DateTime(DateTime.Now.Year, DateTime.Now.Month, dict_Attendance[ID].Check_In_Time.Day, Team_Checkout_Time.TimeOfDay.Hours, Team_Checkout_Time.TimeOfDay.Minutes, Team_Checkout_Time.TimeOfDay.Seconds));
 
                 //row to be updated - increment by 1 because sheets start at "0"
                 rowRange = string.Format("{0}{1}{2}", _ATTENDANCE_STATUS, _CURRENT_STATUS_COL, (rowToUpdate + 1));

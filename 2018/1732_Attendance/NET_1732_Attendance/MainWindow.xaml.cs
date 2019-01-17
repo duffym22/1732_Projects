@@ -706,7 +706,7 @@ namespace _NET_1732_Attendance
 
         private void Setup_Checkout_Timer()
         {
-            TimeSpan timeToGo = new TimeSpan(gAPI.Auto_Checkout_Time.Days, gAPI.Auto_Checkout_Time.Hours, gAPI.Auto_Checkout_Time.Minutes, gAPI.Auto_Checkout_Time.Seconds) - DateTime.Now.TimeOfDay;
+            TimeSpan timeToGo = gAPI.Auto_Checkout_Time - DateTime.Now;
 
             if (DateTime.Today.DayOfWeek.Equals(DayOfWeek.Saturday) || DateTime.Today.DayOfWeek.Equals(DayOfWeek.Sunday))
             {
@@ -832,13 +832,13 @@ namespace _NET_1732_Attendance
             }
         }
 
-        private TimeSpan Parse_Checkout_Time(string time)
+        private DateTime Parse_Checkout_Time(string time)
         {
-            TimeSpan value = new TimeSpan();
+            DateTime value = new DateTime();
             try
             {
                 Log("Auto checkout enabled. Attempting to parse auto checkout time");
-                TimeSpan.TryParse(time, out value);
+                DateTime.TryParse(time, out value);
             }
             catch (Exception ex)
             {
