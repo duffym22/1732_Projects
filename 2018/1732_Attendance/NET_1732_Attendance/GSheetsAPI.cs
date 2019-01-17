@@ -39,14 +39,15 @@ namespace _NET_1732_Attendance
         const string _ATTENDANCE_STATUS = "ATTENDANCE_STATUS!";
 
         const string _ID_COL = "A";
-        const string _NAME_COL = "B";
-        const string _IS_MENTOR_COL = "C";
-        const string _CURRENT_STATUS_COL = "D";
-        const string _CHECKIN_COL = "E";
-        const string _HOURS_COL = "F";
-        const string _CHECKOUT_COL = "G";
-        const string _TOTAL_HRS_COL = "H";
-        const string _TOTAL_MISSED_HRS_COL = "I";
+        const string _SECONDARY_ID_COL = "B";
+        const string _NAME_COL = "C";
+        const string _IS_MENTOR_COL = "D";
+        const string _CURRENT_STATUS_COL = "E";
+        const string _CHECKIN_COL = "F";
+        const string _HOURS_COL = "G";
+        const string _CHECKOUT_COL = "H";
+        const string _TOTAL_HRS_COL = "I";
+        const string _TOTAL_MISSED_HRS_COL = "J";
 
         const string _RESET_HOURS = "00:00:00";
         const string _RESET_TOTAL_HOURS = "0.00:00:00";
@@ -73,18 +74,20 @@ namespace _NET_1732_Attendance
         readonly string[] _scopes = { SheetsService.Scope.Spreadsheets };
         string _applicationName = "1732 Attendance Check-In Station";
         Dictionary<ulong, User> dict_Attendance;
+        Dictionary<ulong, ulong> dict_IDs;
 
         enum COLUMNS
         {
             ID = 0,
-            NAME = 1,
-            IS_MENTOR = 2,
-            STATUS = 3,
-            LAST_CHECKIN = 4,
-            HOURS = 5,
-            LAST_CHECKOUT = 6,
-            TOTAL_HOURS = 7,
-            TOTAL_MISSED_HOURS = 8,
+            SECONDARY_ID = 1,
+            NAME = 2,
+            IS_MENTOR = 3,
+            STATUS = 4,
+            LAST_CHECKIN = 5,
+            HOURS = 6,
+            LAST_CHECKOUT = 7,
+            TOTAL_HOURS = 8,
+            TOTAL_MISSED_HOURS = 9,
         }
 
         #endregion
@@ -108,6 +111,7 @@ namespace _NET_1732_Attendance
             _service = new SheetsService();
             _credential = null;
             dict_Attendance = new Dictionary<ulong, User>();
+            dict_IDs = new Dictionary<ulong, ulong>();
         }
 
         public void Dispose()
@@ -118,9 +122,24 @@ namespace _NET_1732_Attendance
 
         #region *** FEATURE FUNCTIONALITY METHODS ***
 
-        public bool Check_Valid_ID(ulong ID)
+        public bool Check_Valid_ID(ulong ID, out ulong primaryID)
         {
-            return dict_Attendance.ContainsKey(ID);
+            bool
+                idFound = false;
+
+            primaryID = 0;
+            if (dict_Attendance.ContainsKey(ID))
+            {
+                primaryID = ID;
+                idFound = true;
+            }
+            else if (dict_IDs.ContainsKey(ID))
+            {
+                primaryID = dict_IDs[ID];
+                idFound = true;
+            }
+
+            return idFound;
         }
 
         public bool Check_Is_Mentor(ulong ID)
@@ -138,14 +157,14 @@ namespace _NET_1732_Attendance
             return dict_Attendance[ID].Name;
         }
 
-        public bool Add_User(ulong ID, string name, ulong mentorID, bool isMentor)
+        public bool Add_User(ulong ID, ulong secondaryID, string name, ulong mentorID, bool isMentor)
         {
             bool
                 success = false;
 
             try
             {
-                InsertRows(Create_Attendance_Status_Row(ID, name, isMentor ? "X" : "", "OUT", "0", _RESET_HOURS, "0", _RESET_TOTAL_HOURS, _RESET_TOTAL_HOURS), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_Next_Attendance_Row(), _TOTAL_MISSED_HRS_COL));
+                InsertRows(Create_Attendance_Status_Row(ID, secondaryID, name, isMentor ? "X" : "", "OUT", "0", _RESET_HOURS, "0", _RESET_TOTAL_HOURS, _RESET_TOTAL_HOURS), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_Next_Attendance_Row(), _TOTAL_MISSED_HRS_COL));
                 InsertRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}{2}:{3}", _ACCUM_HOURS, _ID_COL, Get_Next_Accumulated_Hours_Row(), _NAME_COL));
                 Read_Attendance_Status();
                 InsertRows(Create_Log_Row(ID, _ADDED_STATUS, mentorID), Get_Next_Log_Row());
@@ -769,18 +788,29 @@ namespace _NET_1732_Attendance
         #region *** PARSE METHODS ***
         private void Parse_Attendance_Status_Rows(IList<IList<object>> idStatusList)
         {
+            ulong
+                ID,
+                sec_ID = 0;
+
             try
             {
                 //Wipe any previous dictionary values to start fresh with every request
                 //Treats the Google Sheet as the golden copy
                 dict_Attendance = new Dictionary<ulong, User>();
+                dict_IDs = new Dictionary<ulong, ulong>();
 
                 //Start at 1 because first row is the header row (ID | Name)
                 for (int i = 1; i < idStatusList.Count; i++)
                 {
                     //Get the current row (ID | Current_Status)
                     IList<object> row = idStatusList[i];
-                    ulong.TryParse((string)row[(int)COLUMNS.ID], out ulong ID);
+                    ulong.TryParse((string)row[(int)COLUMNS.ID], out ID);
+
+                    if (!string.IsNullOrEmpty((string)row[(int)COLUMNS.SECONDARY_ID]))
+                    {
+                        ulong.TryParse((string)row[(int)COLUMNS.SECONDARY_ID], out sec_ID);
+                    }
+
                     string name = row[(int)COLUMNS.NAME].ToString();
                     bool mentor = row[(int)COLUMNS.IS_MENTOR].ToString().Equals("X") ? true : false;
                     string stat = row[(int)COLUMNS.STATUS].ToString();
@@ -791,6 +821,12 @@ namespace _NET_1732_Attendance
                     TimeSpan.TryParse(row[(int)COLUMNS.TOTAL_MISSED_HOURS].ToString(), out TimeSpan totalMissedHours);
 
                     dict_Attendance.Add(ID, new User() { ID = ID, Name = name, Is_Mentor = mentor, Status = stat, Check_In_Time = lastCheckIn, User_Hours = hours, Check_Out_Time = lastCheckOut, User_TotalHours = totalHours, User_TotalMissedHours = totalMissedHours });
+
+                    if (!string.IsNullOrEmpty((string)row[(int)COLUMNS.SECONDARY_ID]))
+                    {
+                        dict_IDs.Add(sec_ID, ID);
+                        dict_Attendance[ID].Secondary_ID = sec_ID;
+                    }
                 }
             }
             catch (Exception ex)
@@ -867,11 +903,11 @@ namespace _NET_1732_Attendance
             return newRow;
         }
 
-        private IList<IList<object>> Create_Attendance_Status_Row(ulong ID, string name, string isMentor, string status, string lastCheckIn, string hours, string lastCheckout, string totalHours, string totalMissedHours)
+        private IList<IList<object>> Create_Attendance_Status_Row(ulong ID, ulong secondaryID, string name, string isMentor, string status, string lastCheckIn, string hours, string lastCheckout, string totalHours, string totalMissedHours)
         {
             IList<IList<object>> newRow = new List<IList<object>>
             {
-                new List<object>() { ID, name, isMentor, status, lastCheckIn, hours, lastCheckout, totalHours, totalMissedHours }
+                new List<object>() { ID, secondaryID, name, isMentor, status, lastCheckIn, hours, lastCheckout, totalHours, totalMissedHours }
             };
             return newRow;
         }
