@@ -167,7 +167,7 @@ namespace _NET_1732_Attendance
                 InsertRows(Create_Attendance_Status_Row(ID, secondaryID, name, isMentor ? "X" : "", "OUT", "0", _RESET_HOURS, "0", _RESET_TOTAL_HOURS, _RESET_TOTAL_HOURS), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_Next_Attendance_Row(), _TOTAL_MISSED_HRS_COL));
                 InsertRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}{2}:{3}", _ACCUM_HOURS, _ID_COL, Get_Next_Accumulated_Hours_Row(), _NAME_COL));
                 Read_Attendance_Status();
-                InsertRows(Create_Log_Row(ID, _ADDED_STATUS, mentorID), Get_Next_Log_Row());
+                InsertRows(Create_Log_Row(mentorID, _ADDED_STATUS, ID), Get_Next_Log_Row());
                 success = true;
             }
             catch (Exception ex)
@@ -187,7 +187,7 @@ namespace _NET_1732_Attendance
                 UpdateRows(Create_Updated_Attendance_Status_Row(ID, name, isMentor ? "X" : ""), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_User_Attendance_Status_Row(ID) + 1, _IS_MENTOR_COL));
                 UpdateRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}{2}:{3}", _ACCUM_HOURS, _ID_COL, Get_Accumulated_Hours_User_Row(ID) + 1, _NAME_COL));
                 Read_Attendance_Status();
-                InsertRows(Create_Log_Row(ID, _UPDATED_STATUS, mentorID), Get_Next_Log_Row());
+                InsertRows(Create_Log_Row(mentorID, _UPDATED_STATUS, ID), Get_Next_Log_Row());
                 success = true;
             }
             catch (Exception ex)
@@ -242,7 +242,7 @@ namespace _NET_1732_Attendance
                 Read_Attendance_Status();
 
                 // 6. Update the log
-                InsertRows(Create_Log_Row(ID, _HOURS_CREDITED, mentorID), Get_Next_Log_Row());
+                InsertRows(Create_Log_Row(mentorID, _HOURS_CREDITED, ID), Get_Next_Log_Row());
                 success = true;
             }
             catch (Exception ex)
@@ -283,7 +283,7 @@ namespace _NET_1732_Attendance
                 Read_Attendance_Status();
 
                 // 6. Update the log
-                InsertRows(Create_Log_Row(ID, _HOURS_MISSING, mentorID), Get_Next_Log_Row());
+                InsertRows(Create_Log_Row(mentorID, _HOURS_MISSING, ID), Get_Next_Log_Row());
                 success = true;
             }
             catch (Exception ex)
@@ -403,7 +403,7 @@ namespace _NET_1732_Attendance
                     rowToRemove = Get_Accumulated_Hours_User_Row(ID);
                     DeleteRows(rowToRemove, _GID_ACCUMULATED_HOURS);
 
-                    InsertRows(Create_Log_Row(ID, _DELETED_STATUS, mentorID), Get_Next_Log_Row());
+                    InsertRows(Create_Log_Row(mentorID, _DELETED_STATUS, ID), Get_Next_Log_Row());
                     success = true;
                 }
             }
@@ -867,39 +867,45 @@ namespace _NET_1732_Attendance
         private IList<IList<object>> Create_Log_Row(ulong ID, string status, ulong mentorID = 0, bool forceLogOff = false)
         {
             string log = string.Empty;
+            IList<IList<object>> newRow = new List<IList<object>>();
+
             switch (status)
             {
                 case _IN_STATUS:
                     log = "User checked IN";
+                    newRow.Add(new List<object>() { ID, DateTime.Now.ToString(), log });
                     break;
                 case _OUT_STATUS:
                     log = forceLogOff ? "Forced user check OUT" : "User checked OUT";
+                    newRow.Add(new List<object>() { ID, DateTime.Now.ToString(), log });
                     break;
                 case _ADDED_STATUS:
-                    log = string.Format("User ADDED by mentor {0}", mentorID.ToString());
+                    log = string.Format("Added ID {0}", ID.ToString());
+                    newRow.Add(new List<object>() { mentorID, DateTime.Now.ToString(), log });
                     break;
                 case _UNREGISTERED_STATUS:
                     log = "User NOT REGISTERED";
+                    newRow.Add(new List<object>() { ID, DateTime.Now.ToString(), log });
                     break;
                 case _HOURS_CREDITED:
-                    log = string.Format("User hours CREDITED by mentor {0}", mentorID.ToString());
+                    log = string.Format("Credited hours to ID {0}", ID.ToString());
+                    newRow.Add(new List<object>() { mentorID, DateTime.Now.ToString(), log });
                     break;
                 case _HOURS_MISSING:
-                    log = string.Format("User hours MISSED added by mentor {0}", mentorID.ToString());
+                    log = string.Format("Added missed hours to ID {0}", ID.ToString());
+                    newRow.Add(new List<object>() { mentorID, DateTime.Now.ToString(), log });
                     break;
                 case _UPDATED_STATUS:
-                    log = string.Format("User UPDATED by mentor {0}", mentorID.ToString());
+                    log = string.Format("Updated ID {0}", ID.ToString());
+                    newRow.Add(new List<object>() { mentorID, DateTime.Now.ToString(), log });
                     break;
                 case _DELETED_STATUS:
-                    log = string.Format("User DELETED by mentor {0}", mentorID.ToString());
+                    log = string.Format("Deleted ID {0}", ID.ToString());
+                    newRow.Add(new List<object>() { mentorID, DateTime.Now.ToString(), log });
                     break;
                 default:
                     throw new Exception("Unable to parse status to create row for Log sheet");
             }
-            IList<IList<object>> newRow = new List<IList<object>>
-            {
-                new List<object>() { ID, DateTime.Now.ToString(), log }
-            };
             return newRow;
         }
 
