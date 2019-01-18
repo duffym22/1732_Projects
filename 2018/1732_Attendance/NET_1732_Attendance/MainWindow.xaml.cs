@@ -3,7 +3,6 @@ using log4net.Config;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -365,12 +364,13 @@ namespace _NET_1732_Attendance
                 if (users.Count > 0)
                 {
                     UserDataGrid.Visibility = Visibility.Visible;
-                    Log(string.Format("Displayed currently logged in users. Count = {0}", users.Count));
                     DisplayAdminText(string.Format("Displayed currently logged in users. Count = {0}", users.Count));
+                    Log(string.Format("Displayed currently logged in users. Count = {0}", users.Count));
                     UserDataGrid.ItemsSource = users;
                 }
                 else
                 {
+                    DisplayAdminText("No users currently logged in");
                     Log("No users currently logged in");
                 }
             }
@@ -448,23 +448,21 @@ namespace _NET_1732_Attendance
 
         private void BTN_View_Log_Click(object sender, RoutedEventArgs e)
         {
-            string[] lines;
             try
             {
-                if (Log_File_Path.StartsWith("\\"))
+                List<string> log = gAPI.Get_Log_100_Rows();
+                log.Reverse();
+                if (log.Count > 0)
                 {
-                    string file = Log_File_Path.Replace("\\", "");
-                    string path = Directory.GetCurrentDirectory();
-                    lines = File.ReadAllLines(path + Log_File_Path, Encoding.UTF8);
+                    DisplayAdminText("=== LOG ENTRIES ===");
+                    foreach (string item in log)
+                    {
+                        DisplayAdminText(item);
+                    }
                 }
                 else
                 {
-                    lines = File.ReadAllLines(Log_File_Path, Encoding.UTF8);
-                }
-
-                foreach (string item in lines)
-                {
-                    DisplayAdminText(item);
+                    DisplayAdminText("No log entries");
                 }
             }
             catch (Exception ex)

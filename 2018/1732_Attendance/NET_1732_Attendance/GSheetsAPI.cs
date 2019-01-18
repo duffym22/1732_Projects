@@ -188,7 +188,9 @@ namespace _NET_1732_Attendance
             try
             {
                 if (!secondaryID.Equals(0))
+                {
                     secID = secondaryID.ToString();
+                }
 
                 UpdateRows(Create_Updated_Attendance_Status_Row(ID, secID, name, isMentor ? "X" : ""), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_User_Attendance_Status_Row(ID) + 1, _IS_MENTOR_COL));
                 UpdateRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}{2}:{3}", _ACCUM_HOURS, _ID_COL, Get_Accumulated_Hours_User_Row(ID) + 1, _NAME_COL));
@@ -563,6 +565,64 @@ namespace _NET_1732_Attendance
             return users;
         }
 
+        public List<string> Get_Full_Log()
+        {
+            IList<IList<object>> logRead;
+            List<string> logEntries = new List<string>();
+            string line = string.Empty;
+            try
+            {
+                logRead = Get_Log_Entries();
+                for (int i = 0; i < logRead.Count; i++)
+                {
+                    //Get the current row (ID | Current_Status)
+                    IList<object> row = logRead[i];
+                    foreach (string item in row)
+                    {
+                        line = line + string.Concat(item, "\t");
+                    }
+                    logEntries.Add(line);
+                    line = string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return logEntries;
+        }
+
+        public List<string> Get_Log_100_Rows()
+        {
+            IList<IList<object>> logRead;
+            List<string> logEntries = new List<string>();
+            string line = string.Empty;
+            try
+            {
+                logRead = Get_Log_Entries();
+                if (logRead.Count > 100)
+                {
+                    int total = logRead.Count - 100;
+                    for (int i = logRead.Count - 1; i != total; i--)
+                    {
+                        //Get the current row (ID | Current_Status)
+                        IList<object> row = logRead[i];
+                        foreach (string item in row)
+                        {
+                            line = line + string.Concat(item, "\t");
+                        }
+                        logEntries.Add(line);
+                        line = string.Empty;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return logEntries;
+        }
+
         #endregion
 
         #region *** GET/READ METHODS ***
@@ -744,6 +804,22 @@ namespace _NET_1732_Attendance
             return returnVal;
         }
 
+        private IList<IList<object>> Get_Log_Entries()
+        {
+            try
+            {
+                GetRequest getRequest = _service.Spreadsheets.Values.Get(Sheet_ID, _LOG_RANGE);
+
+                ValueRange getResponse = getRequest.Execute();
+                IList<IList<Object>> getValues = getResponse.Values;
+                return getValues;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(MethodBase.GetCurrentMethod().Name, ex);
+            }
+        }
+
         private string Get_Next_Log_Row()
         {
             string returnVal = string.Empty;
@@ -787,7 +863,6 @@ namespace _NET_1732_Attendance
             }
             return columnLetter;
         }
-
 
         #endregion
 
