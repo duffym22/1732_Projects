@@ -102,6 +102,54 @@ namespace _NET_1732_Attendance
             Initialize();
         }
 
+        private void BTN_Check_In_User_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(TXT_Card_ID.Text))
+                {
+                    if (Parse_Scanned_ID(TXT_Card_ID.Text, out ulong ID))
+                    {
+                        if (Lookup_ID(ID, out ulong primaryID))
+                        {
+                            if (gAPI.Update_User_Status(primaryID))
+                            {
+                                DisplayAdminText(string.Format("User checked in - ID: {0}", primaryID));
+                                Log(string.Format("User checked in - ID: {0}", primaryID));
+                            }
+                            else
+                            {
+                                DisplayAdminText(gAPI.LastException);
+                                Log(gAPI.LastException);
+                            }
+                        }
+                        else
+                        {
+                            DisplayAdminText(string.Format("ID - {0} is not registered.", ID.ToString()));
+                        }
+                    }
+                    else
+                    {
+                        DisplayAdminText(string.Format("Invalid ID scanned. Please try a different card to check-in user", TXT_Card_ID.Text));
+                        Log(string.Format("Invalid ID scanned to check-in user", TXT_Card_ID.Text));
+                    }
+                }
+                else
+                {
+                    DisplayAdminText("Please scan/enter an ID of the user to check-in");
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            finally
+            {
+                TXT_Card_ID.Clear();
+                TXT_Card_ID.Focus();
+            }
+        }
+
         private void BTN_Force_Checkout_Click(object sender, RoutedEventArgs e)
         {
             try
