@@ -38,17 +38,17 @@
             <Button x:Name="BTN_Add_Hours_Missed" Content="Add Hours Missed" HorizontalAlignment="Left" Margin="480,220,0,0" VerticalAlignment="Top" Width="199" Height="75" FontSize="18" Click="BTN_Add_Hours_Missed_Click"/>
             <Grid x:Name="GRD_Data_Input" HorizontalAlignment="Left" Height="377" Margin="915,10,0,0" VerticalAlignment="Top" Width="411">
                 <Label x:Name="LBL_ID" Content="Card ID" HorizontalAlignment="Right" Margin="0,10,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" Padding="6,5,5,5" FontSize="24"/>
-                <Label x:Name="LBL_Name" Content="First Name" HorizontalAlignment="Right" Margin="0,120,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" FontSize="24"/>
+                <Label x:Name="LBL_Printed_ID" Content="Printed ID" HorizontalAlignment="Right" Margin="0,65,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" Padding="6,5,5,5" FontSize="24"/>
+                <Label x:Name="LBL_First_Name" Content="First Name" HorizontalAlignment="Right" Margin="0,120,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" FontSize="24"/>
                 <Label x:Name="LBL_Last_Name" Content="Last Name" HorizontalAlignment="Right" Margin="0,175,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" FontSize="24"/>
+                <Label x:Name="LBL_Hours" Content="Hours" HorizontalAlignment="Right" Margin="0,230,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" FontSize="24"/>
                 <TextBox x:Name="TXT_Card_ID" HorizontalAlignment="Right" Height="50" Margin="0,0,10,317" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="36"/>
+                <TextBox x:Name="TXT_Printed_ID" HorizontalAlignment="Right" Height="50" Margin="0,0,10,262" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="36"/>
                 <TextBox x:Name="TXT_First_Name" HorizontalAlignment="Right" Height="50" Margin="0,0,10,207" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="36"/>
                 <TextBox x:Name="TXT_Last_Name" HorizontalAlignment="Right" Height="50" Margin="0,0,10,152" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="36"/>
+                <TextBox x:Name="TXT_Hours" HorizontalAlignment="Right" Height="50" Margin="0,0,10,97" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="36"/>
                 <CheckBox x:Name="CHK_Is_Mentor" Content="Is Mentor?" HorizontalAlignment="Right" Margin="0,0,214,33" VerticalAlignment="Bottom" Width="187" FontSize="24"/>
                 <Button x:Name="BTN_Save_Updated_User" Content="Save" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="199" Height="75" Click="BTN_Save_Updated_User_Click" FontSize="18"/>
-                <TextBox x:Name="TXT_Hours" HorizontalAlignment="Right" Height="50" Margin="0,0,10,97" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="36"/>
-                <Label x:Name="LBL_Hours" Content="Hours" HorizontalAlignment="Right" Margin="0,230,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" FontSize="24"/>
-                <TextBox x:Name="TXT_Printed_ID" HorizontalAlignment="Right" Height="50" Margin="0,0,10,262" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="265" FontSize="36"/>
-                <Label x:Name="LBL_Printed_ID" Content="Printed ID" HorizontalAlignment="Right" Margin="0,65,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" Padding="6,5,5,5" FontSize="24"/>
             </Grid>
             <DataGrid x:Name="UserDataGrid" HorizontalAlignment="Left" Height="390" Margin="10,10,0,0" VerticalAlignment="Top" Width="1316" LostFocus="UserDataGrid_LostFocus" FocusableChanged="UserDataGrid_FocusableChanged" d:IsHidden="True"/>
         </Grid>

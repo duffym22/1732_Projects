@@ -3,12 +3,12 @@ using log4net.Config;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace _NET_1732_Attendance
@@ -76,24 +76,12 @@ namespace _NET_1732_Attendance
         {
             if (BTN_Login.Content.Equals(_LOGIN))
             {
-                Mentor_Mode = true;
-                LBL_ScanID.Text = _MENTOR_MODE_SCAN;
-                BTN_Login.Content = _EXIT;
-                TXT_Scan.Clear();
-                TXT_Scan.Focus();
+                UI_Control(3); //Set UI to mentor mode
             }
             else if (BTN_Login.Content.Equals(_EXIT))
             {
-                Mentor_Mode = false;
-                Logged_In_Mentor_ID = 0;
-                RTB_AdminOutput.Document.Blocks.Clear();
-                GRD_Admin.Visibility = Visibility.Hidden;
-                BTN_Refresh_Main.Visibility = Visibility.Visible;
-                BTN_Refresh_Main.IsEnabled = true;
-                LBL_ScanID.Text = _REGULAR_MODE_SCAN;
-                BTN_Login.Content = _LOGIN;
-                TXT_Scan.Clear();
-                TXT_Scan.Focus();
+                UI_Control(4); //Set login to normal scanning
+                UI_Control(0); //Set UI to normal scanning
             }
         }
 
@@ -309,7 +297,7 @@ namespace _NET_1732_Attendance
 
         private void BTN_Save_Updated_User_Click(object sender, RoutedEventArgs e)
         {
-            ulong 
+            ulong
                 secondaryID = 0;
 
             try
@@ -424,12 +412,13 @@ namespace _NET_1732_Attendance
                 if (users.Count > 0)
                 {
                     UserDataGrid.Visibility = Visibility.Visible;
-                    Log(string.Format("Displayed currently logged in users. Count = {0}", users.Count));
                     DisplayAdminText(string.Format("Displayed currently logged in users. Count = {0}", users.Count));
+                    Log(string.Format("Displayed currently logged in users. Count = {0}", users.Count));
                     UserDataGrid.ItemsSource = users;
                 }
                 else
                 {
+                    DisplayAdminText("No users currently logged in");
                     Log("No users currently logged in");
                 }
             }
@@ -507,23 +496,21 @@ namespace _NET_1732_Attendance
 
         private void BTN_View_Log_Click(object sender, RoutedEventArgs e)
         {
-            string[] lines;
             try
             {
-                if (Log_File_Path.StartsWith("\\"))
+                List<string> log = gAPI.Get_Log_100_Rows();
+                log.Reverse();
+                if (log.Count > 0)
                 {
-                    string file = Log_File_Path.Replace("\\", "");
-                    string path = Directory.GetCurrentDirectory();
-                    lines = File.ReadAllLines(path + Log_File_Path, Encoding.UTF8);
+                    DisplayAdminText("=== LOG ENTRIES ===");
+                    foreach (string item in log)
+                    {
+                        DisplayAdminText(item);
+                    }
                 }
                 else
                 {
-                    lines = File.ReadAllLines(Log_File_Path, Encoding.UTF8);
-                }
-
-                foreach (string item in lines)
-                {
-                    DisplayAdminText(item);
+                    DisplayAdminText("No log entries");
                 }
             }
             catch (Exception ex)
@@ -679,13 +666,7 @@ namespace _NET_1732_Attendance
                             {
                                 if (Verify_Mentor_ID(primaryID))
                                 {
-                                    TXT_Scan.Clear();
-                                    Log("Enabling Mentor admin screen");
-                                    GRD_Admin.IsEnabled = true;
-                                    GRD_Admin.Visibility = Visibility.Visible;
-                                    UserDataGrid.Visibility = Visibility.Hidden;
-                                    BTN_Refresh_Main.Visibility = Visibility.Hidden;
-                                    BTN_Refresh_Main.IsEnabled = false;
+                                    UI_Control(2);
                                     DisplayAdminText(string.Format("Mentor Authorized - ID: {0} | NAME: {1}", primaryID, gAPI.Get_ID_Name(primaryID)));
                                 }
                                 else
@@ -720,7 +701,7 @@ namespace _NET_1732_Attendance
             catch (Exception ex)
             {
                 HandleException(ex, MethodBase.GetCurrentMethod().Name);
-                UI_Control(false); //if an exception is thrown - disable the UI
+                UI_Control(1); //if an exception is thrown - disable the UI
             }
             finally
             {
@@ -854,19 +835,17 @@ namespace _NET_1732_Attendance
                 if (gAPI.Refresh_Local_Data())
                 {
                     Log("Successfully refreshed local data");
-                    UI_Control(true);
+                    UI_Control(0);
                     if (gAPI.Auto_Checkout_Enabled)
                     {
                         Setup_Checkout_Timer();
                     }
-
-                    TXT_Scan.Focus();
                 }
                 else
                 {
                     DisplayText("Failed to refresh local data");
                     Log("Failed to refresh local data");
-                    UI_Control(false);
+                    UI_Control(1);
                     BTN_Reconnect.Focus();
                 }
             }
@@ -876,7 +855,7 @@ namespace _NET_1732_Attendance
                 Log("Verify internet connectivity");
                 Log("Verify API key still valid");
                 Log(gAPI.LastException);
-                UI_Control(false);
+                UI_Control(1);
             }
         }
 
@@ -895,7 +874,7 @@ namespace _NET_1732_Attendance
             return value;
         }
 
-        private void UI_Control(bool state)
+        private void UI_Control(int state)
         {
             /// State == TRUE
             /// - Disable & Hide Reconnect button
@@ -904,34 +883,87 @@ namespace _NET_1732_Attendance
             /// - Enable & Show Reconnect button
             /// - Disable & Hide ID text field entry
 
-            if (state)
+            switch (state)
             {
-                Log("Enabling text entry field");
-                TXT_Scan.IsEnabled = true;
-                TXT_Scan.Visibility = Visibility.Visible;
-                Log("Disabling reconnect button");
-                GRD_Admin.IsEnabled = false;
-                GRD_Admin.Visibility = Visibility.Hidden;
-                BTN_Refresh_Main.IsEnabled = true;
-                BTN_Refresh_Main.Visibility = Visibility.Visible;
-                BTN_Save_Updated_User.IsEnabled = false;
-                BTN_Save_Updated_User.Visibility = Visibility.Hidden;
-                BTN_Reconnect.Visibility = Visibility.Hidden;
-                BTN_Reconnect.IsEnabled = false;
+                //Normal Scanning 
+                case 0:
+                    Log("Enabling normal UI mode for scanning");
+                    TXT_Scan.IsEnabled = true;
+                    TXT_Scan.Visibility = Visibility.Visible;
+                    Keyboard.Focus(TXT_Scan);
 
-            }
-            else
-            {
-                Log("Disabling text entry field");
-                TXT_Scan.IsEnabled = false;
-                TXT_Scan.Visibility = Visibility.Hidden;
-                Log("Enabling reconnect button");
-                GRD_Admin.IsEnabled = false;
-                GRD_Admin.Visibility = Visibility.Hidden;
-                BTN_Refresh_Main.IsEnabled = false;
-                BTN_Refresh_Main.Visibility = Visibility.Hidden;
-                BTN_Reconnect.Visibility = Visibility.Visible;
-                BTN_Reconnect.IsEnabled = true;
+
+                    BTN_Refresh_Main.IsEnabled = true;
+                    BTN_Refresh_Main.Visibility = Visibility.Visible;
+
+                    GRD_Admin.IsEnabled = false;
+                    GRD_Admin.Visibility = Visibility.Hidden;
+
+                    BTN_Save_Updated_User.IsEnabled = false;
+                    BTN_Save_Updated_User.Visibility = Visibility.Hidden;
+
+                    BTN_Reconnect.Visibility = Visibility.Hidden;
+                    BTN_Reconnect.IsEnabled = false;
+
+                    UserDataGrid.Visibility = Visibility.Hidden;
+                    break;
+                //UI Disabled - Need to reconnect
+                case 1:
+                    Log("Disabling UI mode for scanning");
+                    TXT_Scan.IsEnabled = true;
+                    TXT_Scan.Visibility = Visibility.Visible;
+
+                    BTN_Refresh_Main.IsEnabled = true;
+                    BTN_Refresh_Main.Visibility = Visibility.Visible;
+
+                    GRD_Admin.IsEnabled = false;
+                    GRD_Admin.Visibility = Visibility.Hidden;
+
+                    BTN_Save_Updated_User.IsEnabled = false;
+                    BTN_Save_Updated_User.Visibility = Visibility.Hidden;
+
+                    BTN_Reconnect.Visibility = Visibility.Visible;
+                    BTN_Reconnect.IsEnabled = true;
+
+                    UserDataGrid.Visibility = Visibility.Hidden;
+                    break;
+                //Mentor Mode
+                case 2:
+                    Log("Enabling mentor mode");
+                    TXT_Scan.IsEnabled = false;
+                    TXT_Scan.Visibility = Visibility.Hidden;
+
+                    BTN_Refresh_Main.IsEnabled = false;
+                    BTN_Refresh_Main.Visibility = Visibility.Hidden;
+
+                    GRD_Admin.IsEnabled = true;
+                    GRD_Admin.Visibility = Visibility.Visible;
+                    Keyboard.Focus(TXT_Card_ID);
+
+                    BTN_Save_Updated_User.IsEnabled = false;
+                    BTN_Save_Updated_User.Visibility = Visibility.Hidden;
+
+                    BTN_Reconnect.Visibility = Visibility.Hidden;
+                    BTN_Reconnect.IsEnabled = false;
+
+                    UserDataGrid.Visibility = Visibility.Hidden;
+                    break;
+                //Login - Setup Mentor Mode
+                case 3:
+                    Mentor_Mode = true;
+                    LBL_ScanID.Text = _MENTOR_MODE_SCAN;
+                    BTN_Login.Content = _EXIT;
+                    TXT_Scan.Clear();
+                    TXT_Scan.Focus();
+                    break;
+                //Login - Setup Normal Scanning
+                case 4:
+                    Mentor_Mode = false;
+                    LBL_ScanID.Text = _REGULAR_MODE_SCAN;
+                    BTN_Login.Content = _LOGIN;
+                    Logged_In_Mentor_ID = 0;
+                    RTB_AdminOutput.Document.Blocks.Clear();
+                    break;
             }
         }
 

@@ -17,11 +17,11 @@ namespace _NET_1732_Attendance
     /// 1. Scan ID over sensor
     /// 2. Text populates on field - automatic carriage return will invoke keypress
     /// 3. Check for carriage return in keypress event and if present, continue check
-    /// 4. Parse ID from field as ulongeger and check against existing dictionary read on startup of app (or from periodic invoke)
+    /// 4. Parse ID from field as ulong and check against existing dictionary read on startup of app (or from periodic invoke)
     /// 5. If ID is in dictionary, create new entry to record to LOG tab the ID and timestamp. 
-    /// 5a. If ID is NOT in the directory, display to screen "ID: [IDVAL] is not in the list of valid IDs. Please contact a mentor to be added"
+    /// 5a. If ID is NOT in the directory, display a message to the screen.
     /// 6. Read the current status' of all IDs from the ATTENDANCE_STATUS tab
-    /// 7. Enumerate current status of all IDs ulongo dict_ID_Status
+    /// 7. Enumerate current status of all IDs ulong dict_ID_Status
     /// 8. Verify current status of the ID and invert it to write to the ATTENDANCE_STATUS tab
     internal class GSheetsAPI : IDisposable
     {
@@ -188,7 +188,9 @@ namespace _NET_1732_Attendance
             try
             {
                 if (!secondaryID.Equals(0))
+                {
                     secID = secondaryID.ToString();
+                }
 
                 UpdateRows(Create_Updated_Attendance_Status_Row(ID, secID, name, isMentor ? "X" : ""), string.Format("{0}{1}{2}:{3}", _ATTENDANCE_STATUS, _ID_COL, Get_User_Attendance_Status_Row(ID) + 1, _IS_MENTOR_COL));
                 UpdateRows(Create_Accumulated_Hours_Row(ID, name), string.Format("{0}{1}{2}:{3}", _ACCUM_HOURS, _ID_COL, Get_Accumulated_Hours_User_Row(ID) + 1, _NAME_COL));
@@ -563,6 +565,64 @@ namespace _NET_1732_Attendance
             return users;
         }
 
+        public List<string> Get_Full_Log()
+        {
+            IList<IList<object>> logRead;
+            List<string> logEntries = new List<string>();
+            string line = string.Empty;
+            try
+            {
+                logRead = Get_Log_Entries();
+                for (int i = 0; i < logRead.Count; i++)
+                {
+                    //Get the current row (ID | Current_Status)
+                    IList<object> row = logRead[i];
+                    foreach (string item in row)
+                    {
+                        line = line + string.Concat(item, "\t");
+                    }
+                    logEntries.Add(line);
+                    line = string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return logEntries;
+        }
+
+        public List<string> Get_Log_100_Rows()
+        {
+            IList<IList<object>> logRead;
+            List<string> logEntries = new List<string>();
+            string line = string.Empty;
+            try
+            {
+                logRead = Get_Log_Entries();
+                if (logRead.Count > 100)
+                {
+                    int total = logRead.Count - 100;
+                    for (int i = logRead.Count - 1; i != total; i--)
+                    {
+                        //Get the current row (ID | Current_Status)
+                        IList<object> row = logRead[i];
+                        foreach (string item in row)
+                        {
+                            line = line + string.Concat(item, "\t");
+                        }
+                        logEntries.Add(line);
+                        line = string.Empty;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
+            return logEntries;
+        }
+
         #endregion
 
         #region *** GET/READ METHODS ***
@@ -744,6 +804,22 @@ namespace _NET_1732_Attendance
             return returnVal;
         }
 
+        private IList<IList<object>> Get_Log_Entries()
+        {
+            try
+            {
+                GetRequest getRequest = _service.Spreadsheets.Values.Get(Sheet_ID, _LOG_RANGE);
+
+                ValueRange getResponse = getRequest.Execute();
+                IList<IList<Object>> getValues = getResponse.Values;
+                return getValues;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(MethodBase.GetCurrentMethod().Name, ex);
+            }
+        }
+
         private string Get_Next_Log_Row()
         {
             string returnVal = string.Empty;
@@ -787,7 +863,6 @@ namespace _NET_1732_Attendance
             }
             return columnLetter;
         }
-
 
         #endregion
 
