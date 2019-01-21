@@ -368,7 +368,7 @@ namespace _NET_1732_Attendance
                 }
                 else
                 {
-                    ///If user currently checked out 
+                    /// If user currently checked out
                     /// 1) Set the user status to IN
                     /// 2) Set the user check-in time
                     /// 3) Set the hours field for that user to 0
