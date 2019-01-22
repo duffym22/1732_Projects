@@ -34,7 +34,7 @@
             <Button x:Name="BTN_Check_In_User" Content="Check-In User" HorizontalAlignment="Left" Margin="250,320,0,0" VerticalAlignment="Top" Width="199" Click="BTN_Check_In_User_Click" Height="75" FontSize="18"/>
             <Button x:Name="BTN_Force_Checkout" Content="Force User Check-Out" HorizontalAlignment="Left" Margin="480,320,0,0" VerticalAlignment="Top" Width="199" Click="BTN_Force_Checkout_Click" Height="75" FontSize="18"/>
             <Button x:Name="BTN_Show_All_Users" Content="Show All Users" HorizontalAlignment="Left" Margin="20,20,0,0" VerticalAlignment="Top" Width="199" Height="75" FontSize="18" Click="BTN_Show_All_Users_Click"/>
-            <Button x:Name="BTN_Credit_Hours_Present" Content="Credit Hours Present" HorizontalAlignment="Left" Margin="480,120,0,0" VerticalAlignment="Top" Width="199" Height="75" FontSize="18" Click="BTN_Credit_Hours_Present_Click"/>
+            <Button x:Name="BTN_Add_Hours_Present" Content="Add Hours Present" HorizontalAlignment="Left" Margin="480,120,0,0" VerticalAlignment="Top" Width="199" Height="75" FontSize="18" Click="BTN_Add_Hours_Present_Click"/>
             <Button x:Name="BTN_Add_Hours_Missed" Content="Add Hours Missed" HorizontalAlignment="Left" Margin="480,220,0,0" VerticalAlignment="Top" Width="199" Height="75" FontSize="18" Click="BTN_Add_Hours_Missed_Click"/>
             <Grid x:Name="GRD_Data_Input" HorizontalAlignment="Left" Height="377" Margin="915,10,0,0" VerticalAlignment="Top" Width="411">
                 <Label x:Name="LBL_ID" Content="Card ID" HorizontalAlignment="Right" Margin="0,10,280,0" VerticalAlignment="Top" HorizontalContentAlignment="Right" Padding="6,5,5,5" FontSize="24"/>

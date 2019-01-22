@@ -546,7 +546,7 @@ namespace _NET_1732_Attendance
             }
         }
 
-        private void BTN_Credit_Hours_Present_Click(object sender, RoutedEventArgs e)
+        private void BTN_Add_Hours_Present_Click(object sender, RoutedEventArgs e)
         {
             try
             {
