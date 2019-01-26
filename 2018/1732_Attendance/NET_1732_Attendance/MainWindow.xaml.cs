@@ -3,6 +3,7 @@ using log4net.Config;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -826,6 +827,7 @@ namespace _NET_1732_Attendance
                 testSheet;
 
             Log("========== PROGRAM STARTED ==========");
+            Log(string.Format("Program version: {0}", FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion));
 
             gAPI = new GSheetsAPI
             {
