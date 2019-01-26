@@ -100,6 +100,7 @@ namespace _NET_1732_Attendance
         public bool Auto_Checkout_Enabled { get; set; }
         public DateTime Auto_Checkout_Time { get; set; }
         public DateTime Team_Checkout_Time { get; set; }
+        public DateTime Last_Data_Update { get; set; }
         public int Recent_Time_Check { get; set; }
 
         public string LastException { get { return _exMsg.ToString(); } }
@@ -909,6 +910,7 @@ namespace _NET_1732_Attendance
                         dict_Attendance[ID].Secondary_ID = sec_ID;
                     }
                 }
+                Last_Data_Update = DateTime.Now;
             }
             catch (Exception ex)
             {

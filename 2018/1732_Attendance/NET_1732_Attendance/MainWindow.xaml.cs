@@ -29,12 +29,14 @@ namespace _NET_1732_Attendance
         private GSheetsAPI gAPI;
 
         private Timer
-           timer;
+           checkoutTimer;
 
         private DispatcherTimer
+           dataRefreshTimer,
            displayTimer;
 
         private DateTime
+           lastDataUpdate,
            lastDisplayUpdate;
 
         private static readonly ILog
@@ -52,11 +54,29 @@ namespace _NET_1732_Attendance
         {
             InitializeComponent();
             XmlConfigurator.Configure();
+            InitializeTimers();
+        }
 
-            displayTimer = new DispatcherTimer();
-            displayTimer.Tick += DisplayTimer_Tick;
-            displayTimer.Interval = new TimeSpan(0, 0, 5);
-            displayTimer.Start();
+        private void InitializeTimers()
+        {
+            try
+            {
+                //Set 5 second timer for clearing text from feedback field
+                displayTimer = new DispatcherTimer();
+                displayTimer.Tick += DisplayTimer_Tick;
+                displayTimer.Interval = new TimeSpan(0, 0, 5);
+                displayTimer.Start();
+
+                //Set 5 minute timer to auto-refresh data from GSheets
+                dataRefreshTimer = new DispatcherTimer();
+                dataRefreshTimer.Tick += DataRefreshTimer_Tick;
+                dataRefreshTimer.Interval = new TimeSpan(0, 5, 0);
+                dataRefreshTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex, MethodBase.GetCurrentMethod().Name);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -64,11 +84,34 @@ namespace _NET_1732_Attendance
             Initialize();
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            CloseTimers();
+            gAPI.Dispose();
+            gAPI = null;
+            Log("========== PROGRAM CLOSING ==========");
+        }
+
+        private void CloseTimers()
+        {
+            checkoutTimer.Dispose();
+            displayTimer.Stop();
+        }
+
         private void DisplayTimer_Tick(object sender, EventArgs e)
         {
             if ((DateTime.Now - lastDisplayUpdate).TotalSeconds > 5)
             {
                 txt_Status.Text = string.Empty;
+            }
+        }
+
+        private void DataRefreshTimer_Tick(object sender, EventArgs e)
+        {
+            if ((DateTime.Now - gAPI.Last_Data_Update).TotalMinutes > 5)
+            {
+                Log("Auto-refreshing local data");
+                Refresh_Data();
             }
         }
 
@@ -486,7 +529,16 @@ namespace _NET_1732_Attendance
 
         private void BTN_Refresh_Main_Click(object sender, RoutedEventArgs e)
         {
-            Refresh_Data();
+            Log("Refreshing local data");
+            if (Refresh_Data())
+            {
+                UI_Control(0);
+            }
+            else
+            {
+                UI_Control(1);
+                BTN_Reconnect.Focus();
+            }
         }
 
         private void BTN_Refresh_Click(object sender, RoutedEventArgs e)
@@ -752,7 +804,7 @@ namespace _NET_1732_Attendance
             }
             Log(string.Format("Time until next auto-check out of users: {0}", timeToGo.ToString()));
 
-            timer = new Timer(x =>
+            checkoutTimer = new Timer(x =>
             {
                 Check_Out_Users();
             }, null, timeToGo, Timeout.InfiniteTimeSpan);
@@ -772,6 +824,8 @@ namespace _NET_1732_Attendance
                 customLogo,
                 prodSheet,
                 testSheet;
+
+            Log("========== PROGRAM STARTED ==========");
 
             gAPI = new GSheetsAPI
             {
@@ -832,21 +886,19 @@ namespace _NET_1732_Attendance
             {
                 Log("Application authorized");
                 Log("Refreshing local data");
-                if (gAPI.Refresh_Local_Data())
+                if (Refresh_Data())
                 {
-                    Log("Successfully refreshed local data");
                     UI_Control(0);
-                    if (gAPI.Auto_Checkout_Enabled)
-                    {
-                        Setup_Checkout_Timer();
-                    }
                 }
                 else
                 {
-                    DisplayText("Failed to refresh local data");
-                    Log("Failed to refresh local data");
                     UI_Control(1);
                     BTN_Reconnect.Focus();
+                }
+
+                if (gAPI.Auto_Checkout_Enabled)
+                {
+                    Setup_Checkout_Timer();
                 }
             }
             else
@@ -864,8 +916,13 @@ namespace _NET_1732_Attendance
             DateTime value = new DateTime();
             try
             {
-                Log("Auto checkout enabled. Attempting to parse auto checkout time");
+                Log("Auto checkout enabled");
                 DateTime.TryParse(time, out value);
+                if (value.Day.Equals(DateTime.Now.Day))
+                {
+                    value = value.AddDays(1);
+                }
+                Log(string.Format("Parsed auto checkout time: {0}", value.ToString()));
             }
             catch (Exception ex)
             {
@@ -890,8 +947,9 @@ namespace _NET_1732_Attendance
                     Log("Enabling normal UI mode for scanning");
                     TXT_Scan.IsEnabled = true;
                     TXT_Scan.Visibility = Visibility.Visible;
-                    Keyboard.Focus(TXT_Scan);
 
+                    BTN_Reconnect.IsEnabled = false;
+                    BTN_Reconnect.Visibility = Visibility.Hidden;
 
                     BTN_Refresh_Main.IsEnabled = true;
                     BTN_Refresh_Main.Visibility = Visibility.Visible;
@@ -902,16 +960,17 @@ namespace _NET_1732_Attendance
                     BTN_Save_Updated_User.IsEnabled = false;
                     BTN_Save_Updated_User.Visibility = Visibility.Hidden;
 
-                    BTN_Reconnect.Visibility = Visibility.Hidden;
-                    BTN_Reconnect.IsEnabled = false;
-
                     UserDataGrid.Visibility = Visibility.Hidden;
+                    Keyboard.Focus(TXT_Scan);
                     break;
                 //UI Disabled - Need to reconnect
                 case 1:
                     Log("Disabling UI mode for scanning");
-                    TXT_Scan.IsEnabled = true;
-                    TXT_Scan.Visibility = Visibility.Visible;
+                    TXT_Scan.IsEnabled = false;
+                    TXT_Scan.Visibility = Visibility.Hidden;
+
+                    BTN_Reconnect.IsEnabled = true;
+                    BTN_Reconnect.Visibility = Visibility.Visible;
 
                     BTN_Refresh_Main.IsEnabled = true;
                     BTN_Refresh_Main.Visibility = Visibility.Visible;
@@ -921,9 +980,6 @@ namespace _NET_1732_Attendance
 
                     BTN_Save_Updated_User.IsEnabled = false;
                     BTN_Save_Updated_User.Visibility = Visibility.Hidden;
-
-                    BTN_Reconnect.Visibility = Visibility.Visible;
-                    BTN_Reconnect.IsEnabled = true;
 
                     UserDataGrid.Visibility = Visibility.Hidden;
                     break;
@@ -933,20 +989,20 @@ namespace _NET_1732_Attendance
                     TXT_Scan.IsEnabled = false;
                     TXT_Scan.Visibility = Visibility.Hidden;
 
+                    BTN_Reconnect.IsEnabled = false;
+                    BTN_Reconnect.Visibility = Visibility.Hidden;
+
                     BTN_Refresh_Main.IsEnabled = false;
                     BTN_Refresh_Main.Visibility = Visibility.Hidden;
 
                     GRD_Admin.IsEnabled = true;
                     GRD_Admin.Visibility = Visibility.Visible;
-                    Keyboard.Focus(TXT_Card_ID);
 
                     BTN_Save_Updated_User.IsEnabled = false;
                     BTN_Save_Updated_User.Visibility = Visibility.Hidden;
 
-                    BTN_Reconnect.Visibility = Visibility.Hidden;
-                    BTN_Reconnect.IsEnabled = false;
-
                     UserDataGrid.Visibility = Visibility.Hidden;
+                    Keyboard.Focus(TXT_Card_ID);
                     break;
                 //Login - Setup Mentor Mode
                 case 3:
@@ -1274,12 +1330,15 @@ namespace _NET_1732_Attendance
             _log.Info(text);
         }
 
-        private void Refresh_Data()
+        private bool Refresh_Data()
         {
+            bool success = false;
+
             try
             {
                 if (gAPI.Refresh_Local_Data())
                 {
+                    success = true;
                     Log("Local data refreshed");
                     if (Mentor_Mode)
                     {
@@ -1308,6 +1367,7 @@ namespace _NET_1732_Attendance
             {
                 HandleException(ex, MethodBase.GetCurrentMethod().Name);
             }
+            return success;
         }
 
         #endregion

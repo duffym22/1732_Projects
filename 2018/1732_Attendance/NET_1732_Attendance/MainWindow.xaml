@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:_NET_1732_Attendance"
         mc:Ignorable="d"
-        Title="Team 1732 Attendance Station" Height="767.9" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner" WindowState="Maximized" Loaded="Window_Loaded" Cursor="IBeam" Width="1366">
+        Title="Team 1732 Attendance Station" Height="767.9" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner" WindowState="Maximized" Loaded="Window_Loaded" Cursor="IBeam" Width="1366" Closing="Window_Closing">
     <Window.Resources>
         <Color x:Key="Accent_2">#FF8BC81E</Color>
     </Window.Resources>
