@@ -530,7 +530,6 @@ namespace _NET_1732_Attendance
 
         private void BTN_Refresh_Main_Click(object sender, RoutedEventArgs e)
         {
-            Log("Refreshing local data");
             if (Refresh_Data())
             {
                 UI_Control(0);
@@ -699,14 +698,14 @@ namespace _NET_1732_Attendance
             }
         }
 
-        private void TXT_ID_Scan_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void TXT_ID_Scan_KeyDown(object sender, KeyEventArgs e)
         {
             string
                 idText = string.Empty;
 
             try
             {
-                if (e.Key == System.Windows.Input.Key.Enter || e.Key == System.Windows.Input.Key.Return)
+                if (e.Key == Key.Enter || e.Key == Key.Return)
                 {
                     idText = TXT_Scan.Text;
                     TXT_Scan.Clear();
@@ -856,15 +855,6 @@ namespace _NET_1732_Attendance
                 gAPI.Team_Checkout_Time = Parse_Checkout_Time(ConfigurationManager.AppSettings["WEEKDAY_TEAM_CHECKOUT_TIME"]);
             }
 
-            if (gAPI.Auto_Checkout_Enabled)
-            {
-                gAPI.Auto_Checkout_Time = Parse_Checkout_Time(ConfigurationManager.AppSettings["AUTO_CHECKOUT_TIME"]);
-            }
-            else
-            {
-                Log("Auto checkout disabled. Skipping parsing auto checkout time");
-            }
-
             defaultLogo = ConfigurationManager.AppSettings["DEFAULT_LOGO"];
             customLogo = ConfigurationManager.AppSettings["CUSTOM_LOGO"];
             //if (!string.IsNullOrEmpty(customLogo))
@@ -887,7 +877,6 @@ namespace _NET_1732_Attendance
             if (gAPI.AuthorizeGoogleApp())
             {
                 Log("Application authorized");
-                Log("Refreshing local data");
                 if (Refresh_Data())
                 {
                     UI_Control(0);
@@ -900,7 +889,13 @@ namespace _NET_1732_Attendance
 
                 if (gAPI.Auto_Checkout_Enabled)
                 {
+                    Log("Auto checkout enabled");
+                    gAPI.Auto_Checkout_Time = Parse_Checkout_Time(ConfigurationManager.AppSettings["AUTO_CHECKOUT_TIME"]);
                     Setup_Checkout_Timer();
+                }
+                else
+                {
+                    Log("Auto checkout disabled");
                 }
             }
             else
@@ -918,13 +913,11 @@ namespace _NET_1732_Attendance
             DateTime value = new DateTime();
             try
             {
-                Log("Auto checkout enabled");
                 DateTime.TryParse(time, out value);
                 if (value.Day.Equals(DateTime.Now.Day))
                 {
                     value = value.AddDays(1);
                 }
-                Log(string.Format("Parsed auto checkout time: {0}", value.ToString()));
             }
             catch (Exception ex)
             {
@@ -946,7 +939,7 @@ namespace _NET_1732_Attendance
             {
                 //Normal Scanning 
                 case 0:
-                    Log("Enabling normal UI mode for scanning");
+                    Log("UI Mode: NORMAL");
                     TXT_Scan.IsEnabled = true;
                     TXT_Scan.Visibility = Visibility.Visible;
 
@@ -967,7 +960,7 @@ namespace _NET_1732_Attendance
                     break;
                 //UI Disabled - Need to reconnect
                 case 1:
-                    Log("Disabling UI mode for scanning");
+                    Log("UI Mode: DISABLED");
                     TXT_Scan.IsEnabled = false;
                     TXT_Scan.Visibility = Visibility.Hidden;
 
@@ -987,7 +980,7 @@ namespace _NET_1732_Attendance
                     break;
                 //Mentor Mode
                 case 2:
-                    Log("Enabling mentor mode");
+                    Log("UI Mode: MENTOR MODE");
                     TXT_Scan.IsEnabled = false;
                     TXT_Scan.Visibility = Visibility.Hidden;
 
@@ -1008,6 +1001,7 @@ namespace _NET_1732_Attendance
                     break;
                 //Login - Setup Mentor Mode
                 case 3:
+                    Log("UI Mode: SETUP - MENTOR MODE");
                     Mentor_Mode = true;
                     LBL_ScanID.Text = _MENTOR_MODE_SCAN;
                     BTN_Login.Content = _EXIT;
@@ -1016,6 +1010,7 @@ namespace _NET_1732_Attendance
                     break;
                 //Login - Setup Normal Scanning
                 case 4:
+                    Log("UI Mode: SETUP - NORMAL");
                     Mentor_Mode = false;
                     LBL_ScanID.Text = _REGULAR_MODE_SCAN;
                     BTN_Login.Content = _LOGIN;
