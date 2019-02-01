@@ -790,7 +790,7 @@ namespace _NET_1732_Attendance
                 //otherwise return the index of the column
                 if (!Parse_Accumulated_Hours_Dates(getValues, out lastColumn))
                 {
-                    UpdateRows(Create_Accumulated_Hours_Date_Cell(), string.Format("{0}{1}{2}", _ACCUM_HOURS, Get_Next_Accum_Cell(lastColumn + 1), _DATE_RANGE));
+                    InsertRows_Overwrite(Create_Accumulated_Hours_Date_Cell(), string.Format("{0}{1}{2}", _ACCUM_HOURS, Get_Next_Accum_Cell(lastColumn + 1), _DATE_RANGE));
                     returnVal = Get_Next_Accum_Cell(lastColumn + 1);
                 }
                 else
@@ -1063,6 +1063,14 @@ namespace _NET_1732_Attendance
                 throw new Exception(MethodBase.GetCurrentMethod().Name, ex);
             }
             return success;
+        }
+
+        private void InsertRows_Overwrite(IList<IList<Object>> values, string newRange)
+        {
+            AppendRequest request = _service.Spreadsheets.Values.Append(new ValueRange() { Values = values }, Sheet_ID, newRange);
+            request.InsertDataOption = AppendRequest.InsertDataOptionEnum.OVERWRITE;
+            request.ValueInputOption = AppendRequest.ValueInputOptionEnum.RAW;
+            AppendValuesResponse response = request.Execute();
         }
 
         private void InsertRows(IList<IList<Object>> values, string newRange)
