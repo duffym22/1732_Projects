@@ -872,7 +872,7 @@ namespace _NET_1732_Attendance
         {
             ulong
                 ID,
-                sec_ID = 0;
+                sec_ID = 9999999;
 
             try
             {
@@ -904,11 +904,12 @@ namespace _NET_1732_Attendance
 
                     dict_Attendance.Add(ID, new User() { ID = ID, Name = name, Is_Mentor = mentor, Status = stat, Check_In_Time = lastCheckIn, User_Hours = hours, Check_Out_Time = lastCheckOut, User_TotalHours = totalHours, User_TotalMissedHours = totalMissedHours });
 
-                    if (!string.IsNullOrEmpty((string)row[(int)COLUMNS.SECONDARY_ID]))
+                    if (sec_ID != 9999999 && !dict_IDs.ContainsKey(sec_ID))
                     {
                         dict_IDs.Add(sec_ID, ID);
                         dict_Attendance[ID].Secondary_ID = sec_ID;
                     }
+                    sec_ID = 9999999; //reset value back to default for next row to parse
                 }
                 Last_Data_Update = DateTime.Now;
             }
