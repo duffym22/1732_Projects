@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace _NET_1732_Attendance
@@ -821,7 +823,6 @@ namespace _NET_1732_Attendance
 
             string
                 defaultLogo,
-                customLogo,
                 prodSheet,
                 testSheet;
 
@@ -856,21 +857,10 @@ namespace _NET_1732_Attendance
             }
 
             defaultLogo = ConfigurationManager.AppSettings["DEFAULT_LOGO"];
-            customLogo = ConfigurationManager.AppSettings["CUSTOM_LOGO"];
-            //if (!string.IsNullOrEmpty(customLogo))
-            //{
-            //    var path = Path.Combine(Environment.CurrentDirectory, "img", customLogo);
-            //    var uri = new Uri(path);
-            //    var bitmap = new BitmapImage(uri);
-            //    IMG_Logo.Source = bitmap;
-            //}
-            //else
-            //{
-            //    var path = Path.Combine(Environment.CurrentDirectory, "img", defaultLogo);
-            //    var uri = new Uri(path);
-            //    var bitmap = new BitmapImage(uri);
-            //    IMG_Logo.Source = bitmap;
-            //}
+            var path = Path.Combine(Environment.CurrentDirectory, "img", defaultLogo);
+            var uri = new Uri(path);
+            var bitmap = new BitmapImage(uri);
+            IMG_Logo.Source = bitmap;
 
             Log_File_Path = ConfigurationManager.AppSettings["LOG_FILE_PATH"];
 
