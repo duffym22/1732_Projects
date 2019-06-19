@@ -857,7 +857,7 @@ namespace _NET_1732_Attendance
             }
 
             defaultLogo = ConfigurationManager.AppSettings["DEFAULT_LOGO"];
-            var path = Path.Combine(Environment.CurrentDirectory, "img", defaultLogo);
+            var path = Environment.CurrentDirectory + @defaultLogo;
             var uri = new Uri(path);
             var bitmap = new BitmapImage(uri);
             IMG_Logo.Source = bitmap;

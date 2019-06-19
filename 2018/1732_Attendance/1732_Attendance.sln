@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NET_1732_Attendance", "NET_1732_Attendance\NET_1732_Attendance.csproj", "{7C9FB859-2D8C-4C65-A1C3-98CA93BB6F46}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_GoogleSheetsAPI", "Test_GoogleSheetsAPI\Test_GoogleSheetsAPI.csproj", "{C1304EC8-AC10-4EC6-9C28-FFCC008F4CBE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UWP_1732_Attendance", "UWP_1732_Attendance\UWP_1732_Attendance.csproj", "{ADA29B30-D794-4844-B3F1-17E9F11F4860}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,34 +53,6 @@ Global
 		{C1304EC8-AC10-4EC6-9C28-FFCC008F4CBE}.Release|ARM64.ActiveCfg = Release|Any CPU
 		{C1304EC8-AC10-4EC6-9C28-FFCC008F4CBE}.Release|x64.ActiveCfg = Release|Any CPU
 		{C1304EC8-AC10-4EC6-9C28-FFCC008F4CBE}.Release|x86.ActiveCfg = Release|Any CPU
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|Any CPU.Build.0 = Debug|x86
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|Any CPU.Deploy.0 = Debug|x86
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|ARM.ActiveCfg = Debug|ARM
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|ARM.Build.0 = Debug|ARM
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|ARM.Deploy.0 = Debug|ARM
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|ARM64.ActiveCfg = Debug|ARM64
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|ARM64.Build.0 = Debug|ARM64
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|ARM64.Deploy.0 = Debug|ARM64
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|x64.ActiveCfg = Debug|x64
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|x64.Build.0 = Debug|x64
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|x64.Deploy.0 = Debug|x64
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|x86.ActiveCfg = Debug|x86
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|x86.Build.0 = Debug|x86
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Debug|x86.Deploy.0 = Debug|x86
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|Any CPU.ActiveCfg = Release|x86
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|ARM.ActiveCfg = Release|ARM
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|ARM.Build.0 = Release|ARM
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|ARM.Deploy.0 = Release|ARM
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|ARM64.ActiveCfg = Release|ARM64
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|ARM64.Build.0 = Release|ARM64
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|ARM64.Deploy.0 = Release|ARM64
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|x64.ActiveCfg = Release|x64
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|x64.Build.0 = Release|x64
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|x64.Deploy.0 = Release|x64
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|x86.ActiveCfg = Release|x86
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|x86.Build.0 = Release|x86
-		{ADA29B30-D794-4844-B3F1-17E9F11F4860}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

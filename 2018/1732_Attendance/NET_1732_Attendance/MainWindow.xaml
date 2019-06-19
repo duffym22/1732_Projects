@@ -54,7 +54,7 @@
         </Grid>
         <Button x:Name="BTN_Refresh_Main" Content="" HorizontalAlignment="Left" Margin="10,659,0,0" VerticalAlignment="Top" Width="48" Height="48" Click="BTN_Refresh_Main_Click">
             <Button.Background>
-                <ImageBrush ImageSource="refresh.png" Stretch="Uniform"/>
+                <ImageBrush ImageSource="img\refresh.png" Stretch="Uniform"/>
             </Button.Background>
         </Button>
 
