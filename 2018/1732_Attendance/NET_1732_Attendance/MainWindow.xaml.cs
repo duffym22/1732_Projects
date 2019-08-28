@@ -740,9 +740,23 @@ namespace _NET_1732_Attendance
                         }
                         else
                         {
-                            Log(string.Format("ID - {0} is not registered", ID.ToString()));
-                            DisplayText(string.Format("ID ({0}) is not registered. Please find a Mentor to register your ID", ID.ToString()));
-                            Log_Unregistered_User(ID);
+                            var dialog = new UserPrompt();
+                            if (dialog.ShowDialog() == true)
+                            {
+                                string first = dialog.FirstName;
+                                string last = dialog.LastName;
+                                if (first.Equals(string.Empty) == false && last.Equals(string.Empty) == false)
+                                {
+                                    gAPI.Add_User(ID, 0, string.Format("{0}, {1}", last, first), 9999, false);
+                                    DisplayText(string.Format("New ID registered [{0} - {1} {2}]", ID.ToString(), first, last));
+                                    Log(string.Format("New ID registered [{0} - {1} {2}]", ID.ToString(), first, last));
+                                }
+                                else
+                                {
+                                    DisplayText(string.Format("No name provided. Failed to register new ID"));
+                                }
+
+                            }
                         }
                     }
                     else
